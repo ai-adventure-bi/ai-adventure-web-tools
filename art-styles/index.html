@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Art Styles</title>
+    <style>
+      :root {
+        --ink: #24324a;
+        --paper: #fffaf0;
+        --blue: #4776e6;
+        --green: #168b67;
+        --red: #d94b62;
+        --gold: #ffbd2e;
+        --shadow: 0 12px 30px #24324a18;
+        --r: 22px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        color: var(--ink);
+        font:
+          650 16px/1.4 system-ui,
+          sans-serif;
+        background:
+          radial-gradient(circle at 8% 0, #ffe9a8 0 10%, transparent 32%),
+          radial-gradient(circle at 96% 5%, #c9e9ff 0 10%, transparent 30%), var(--paper);
+      }
+      button {
+        font: inherit;
+        color: inherit;
+      }
+      .page {
+        width: min(1500px, 96vw);
+        margin: auto;
+        padding: 20px 0 44px;
+      }
+      header {
+        text-align: center;
+        position: relative;
+        padding: 8px 65px 16px;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4.3rem);
+        line-height: 0.95;
+        margin: 8px 0 12px;
+        letter-spacing: -0.05em;
+      }
+      h1 span {
+        color: var(--blue);
+      }
+      header p {
+        font-size: clamp(1rem, 2vw, 1.3rem);
+        margin: 0;
+      }
+      .help {
+        position: absolute;
+        right: 0;
+        top: 8px;
+        border: 0;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        background: #fff;
+        box-shadow: var(--shadow);
+        font-size: 1.4rem;
+        cursor: pointer;
+      }
+      .instructions {
+        background: #fff;
+        border: 3px solid #24324a16;
+        border-radius: var(--r);
+        padding: 13px 18px;
+        text-align: center;
+        box-shadow: var(--shadow);
+        margin: 0 auto 20px;
+        max-width: 980px;
+      }
+      .instructions strong {
+        color: var(--blue);
+      }
+      .level-picker {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 0 auto 20px;
+      }
+      .level-picker strong {
+        margin-right: 4px;
+      }
+      .level-button {
+        border: 3px solid var(--blue);
+        border-radius: 999px;
+        padding: 9px 18px;
+        background: #fff;
+        color: var(--blue);
+        cursor: pointer;
+      }
+      .level-button[aria-pressed="true"] {
+        background: var(--blue);
+        color: #fff;
+        box-shadow: 0 5px 0 #24324a24;
+      }
+      .zones {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .zone {
+        --accent: #4776e6;
+        --pale: #edf3ff;
+        background: #fff;
+        border: 4px dashed color-mix(in srgb, var(--accent) 55%, white);
+        border-radius: var(--r);
+        padding: 12px;
+        min-height: 245px;
+        box-shadow: var(--shadow);
+        transition: 0.18s;
+      }
+      .zone.drag-over {
+        transform: scale(1.015);
+        background: var(--pale);
+        border-style: solid;
+      }
+      .zone.full {
+        border-style: solid;
+      }
+      .zone h2 {
+        font-size: 1.15rem;
+        margin: 0 0 10px;
+        text-align: center;
+        color: var(--accent);
+      }
+      .artist {
+        display: block;
+        font-size: 1.45rem;
+        color: var(--ink);
+        animation: reveal 0.5s;
+      }
+      .zone-cards {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 7px;
+        min-height: 135px;
+        align-content: start;
+      }
+      .zone .card {
+        aspect-ratio: 3/4;
+      }
+      .zone .move {
+        font-size: 0.68rem;
+        padding: 3px 5px;
+      }
+      .tray-wrap {
+        background: #fff;
+        border-radius: var(--r);
+        padding: 18px;
+        box-shadow: var(--shadow);
+        margin-top: 18px;
+      }
+      .tray-wrap h2 {
+        text-align: center;
+        font-size: 1.3rem;
+        margin: 0 0 12px;
+      }
+      .tray {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 12px;
+        min-height: 250px;
+      }
+      .tray.empty:after {
+        content: "All placed!";
+        grid-column: 1/-1;
+        align-self: center;
+        text-align: center;
+        color: #668;
+        font-size: 1.15rem;
+      }
+      .card {
+        position: relative;
+        border-radius: 14px;
+        background: #e9edf5;
+        aspect-ratio: 4/3;
+        overflow: hidden;
+        box-shadow: 0 5px 14px #24324a24;
+        cursor: grab;
+        transition: 0.25s;
+        touch-action: none;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 9px 20px #24324a35;
+      }
+      .card.selected {
+        outline: 5px solid var(--gold);
+        outline-offset: 2px;
+        transform: rotate(-2deg) scale(1.03);
+      }
+      .art {
+        border: 0;
+        padding: 0;
+        background: transparent;
+        width: 100%;
+        height: 100%;
+        display: block;
+        cursor: zoom-in;
+      }
+      .art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        pointer-events: none;
+      }
+      .fallback {
+        position: absolute;
+        inset: 0;
+        display: none;
+        place-items: center;
+        text-align: center;
+        padding: 8px;
+        background: linear-gradient(135deg, #cfe1ff, #ffe3af);
+        font-size: 0.75rem;
+        pointer-events: none;
+      }
+      .card.missing .fallback {
+        display: grid;
+      }
+      .card.missing img {
+        display: none;
+      }
+      .move {
+        position: absolute;
+        left: 6px;
+        bottom: 6px;
+        border: 2px solid #fff;
+        border-radius: 999px;
+        padding: 5px 9px;
+        background: #24324ae8;
+        color: #fff;
+        font-size: 0.78rem;
+        cursor: pointer;
+        z-index: 2;
+      }
+      .badge {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        display: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        place-items: center;
+        color: #fff;
+        border: 2px solid #fff;
+        z-index: 2;
+      }
+      .correct .badge {
+        display: grid;
+        background: var(--green);
+      }
+      .wrong .badge {
+        display: grid;
+        background: var(--red);
+      }
+      .wrong {
+        outline: 4px solid var(--red);
+      }
+      .correct {
+        outline: 4px solid var(--green);
+      }
+      .corrected {
+        animation: corrected 0.75s 2;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        margin: 24px 0;
+      }
+      .btn {
+        border: 0;
+        border-radius: 999px;
+        padding: 14px 24px;
+        cursor: pointer;
+        box-shadow: 0 6px 0 #24324a24;
+      }
+      .primary {
+        background: var(--blue);
+        color: #fff;
+        font-size: 1.15rem;
+      }
+      .secondary {
+        background: #fff;
+      }
+      .fix {
+        background: var(--gold);
+      }
+      .btn[hidden] {
+        display: none;
+      }
+      .result {
+        max-width: 800px;
+        margin: auto;
+        padding: 16px 20px;
+        border-radius: 18px;
+        text-align: center;
+        background: #fff;
+        box-shadow: var(--shadow);
+        font-size: 1.2rem;
+      }
+      .result:empty {
+        display: none;
+      }
+      .result.good {
+        background: #dff8e9;
+        color: #086344;
+      }
+      .result.try {
+        background: #fff0cf;
+        color: #7d5100;
+      }
+      dialog {
+        border: 0;
+        border-radius: 24px;
+        padding: 25px;
+        max-width: 620px;
+        color: var(--ink);
+        box-shadow: 0 24px 70px #0006;
+      }
+      dialog::backdrop {
+        background: #24324a99;
+      }
+      .dialog-actions {
+        text-align: center;
+        margin-top: 18px;
+      }
+      .viewer {
+        width: min(1200px, 96vw);
+        padding: 14px;
+        max-width: none;
+        background: #fff;
+      }
+      .viewer img {
+        display: block;
+        width: 100%;
+        max-height: 90vh;
+        object-fit: contain;
+        border-radius: 14px;
+      }
+      .fallback-big {
+        display: none;
+        min-height: 50vh;
+        place-items: center;
+        background: linear-gradient(135deg, #cfe1ff, #ffe3af);
+        border-radius: 14px;
+      }
+      .viewer.missing img {
+        display: none;
+      }
+      .viewer.missing .fallback-big {
+        display: grid;
+      }
+      .viewer-close {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        border: 3px solid #fff;
+        border-radius: 50%;
+        width: 46px;
+        height: 46px;
+        background: #24324a;
+        color: #fff;
+        cursor: pointer;
+        font-size: 1.3rem;
+      }
+      .help:focus-visible,
+      .btn:focus-visible,
+      .art:focus-visible,
+      .move:focus-visible,
+      .zone:focus-visible {
+        outline: 4px solid #172e88;
+        outline-offset: 3px;
+      }
+      @keyframes corrected {
+        50% {
+          transform: scale(1.08) rotate(2deg);
+          box-shadow: 0 0 0 9px #f9b82d88;
+        }
+      }
+      @keyframes reveal {
+        from {
+          opacity: 0;
+          transform: translateY(-5px);
+        }
+      }
+      @media (max-width: 1000px) {
+        .zones {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .tray {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+      @media (max-width: 620px) {
+        .page {
+          width: 94vw;
+        }
+        .zones {
+          grid-template-columns: 1fr;
+        }
+        .tray {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .zone {
+          min-height: 195px;
+        }
+        .btn {
+          width: 100%;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header>
+        <button class="help" id="help" aria-label="How to play">?</button>
+        <h1>Art <span>Styles</span></h1>
+        <p>Which artworks look as though they belong together?</p>
+      </header>
+      <div class="instructions">
+        Make <strong>four groups of three</strong>. Drag artworks, or use “Move”. Click a picture to
+        look closer.
+      </div>
+      <nav class="level-picker" aria-label="Choose a level">
+        <strong>Choose a level:</strong>
+        <button class="level-button" data-level="1" aria-pressed="true">Level 1</button>
+        <button class="level-button" data-level="2" aria-pressed="false">Level 2</button>
+        <button class="level-button" data-level="3" aria-pressed="false">Level 3</button>
+      </nav>
+      <section class="zones" id="zones" aria-label="Four anonymous artwork groups"></section>
+      <section class="tray-wrap">
+        <h2>🎨 Jumbled artworks <span id="remaining" aria-live="polite"></span></h2>
+        <div class="tray" id="tray" aria-label="Unsorted artwork tray"></div>
+      </section>
+      <div class="actions">
+        <button class="btn primary" id="check">🔒 Lock in and reveal</button
+        ><button class="btn fix" id="fix" hidden>✨ Sort correctly</button
+        ><button class="btn secondary" id="reset">↻ Shuffle again</button>
+      </div>
+      <div class="result" id="result" role="status" aria-live="polite"></div>
+    </main>
+    <dialog id="how">
+      <h2>How to play</h2>
+      <p>
+        Look at colours, brush marks, shapes and subjects. Make four groups of three artworks by the
+        same artist. The group positions do not matter.
+      </p>
+      <p>
+        <b>Drag:</b> drag a card into a group.<br /><b>Tap or keyboard:</b> press “Move”, then
+        choose a group.<br /><b>Look closer:</b> click the artwork itself.
+      </p>
+      <div class="dialog-actions"><button class="btn primary" id="closeHelp">Got it!</button></div>
+    </dialog>
+    <dialog class="viewer" id="viewer">
+      <button class="viewer-close" id="closeViewer" aria-label="Close enlarged artwork">×</button
+      ><img id="bigImage" alt="Enlarged artwork" />
+      <div class="fallback-big" id="bigFallback"></div>
+    </dialog>
+    <script>
+      /* EASY SETTINGS */ const CONFIG = {
+        imagePath: "images/",
+        imageExtension: "jpg",
+        paintingsPerArtist: 3,
+        levels: {
+          1: {
+            folder: "level-1/",
+            artists: [
+              { id: "browne", name: "Anthony Browne", colour: "#e85d75", emoji: "🐵" },
+              { id: "dali", name: "Salvador Dalí", colour: "#3377b8", emoji: "🕒" },
+              { id: "escher", name: "M. C. Escher", colour: "#9a64cc", emoji: "🎭" },
+              { id: "rousseau", name: "Henri Rousseau", colour: "#d58a00", emoji: "🐅" },
+            ],
+          },
+          2: {
+            folder: "level-2/",
+            artists: [
+              { id: "base", name: "Graeme Base", colour: "#e85d75", emoji: "🐅" },
+              { id: "delessert", name: "Etienne Delessert", colour: "#3377b8", emoji: "🐱" },
+              { id: "magritte", name: "René Magritte", colour: "#9a64cc", emoji: "🍏" },
+              { id: "martin", name: "John Martin", colour: "#d58a00", emoji: "🌊" },
+            ],
+          },
+          3: {
+            folder: "level-3/",
+            artists: [
+              { id: "seurat", name: "Georges Seurat", colour: "#e85d75", emoji: "☂️" },
+              { id: "monet", name: "Claude Monet", colour: "#3377b8", emoji: "🐅" },
+              { id: "cassatt", name: "Mary Cassatt", colour: "#9a64cc", emoji: "👶" },
+              { id: "renoir", name: "Pierre-Auguste Renoir", colour: "#d58a00", emoji: "💃" },
+            ],
+          },
+        },
+      };
+      const tray = document.querySelector("#tray"),
+        zones = document.querySelector("#zones"),
+        result = document.querySelector("#result"),
+        check = document.querySelector("#check"),
+        fix = document.querySelector("#fix");
+      let selected = null,
+        locked = false,
+        activeLevel = 1;
+      const shuffle = (a) => {
+          for (let i = a.length - 1; i; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+          }
+          return a;
+        },
+        cards = () => [...document.querySelectorAll(".card")],
+        currentLevel = () => CONFIG.levels[activeLevel],
+        currentArtists = () => currentLevel().artists,
+        artist = (id) => currentArtists().find((a) => a.id === id);
+      function currentImagePath() {
+        return CONFIG.imagePath + currentLevel().folder;
+      }
+      function makeZones() {
+        zones.innerHTML = "";
+        currentArtists().forEach((a, i) => {
+          const z = document.createElement("section");
+          z.className = "zone";
+          z.dataset.zone = i;
+          z.tabIndex = 0;
+          z.setAttribute("role", "group");
+          z.setAttribute("aria-label", `Mystery group ${i + 1}`);
+          z.style.setProperty("--accent", a.colour);
+          z.innerHTML = `<h2></h2><div class="zone-cards"></div>`;
+          z.onclick = (e) => {
+            if (!e.target.closest(".card") && selected)
+              move(selected, z.querySelector(".zone-cards"));
+          };
+          z.onkeydown = (e) => {
+            if ((e.key === "Enter" || e.key === " ") && selected) {
+              e.preventDefault();
+              move(selected, z.querySelector(".zone-cards"));
+            }
+          };
+          drops(z);
+          zones.append(z);
+        });
+      }
+      function makeCard(a, n) {
+        const c = document.createElement("div"),
+          file = `${a.id}-${n}.${CONFIG.imageExtension}`;
+        c.className = "card";
+        c.draggable = true;
+        c.dataset.artist = a.id;
+        c.dataset.file = file;
+        c.innerHTML = `<button class="art" aria-label="Enlarge artwork ${n}"><img src="${currentImagePath()}${file}" alt="Artwork ${n}" draggable="false"><span class="fallback">🖼️<br>Add<br><b>level-${activeLevel}/${file}</b></span></button><button class="move" aria-label="Move artwork ${n}">Move</button><span class="badge"></span>`;
+        c.querySelector("img").onerror = () => c.classList.add("missing");
+        c.querySelector(".art").onclick = (e) => {
+          e.stopPropagation();
+          view(c);
+        };
+        c.querySelector(".move").onclick = (e) => {
+          e.stopPropagation();
+          if (!locked) select(c);
+        };
+        c.ondragstart = (e) => {
+          if (locked) {
+            e.preventDefault();
+            return;
+          }
+          e.dataTransfer.setData("text/plain", file);
+        };
+        return c;
+      }
+      function view(c) {
+        const v = document.querySelector("#viewer"),
+          img = document.querySelector("#bigImage");
+        v.classList.toggle("missing", c.classList.contains("missing"));
+        img.src = currentImagePath() + c.dataset.file;
+        img.alt = "Enlarged " + c.dataset.file;
+        document.querySelector("#bigFallback").innerHTML =
+          `🖼️ Artwork preview<br><b>${c.dataset.file}</b>`;
+        v.showModal();
+      }
+      function drops(el) {
+        el.ondragover = (e) => {
+          if (!locked) {
+            e.preventDefault();
+            el.classList.add("drag-over");
+          }
+        };
+        el.ondragleave = () => el.classList.remove("drag-over");
+        el.ondrop = (e) => {
+          e.preventDefault();
+          el.classList.remove("drag-over");
+          const c = cards().find((x) => x.dataset.file === e.dataTransfer.getData("text/plain"));
+          if (c && !locked)
+            move(c, el.classList.contains("zone") ? el.querySelector(".zone-cards") : el);
+        };
+      }
+      function select(c) {
+        cards().forEach((x) => x.classList.toggle("selected", x === c && selected !== c));
+        selected = selected === c ? null : c;
+        result.className = "result";
+        result.textContent = selected ? "Artwork selected — now choose a mystery group." : "";
+      }
+      function move(c, d) {
+        if (d.closest(".zone") && d.children.length >= 3) {
+          result.className = "result try";
+          result.textContent = "That group already has three artworks.";
+          return;
+        }
+        d.append(c);
+        c.classList.remove("selected");
+        selected = null;
+        result.textContent = "";
+        update();
+      }
+      function update() {
+        const n = tray.querySelectorAll(".card").length;
+        document.querySelector("#remaining").textContent = `(${n} left)`;
+        tray.classList.toggle("empty", !n);
+        [...zones.children].forEach((z) =>
+          z.classList.toggle("full", z.querySelectorAll(".card").length === 3),
+        );
+      }
+      function reveal(z, id) {
+        const a = artist(id);
+        z.querySelector("h2").innerHTML =
+          `<span class="artist">${a.emoji} ${a.name}</span>`;
+      }
+      function start(level = activeLevel) {
+        activeLevel = level;
+        document.querySelectorAll(".level-button").forEach((button) => {
+          button.setAttribute("aria-pressed", Number(button.dataset.level) === activeLevel);
+        });
+        locked = false;
+        selected = null;
+        result.className = "result";
+        result.textContent = "";
+        fix.hidden = true;
+        check.hidden = false;
+        makeZones();
+        tray.innerHTML = "";
+        const list = [];
+        currentArtists().forEach((a) => {
+          for (let n = 1; n <= 3; n++) list.push(makeCard(a, n));
+        });
+        shuffle(list).forEach((c) => tray.append(c));
+        update();
+        drops(tray);
+      }
+      check.onclick = () => {
+        const left = tray.querySelectorAll(".card").length;
+        if (left) {
+          result.className = "result try";
+          result.textContent = `You still have ${left} artwork${left === 1 ? "" : "s"} to place.`;
+          return;
+        }
+        locked = true;
+        let score = 0;
+        [...zones.children].forEach((z) => {
+          const cs = [...z.querySelectorAll(".card")],
+            first = cs[0]?.dataset.artist,
+            ok = cs.length === 3 && cs.every((c) => c.dataset.artist === first);
+          if (ok) {
+            score++;
+            reveal(z, first);
+          }
+          cs.forEach((c) => {
+            c.classList.add(ok ? "correct" : "wrong");
+            c.querySelector(".badge").textContent = ok ? "✓" : "×";
+            c.draggable = false;
+          });
+        });
+        check.hidden = true;
+        result.className = "result " + (score === 4 ? "good" : "try");
+        result.textContent =
+          score === 4
+            ? "Amazing! All four groups are correct — here are the artists!"
+            : `You made ${score} correct group${score === 1 ? "" : "s"} out of 4. Mixed groups are red.`;
+        fix.hidden = score === 4;
+      };
+      fix.onclick = () => {
+        const zs = [...zones.children],
+          used = new Set(),
+          assign = [];
+        zs.forEach((z) => {
+          const count = {};
+          z.querySelectorAll(".card").forEach(
+            (c) => (count[c.dataset.artist] = (count[c.dataset.artist] || 0) + 1),
+          );
+          const best = currentArtists()
+            .map((a) => a.id)
+            .filter((id) => !used.has(id))
+            .sort((a, b) => (count[b] || 0) - (count[a] || 0))[0];
+          used.add(best);
+          assign.push(best);
+        });
+        cards().forEach((c, i) => {
+          const target = zs[assign.indexOf(c.dataset.artist)].querySelector(".zone-cards");
+          setTimeout(() => {
+            target.append(c);
+            c.classList.remove("wrong");
+            c.classList.add("correct", "corrected");
+            c.querySelector(".badge").textContent = "✓";
+          }, i * 80);
+        });
+        zs.forEach((z, i) => reveal(z, assign[i]));
+        fix.hidden = true;
+        result.className = "result good";
+        result.textContent = "All sorted! Now each artist has been revealed. 👀";
+        setTimeout(() => cards().forEach((c) => c.classList.remove("corrected")), 1800);
+      };
+      document.querySelector("#reset").onclick = () => start();
+      document.querySelectorAll(".level-button").forEach((button) => {
+        button.onclick = () => start(Number(button.dataset.level));
+      });
+      const how = document.querySelector("#how"),
+        viewer = document.querySelector("#viewer");
+      document.querySelector("#help").onclick = () => how.showModal();
+      document.querySelector("#closeHelp").onclick = () => how.close();
+      document.querySelector("#closeViewer").onclick = () => viewer.close();
+      viewer.onclick = (e) => {
+        if (e.target === viewer) viewer.close();
+      };
+      start();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Boids Playground</title>
+  <style>
+    :root { color-scheme: dark; --ink:#eef6ff; --muted:#9eb0c5; --panel:#101925e8; --line:#2b3b50; --accent:#69e3c1; --accent2:#f8b85c; }
+    * { box-sizing:border-box; }
+    html,body { height:100%; margin:0; overflow:hidden; background:#07101b; color:var(--ink); font:14px/1.35 system-ui,-apple-system,Segoe UI,sans-serif; }
+    canvas { position:fixed; inset:0; width:100%; height:100%; cursor:crosshair; touch-action:none; }
+    .topbar { position:fixed; top:16px; left:16px; right:16px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; pointer-events:none; }
+    .brand { pointer-events:auto; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:12px 15px; box-shadow:0 12px 40px #0007; backdrop-filter:blur(12px); }
+    h1 { font-size:18px; margin:0 0 2px; letter-spacing:.02em; }
+    .brand p { color:var(--muted); margin:0; font-size:12px; }
+    .actions { display:flex; gap:8px; pointer-events:auto; }
+    button,select,input { font:inherit; }
+    button,.select-wrap { min-height:40px; border:1px solid var(--line); border-radius:12px; background:var(--panel); color:var(--ink); box-shadow:0 8px 24px #0005; backdrop-filter:blur(12px); }
+    button { padding:0 14px; cursor:pointer; }
+    button:hover { border-color:#5d7898; }
+    button:focus-visible, select:focus-visible, input:focus-visible { outline:3px solid #69e3c166; outline-offset:2px; }
+    .select-wrap { display:flex; align-items:center; padding-left:12px; color:var(--muted); }
+    select { height:38px; border:0; background:transparent; color:var(--ink); padding:0 10px 0 6px; outline:0; }
+    select option { background:#101925; }
+    .panel { position:fixed; left:16px; bottom:16px; width:min(330px,calc(100vw - 32px)); background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:14px 15px; box-shadow:0 14px 44px #0008; backdrop-filter:blur(14px); }
+    .panel-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+    .panel-head strong { font-size:13px; letter-spacing:.04em; text-transform:uppercase; }
+    .status { color:var(--accent); font-size:12px; }
+    .control { display:grid; grid-template-columns:92px 1fr 38px; align-items:center; gap:9px; margin:8px 0; }
+    .control label { color:var(--muted); }
+    .value { text-align:right; font-variant-numeric:tabular-nums; color:var(--ink); }
+    input[type=range] { width:100%; height:4px; appearance:none; border-radius:3px; background:#304159; accent-color:var(--accent); }
+    input[type=range]::-webkit-slider-thumb { appearance:none; width:16px; height:16px; border-radius:50%; background:var(--accent); border:2px solid #12202c; cursor:pointer; }
+    .hint { position:fixed; right:18px; bottom:18px; color:var(--muted); background:#07101baa; padding:7px 10px; border-radius:10px; pointer-events:none; font-size:12px; }
+    @media (max-width:700px) { .topbar{top:10px;left:10px;right:10px}.brand p{display:none}.brand{padding:9px 12px}.actions{flex-wrap:wrap;justify-content:flex-end}.select-wrap{order:3}.panel{left:10px;bottom:10px;width:calc(100vw - 20px)}.hint{display:none} }
+  </style>
+</head>
+<body>
+  <canvas id="world" aria-label="Animated boids flocking simulation"></canvas>
+  <header class="topbar">
+    <div class="brand"><h1>Boids Playground</h1><p>Separation · alignment · cohesion</p></div>
+    <div class="actions">
+      <label class="select-wrap">Pointer
+        <select id="mode" aria-label="Pointer interaction">
+          <option value="attract">Attract</option><option value="repel">Repel</option><option value="predator">Predator</option>
+        </select>
+      </label>
+      <button id="pause" type="button">Pause</button><button id="reset" type="button">Reset</button>
+    </div>
+  </header>
+  <section class="panel" aria-label="Simulation controls">
+    <div class="panel-head"><strong>Flock controls</strong><span class="status" id="status" aria-live="polite">120 boids</span></div>
+    <div class="control"><label for="count">Boids</label><input id="count" type="range" min="20" max="300" step="10" value="120"><span class="value" id="countV">120</span></div>
+    <div class="control"><label for="separation">Separation</label><input id="separation" type="range" min="0" max="3" step="0.1" value="1.5"><span class="value" id="separationV">1.5</span></div>
+    <div class="control"><label for="alignment">Alignment</label><input id="alignment" type="range" min="0" max="3" step="0.1" value="1.0"><span class="value" id="alignmentV">1.0</span></div>
+    <div class="control"><label for="cohesion">Cohesion</label><input id="cohesion" type="range" min="0" max="3" step="0.1" value="1.0"><span class="value" id="cohesionV">1.0</span></div>
+    <div class="control"><label for="speed">Speed</label><input id="speed" type="range" min="1" max="6" step="0.2" value="3.4"><span class="value" id="speedV">3.4</span></div>
+  </section>
+  <div class="hint">Hold or drag to interact · press Space to pause</div>
+  <script>
+  (() => {
+    'use strict';
+    const canvas=document.getElementById('world'), ctx=canvas.getContext('2d');
+    const controls={count:document.getElementById('count'),separation:document.getElementById('separation'),alignment:document.getElementById('alignment'),cohesion:document.getElementById('cohesion'),speed:document.getElementById('speed')};
+    const pauseBtn=document.getElementById('pause'), status=document.getElementById('status'), mode=document.getElementById('mode');
+    let W=0,H=0,dpr=1,boids=[],paused=false,last=performance.now();
+    const pointer={x:0,y:0,active:false};
+    const rand=(a,b)=>a+Math.random()*(b-a);
+    function resize(){ dpr=Math.min(devicePixelRatio||1,2); W=innerWidth;H=innerHeight;canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0); }
+    function makeBoid(x=rand(0,W),y=rand(0,H)){ const a=rand(0,Math.PI*2),s=rand(1.4,3); return{x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s}; }
+    function setCount(n){ while(boids.length<n)boids.push(makeBoid()); if(boids.length>n)boids.length=n; status.textContent=n+' boids'; }
+    function reset(){ boids=[];setCount(+controls.count.value);paused=false;pauseBtn.textContent='Pause';last=performance.now(); }
+    function torusDelta(a,b,size){ let d=b-a;if(d>size/2)d-=size;if(d<-size/2)d+=size;return d; }
+    function steer(b,tx,ty,maxForce){ let m=Math.hypot(tx,ty)||1;let sx=tx/m*+controls.speed.value-b.vx,sy=ty/m*+controls.speed.value-b.vy;m=Math.hypot(sx,sy)||1;if(m>maxForce){sx=sx/m*maxForce;sy=sy/m*maxForce}return [sx,sy]; }
+    function update(dt){
+      const next=new Array(boids.length), view=70, avoid=25, maxSpeed=+controls.speed.value, scale=Math.min(dt/16.667,2);
+      for(let i=0;i<boids.length;i++){
+        const b=boids[i];let ax=0,ay=0,alignX=0,alignY=0,cohX=0,cohY=0,sepX=0,sepY=0,n=0,sn=0;
+        for(let j=0;j<boids.length;j++){if(i===j)continue;const o=boids[j],dx=torusDelta(b.x,o.x,W),dy=torusDelta(b.y,o.y,H),d2=dx*dx+dy*dy;if(d2<view*view){alignX+=o.vx;alignY+=o.vy;cohX+=dx;cohY+=dy;n++;if(d2<avoid*avoid&&d2>0){sepX-=dx/d2;sepY-=dy/d2;sn++;}}}
+        if(n){let s=steer(b,alignX/n,alignY/n,.055);ax+=s[0]*+controls.alignment.value;ay+=s[1]*+controls.alignment.value;s=steer(b,cohX/n,cohY/n,.035);ax+=s[0]*+controls.cohesion.value;ay+=s[1]*+controls.cohesion.value;}
+        if(sn){const s=steer(b,sepX/sn,sepY/sn,.11);ax+=s[0]*+controls.separation.value;ay+=s[1]*+controls.separation.value;}
+        if(pointer.active){const dx=pointer.x-b.x,dy=pointer.y-b.y,d=Math.hypot(dx,dy);if(d<220&&d>1){let sign=mode.value==='attract'?1:-1,force=(1-d/220)*(mode.value==='predator'?.28:.13);ax+=dx/d*force*sign;ay+=dy/d*force*sign;}}
+        let vx=b.vx+ax*scale,vy=b.vy+ay*scale,m=Math.hypot(vx,vy)||1;if(m>maxSpeed){vx=vx/m*maxSpeed;vy=vy/m*maxSpeed}if(m<1){vx=vx/m;vy=vy/m}
+        next[i]={x:(b.x+vx*scale+W)%W,y:(b.y+vy*scale+H)%H,vx,vy};
+      }boids=next;
+    }
+    function draw(){
+      const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#071521');g.addColorStop(1,'#11162b');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='#69e3c1';for(const b of boids){const a=Math.atan2(b.vy,b.vx);ctx.save();ctx.translate(b.x,b.y);ctx.rotate(a);ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(-5,4);ctx.lineTo(-2,0);ctx.lineTo(-5,-4);ctx.closePath();ctx.fill();ctx.restore();}
+      if(pointer.active){ctx.beginPath();ctx.arc(pointer.x,pointer.y,mode.value==='predator'?24:17,0,Math.PI*2);ctx.strokeStyle=mode.value==='attract'?'#69e3c1aa':'#f8b85cbb';ctx.lineWidth=2;ctx.stroke();ctx.beginPath();ctx.arc(pointer.x,pointer.y,4,0,Math.PI*2);ctx.fillStyle=ctx.strokeStyle;ctx.fill();}
+    }
+    function frame(now){const dt=now-last;last=now;if(!paused)update(dt);draw();requestAnimationFrame(frame)}
+    function pointerPos(e){const r=canvas.getBoundingClientRect();pointer.x=e.clientX-r.left;pointer.y=e.clientY-r.top;}
+    canvas.addEventListener('pointerdown',e=>{pointerPos(e);pointer.active=true;canvas.setPointerCapture(e.pointerId)});
+    canvas.addEventListener('pointermove',e=>{if(pointer.active)pointerPos(e)});canvas.addEventListener('pointerup',()=>pointer.active=false);canvas.addEventListener('pointercancel',()=>pointer.active=false);
+    Object.entries(controls).forEach(([key,el])=>{el.addEventListener('input',()=>{document.getElementById(key+'V').textContent=el.value;if(key==='count')setCount(+el.value)})});
+    pauseBtn.addEventListener('click',()=>{paused=!paused;pauseBtn.textContent=paused?'Resume':'Pause';status.textContent=paused?'Paused':boids.length+' boids'});
+    document.getElementById('reset').addEventListener('click',reset);addEventListener('resize',resize);addEventListener('keydown',e=>{if(e.code==='Space'&&!/INPUT|SELECT/.test(e.target.tagName)){e.preventDefault();pauseBtn.click()}});
+    resize();reset();requestAnimationFrame(frame);
+  })();
+  </script>
+</body>
+</html>

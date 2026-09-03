@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07110b">
+  <title>ELIZA — DOCTOR</title>
+  <style>
+    :root { --phosphor:#70ff9a; --bright:#c7ffd7; --dim:#3f9c5a; --glass:#07110b; --edge:#1c5e32; --glow:rgba(77,255,130,.2); }
+    [data-theme="amber"] { --phosphor:#ffbf47; --bright:#ffe0a3; --dim:#a87526; --glass:#130d04; --edge:#674414; --glow:rgba(255,181,55,.2); }
+    * { box-sizing:border-box; }
+    html,body { height:100%; margin:0; }
+    body {
+      min-height:100%; background:#020403; color:var(--phosphor);
+      font:clamp(14px,1.6vw,18px)/1.55 "Courier New",Courier,monospace;
+      display:grid; place-items:center; padding:clamp(8px,2vw,24px);
+    }
+    .terminal {
+      position:relative; isolation:isolate; width:min(100%,980px); height:min(94dvh,900px);
+      min-height:520px; display:grid; grid-template-rows:auto auto 1fr auto auto;
+      overflow:hidden; border:1px solid var(--edge); border-radius:18px;
+      background:radial-gradient(ellipse at center, color-mix(in srgb,var(--glass) 91%,var(--phosphor) 9%),var(--glass) 72%);
+      box-shadow:0 0 0 5px #0a0d0b,0 0 0 7px #202521,0 24px 80px #000,inset 0 0 70px #000;
+    }
+    .terminal::before { content:""; position:absolute; inset:0; z-index:5; pointer-events:none; opacity:.3; background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.35) 3px 4px); }
+    .terminal::after { content:""; position:absolute; inset:-30%; z-index:6; pointer-events:none; background:linear-gradient(100deg,transparent 45%,rgba(255,255,255,.035) 50%,transparent 55%); animation:sweep 9s linear infinite; }
+    @keyframes sweep { to { transform:translateY(40%); } }
+    header { padding:clamp(14px,2vw,24px) clamp(14px,3vw,32px) 8px; text-align:center; text-shadow:0 0 10px var(--glow); }
+    .logo { margin:0 auto; color:var(--bright); font-size:clamp(6px,1.48vw,15px); line-height:1.05; white-space:pre; letter-spacing:0; user-select:none; }
+    .subtitle { margin:.7rem 0 0; color:var(--dim); font-size:.72em; letter-spacing:.18em; text-transform:uppercase; }
+    .statusbar { padding:6px clamp(14px,3vw,32px); display:flex; justify-content:space-between; gap:12px; border-block:1px solid var(--edge); color:var(--dim); font-size:.72em; letter-spacing:.08em; }
+    .online::before { content:"●"; color:var(--phosphor); margin-right:.5em; text-shadow:0 0 8px var(--phosphor); }
+    #transcript { overflow-y:auto; scrollbar-color:var(--dim) transparent; padding:clamp(16px,3vw,30px) clamp(14px,3vw,32px); scroll-behavior:smooth; }
+    .turn { display:grid; grid-template-columns:6.5ch 1fr; gap:1ch; margin:0 0 .85rem; animation:appear .16s ease-out; }
+    @keyframes appear { from { opacity:0; transform:translateY(3px); } }
+    .speaker { color:var(--dim); text-align:right; }
+    .turn.eliza .speaker,.turn.eliza .words { color:var(--bright); text-shadow:0 0 8px var(--glow); }
+    .words { min-width:0; overflow-wrap:anywhere; white-space:pre-wrap; }
+    .inputrow { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px; margin:0 clamp(14px,3vw,32px); padding:12px 0; border-top:1px solid var(--edge); }
+    .prompt { color:var(--bright); font-weight:bold; }
+    input { min-width:0; width:100%; border:0; outline:0; background:transparent; color:var(--bright); caret-color:var(--bright); font:inherit; text-transform:none; text-shadow:0 0 8px var(--glow); }
+    input::placeholder { color:var(--dim); opacity:.7; }
+    button { border:1px solid var(--edge); border-radius:3px; background:transparent; color:var(--phosphor); font:inherit; font-size:.72em; letter-spacing:.08em; padding:.55em .8em; cursor:pointer; }
+    button:hover,button:focus-visible { outline:none; color:var(--bright); border-color:var(--phosphor); box-shadow:0 0 12px var(--glow),inset 0 0 12px var(--glow); }
+    .controls { display:flex; gap:8px; justify-content:flex-end; padding:0 clamp(14px,3vw,32px) 15px; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    @media (max-width:560px) {
+      body { padding:0; } .terminal { width:100%; height:100dvh; min-height:0; border:0; border-radius:0; box-shadow:none; }
+      .logo { font-size:clamp(5px,1.75vw,9px); } .subtitle { letter-spacing:.1em; }
+      .statusbar span:last-child { display:none; } .turn { grid-template-columns:5.5ch 1fr; gap:.6ch; }
+      .inputrow { grid-template-columns:auto 1fr; } #send { display:none; }
+    }
+    @media (prefers-reduced-motion:reduce) { .terminal::after { display:none; } * { scroll-behavior:auto!important; animation:none!important; } }
+  </style>
+</head>
+<body>
+<main class="terminal" aria-label="ELIZA terminal">
+  <header>
+<pre class="logo" aria-label="ELIZA">
+███████╗██╗     ██╗███████╗ █████╗
+██╔════╝██║     ██║╚══███╔╝██╔══██╗
+█████╗  ██║     ██║  ███╔╝ ███████║
+██╔══╝  ██║     ██║ ███╔╝  ██╔══██║
+███████╗███████╗██║███████╗██║  ██║
+╚══════╝╚══════╝╚═╝╚══════╝╚═╝  ╚═╝</pre>
+    <p class="subtitle">DOCTOR // MIT-style conversational program // 1966</p>
+  </header>
+  <div class="statusbar"><span class="online">SYSTEM READY</span><span>LOCAL SESSION · NO NETWORK</span></div>
+  <section id="transcript" role="log" aria-live="polite" aria-label="Conversation"></section>
+  <form id="chat" class="inputrow" autocomplete="off">
+    <label class="prompt" for="message">USER&gt;</label>
+    <input id="message" name="message" maxlength="1000" enterkeyhint="send" autofocus placeholder="TYPE HERE…" aria-label="Your message">
+    <button id="send" type="submit">SEND ↵</button>
+  </form>
+  <nav class="controls" aria-label="Terminal controls">
+    <button id="theme" type="button" aria-label="Switch phosphor colour">AMBER</button>
+    <button id="clear" type="button">CLEAR</button>
+    <button id="restart" type="button">RESTART</button>
+  </nav>
+</main>
+<script>
+(() => {
+  "use strict";
+  const $ = s => document.querySelector(s);
+  const transcript = $("#transcript"), input = $("#message");
+
+  const reflections = new Map(Object.entries({
+    "am":"are", "was":"were", "i":"you", "i'd":"you would", "i've":"you have", "i'll":"you will",
+    "my":"your", "are":"am", "you've":"I have", "you'll":"I will", "your":"my", "yours":"mine",
+    "you":"me", "me":"you", "myself":"yourself", "yourself":"myself", "were":"was"
+  }));
+
+  const rules = [
+    { keys:["computer","computers","machine","machines"], rank:50, patterns:[
+      [/(.*)\b(?:computer|computers|machine|machines)\b(.*)/i,["DO COMPUTERS WORRY YOU?","WHY DO YOU MENTION COMPUTERS?","WHAT DO YOU THINK MACHINES HAVE TO DO WITH YOUR PROBLEM?","DON'T YOU THINK COMPUTERS CAN HELP PEOPLE?"]]] },
+    { keys:["mother","mom","father","dad","family","sister","brother","wife","children","husband","child"], rank:45, patterns:[
+      [/(.*)\b(mother|mom|father|dad|family|sister|brother|wife|children|husband|child)\b(.*)/i,["TELL ME MORE ABOUT YOUR FAMILY.","WHO ELSE IN YOUR FAMILY ${3}?","YOUR ${2}?","WHAT COMES TO MIND WHEN YOU THINK OF YOUR ${2}?"]]] },
+    { keys:["dreamt","dreamed","dream","dreams"], rank:40, patterns:[
+      [/(.*)\bdream(?:t|ed|s)?\b(?: about)?\s*(.*)/i,["REALLY, ${2}?","HAVE YOU EVER FANTASIED ${2} WHILE YOU WERE AWAKE?","HAVE YOU DREAMT ${2} BEFORE?","WHAT DOES THAT DREAM SUGGEST TO YOU?","WHAT PERSONS APPEAR IN YOUR DREAMS?"]]] },
+    { keys:["sorry","apologize"], rank:35, patterns:[
+      [/(.*)/i,["PLEASE DON'T APOLOGIZE.","APOLOGIES ARE NOT NECESSARY.","WHAT FEELINGS DO YOU HAVE WHEN YOU APOLOGIZE?"]]] },
+    { keys:["sad","unhappy","depressed","sick"], rank:34, patterns:[
+      [/(.*)\b(sad|unhappy|depressed|sick)\b(.*)/i,["I AM SORRY TO HEAR YOU ARE ${2}.","DO YOU THINK COMING HERE WILL HELP YOU NOT TO BE ${2}?","I'M SURE IT IS NOT PLEASANT TO BE ${2}.","CAN YOU EXPLAIN WHAT MADE YOU ${2}?"]]] },
+    { keys:["happy","elated","glad","better"], rank:34, patterns:[
+      [/(.*)\b(happy|elated|glad|better)\b(.*)/i,["HOW HAVE I HELPED YOU TO BE ${2}?","WHAT MAKES YOU ${2} JUST NOW?","CAN YOU EXPLAIN WHY YOU ARE SUDDENLY ${2}?"]]] },
+    { keys:["remember"], rank:35, patterns:[
+      [/\bi remember\s+(.+)/i,["DO YOU OFTEN THINK OF ${1}?","DOES THINKING OF ${1} BRING ANYTHING ELSE TO MIND?","WHAT ELSE DO YOU REMEMBER?","WHY DO YOU REMEMBER ${1} JUST NOW?"]],
+      [/\bdo you remember\s+(.+)/i,["DID YOU THINK I WOULD FORGET ${1}?","WHY DO YOU THINK I SHOULD RECALL ${1} NOW?","WHAT ABOUT ${1}?"]]] },
+    { keys:["if"], rank:30, patterns:[[/\bif\s+(.+)/i,["DO YOU THINK IT IS LIKELY THAT ${1}?","DO YOU WISH THAT ${1}?","WHAT DO YOU THINK ABOUT ${1}?","REALLY, IF ${1}?"]]] },
+    { keys:["because"], rank:28, patterns:[
+      [/(.*)\bbecause\s+(.+)/i,["IS THAT THE REAL REASON?","WHAT OTHER REASONS MIGHT THERE BE?","DOES THAT REASON EXPLAIN ANYTHING ELSE?","WHAT ELSE CAUSED ${2}?"]]] },
+    { keys:["perhaps","maybe"], rank:27, patterns:[
+      [/(.*)/i,["YOU DON'T SEEM QUITE CERTAIN.","WHY THE UNCERTAIN TONE?","CAN'T YOU BE MORE POSITIVE?","YOU AREN'T SURE.","DON'T YOU KNOW?"]]] },
+    { keys:["always","everyone","everybody","nobody","noone"], rank:26, patterns:[
+      [/(.*)\b(always|everyone|everybody|nobody|no one)\b(.*)/i,["REALLY, ${2}?","CAN YOU THINK OF A SPECIFIC EXAMPLE?","WHEN?","SURELY NOT ${2}."]]] },
+    { keys:["yes","certainly"], rank:24, patterns:[
+      [/^(?:yes|yeah|yep|certainly|of course)\b(.*)/i,["YOU SEEM QUITE POSITIVE.","YOU ARE SURE.","I SEE.","I UNDERSTAND."]]] },
+    { keys:["no"], rank:24, patterns:[
+      [/^(?:no|nope|not really)\b(.*)/i,["ARE YOU SAYING NO JUST TO BE NEGATIVE?","YOU ARE BEING A BIT NEGATIVE.","WHY NOT?","WHY 'NO'?"]]] },
+    { keys:["can"], rank:23, patterns:[
+      [/\bcan you\s+(.+)/i,["YOU BELIEVE I CAN ${1}, DON'T YOU?","YOU WANT ME TO BE ABLE TO ${1}.","PERHAPS YOU WOULD LIKE TO BE ABLE TO ${1} YOURSELF."]],
+      [/\bcan i\s+(.+)/i,["WHETHER OR NOT YOU CAN ${1} DEPENDS ON YOU MORE THAN ON ME.","DO YOU WANT TO BE ABLE TO ${1}?","PERHAPS YOU DON'T WANT TO ${1}."]]] },
+    { keys:["what","how","who","where","when","why"], rank:22, patterns:[
+      [/^(?:what|how|who|where|when|why)\b(.*)/i,["WHY DO YOU ASK?","DOES THAT QUESTION INTEREST YOU?","WHAT ANSWER WOULD PLEASE YOU MOST?","WHAT DO YOU THINK?","HAVE YOU ASKED SUCH QUESTIONS BEFORE?"]]] },
+    { keys:["you"], rank:20, patterns:[
+      [/\byou are\s+(.+)/i,["WHAT MAKES YOU THINK I AM ${1}?","DOES IT PLEASE YOU TO BELIEVE I AM ${1}?","PERHAPS YOU WOULD LIKE TO BE ${1}."]],
+      [/\byou(?:'re|re)\s+(.+)/i,["WHY DO YOU THINK I AM ${1}?","WOULD YOU PREFER IF I WERE NOT ${1}?"]],
+      [/\byou\s+(.+)/i,["WE WERE DISCUSSING YOU, NOT ME.","OH, I ${1}?","YOU'RE NOT REALLY TALKING ABOUT ME, ARE YOU?"]]] },
+    { keys:["i"], rank:18, patterns:[
+      [/\bi am\s+(.+)/i,["IS IT BECAUSE YOU ARE ${1} THAT YOU CAME TO ME?","HOW LONG HAVE YOU BEEN ${1}?","HOW DO YOU FEEL ABOUT BEING ${1}?","DO YOU BELIEVE IT IS NORMAL TO BE ${1}?"]],
+      [/\bi feel\s+(.+)/i,["TELL ME MORE ABOUT FEELING ${1}.","DO YOU OFTEN FEEL ${1}?","DO YOU ENJOY FEELING ${1}?","WHEN DO YOU USUALLY FEEL ${1}?"]],
+      [/\bi (?:want|wish|need)\s+(.+)/i,["WHAT WOULD IT MEAN TO YOU IF YOU GOT ${1}?","WHY DO YOU WANT ${1}?","SUPPOSE YOU SOON GOT ${1}.","WHAT IF YOU NEVER GOT ${1}?"]],
+      [/\bi (?:can't|cannot)\s+(.+)/i,["HOW DO YOU KNOW YOU CAN'T ${1}?","HAVE YOU TRIED?","PERHAPS YOU COULD ${1} NOW.","DO YOU REALLY WANT TO BE ABLE TO ${1}?"]],
+      [/\bi (?:think|believe)\s+(.+)/i,["DO YOU REALLY THINK SO?","BUT YOU ARE NOT SURE ${1}.","DO YOU DOUBT ${1}?"]],
+      [/\bi\s+(.+)/i,["YOU SAY YOU ${1}.","CAN YOU ELABORATE ON THAT?","WHY DO YOU SAY YOU ${1}?"]]] },
+    { keys:["my"], rank:17, patterns:[
+      [/\bmy\s+(.+)/i,["YOUR ${1}?","WHY DO YOU SAY YOUR ${1}?","DOES THAT SUGGEST ANYTHING ELSE WHICH BELONGS TO YOU?","IS IT IMPORTANT TO YOU THAT YOUR ${1}?"]]] },
+    { keys:["are"], rank:16, patterns:[
+      [/\bare you\s+(.+)/i,["WHY ARE YOU INTERESTED IN WHETHER I AM ${1} OR NOT?","WOULD YOU PREFER IF I WERE NOT ${1}?","PERHAPS I AM ${1} IN YOUR FANTASIES."]],
+      [/\bare (.+)/i,["DID YOU THINK THEY MIGHT NOT BE ${1}?","POSSIBLY THEY ARE ${1}."]]] },
+    { keys:["is"], rank:15, patterns:[
+      [/\bis (.+)/i,["IN WHAT WAY IS ${1}?","WHAT IF ${1} WERE NOT?","IT MIGHT BE ${1}."]]] },
+    { keys:["alike","same","like"], rank:14, patterns:[
+      [/(.*)\b(alike|same|like)\b(.*)/i,["IN WHAT WAY?","WHAT RESEMBLANCE DO YOU SEE?","WHAT DOES THAT SIMILARITY SUGGEST TO YOU?","WHAT OTHER CONNECTIONS DO YOU SEE?","COULD THERE REALLY BE SOME CONNECTION?"]]] },
+    { keys:["name"], rank:13, patterns:[
+      [/(.*)/i,["I AM NOT INTERESTED IN NAMES.","I'VE TOLD YOU BEFORE, I DON'T CARE ABOUT NAMES — PLEASE CONTINUE."]]] },
+    { keys:["deutsch","francais","italiano","espanol"], rank:13, patterns:[
+      [/(.*)/i,["I AM SORRY, I SPEAK ONLY ENGLISH."]]] },
+    { keys:["hello","hi"], rank:10, patterns:[
+      [/(.*)/i,["HOW DO YOU DO. PLEASE STATE YOUR PROBLEM.","HELLO. WHAT WOULD YOU LIKE TO DISCUSS?"]]] }
+  ];
+
+  // The 66 top-level input keys in Weizenbaum's published 1966 DOCTOR script.
+  // MEMORY and NONE are internal rules, so are intentionally not included here.
+  const doctorKeywords = [
+    "SORRY","DONT","CANT","WONT","REMEMBER","IF","DREAMT","DREAMED","DREAM","DREAMS",
+    "HOW","WHEN","ALIKE","SAME","CERTAINLY","FEEL","THINK","BELIEVE","WISH","PERHAPS","MAYBE","NAME",
+    "DEUTSCH","FRANCAIS","ITALIANO","ESPANOL","XFREMD","HELLO","COMPUTER","MACHINE","MACHINES","COMPUTERS",
+    "AM","ARE","YOUR","WAS","WERE","ME","YOU'RE","I'M","MYSELF","YOURSELF","MOTHER","MOM","DAD","FATHER",
+    "SISTER","BROTHER","WIFE","CHILDREN","I","YOU","YES","NO","MY","CAN","WHAT","BECAUSE","WHY","EVERYONE",
+    "EVERYBODY","NOBODY","NOONE","ALWAYS","LIKE","DIT"
+  ];
+
+  class Eliza {
+    constructor(){ this.reset(); }
+    reset(){ this.turns=new Map(); this.memory=[]; this.lastInput=""; }
+    next(key, responses){ const n=this.turns.get(key)||0; this.turns.set(key,n+1); return responses[n%responses.length]; }
+    reflect(text){
+      return text.trim().replace(/[.!?]+$/g,"").split(/(\s+)/).map(w => {
+        const k=w.toLowerCase().replace(/[^a-z']/g,""); const r=reflections.get(k);
+        return r ? w.replace(/[A-Za-z']+/, r) : w;
+      }).join("").replace(/\s+/g," ").trim();
+    }
+    fill(template, match){ return template.replace(/\$\{(\d+)\}/g,(_,n)=>this.reflect(match[+n]||"")).replace(/\s+([?.!,])/g,"$1").toUpperCase(); }
+    respond(raw){
+      const text=raw.trim().replace(/[“”]/g,'"').replace(/[‘’]/g,"'")
+        .replace(/\bDONT\b/ig,"DON'T").replace(/\bCANT\b/ig,"CAN'T").replace(/\bWONT\b/ig,"WON'T");
+      if(!text) return "PLEASE SAY SOMETHING.";
+      const lower=text.toLowerCase();
+      if(lower===this.lastInput) return "PLEASE DON'T REPEAT YOURSELF.";
+      this.lastInput=lower;
+      const found=rules.filter(r=>r.keys.some(k=>new RegExp(`\\b${k}\\b`,`i`).test(lower))).sort((a,b)=>b.rank-a.rank);
+      for(const rule of found){
+        for(const [pattern,responses] of rule.patterns){
+          const m=text.match(pattern); if(!m) continue;
+          const answer=this.fill(this.next(rule.keys[0]+pattern.source,responses),m);
+          if(/\b(my|mother|father|family|dream)\b/i.test(text) && this.memory.length<4) this.memory.push(`EARLIER YOU SAID ${this.reflect(text)}.`.toUpperCase());
+          return answer;
+        }
+      }
+      if(this.memory.length && Math.random()<.28) return this.memory.shift();
+      return this.next("none",[
+        "I AM NOT SURE I UNDERSTAND YOU FULLY.","PLEASE GO ON.","WHAT DOES THAT SUGGEST TO YOU?",
+        "DO YOU FEEL STRONGLY ABOUT DISCUSSING SUCH THINGS?","THAT IS QUITE INTERESTING.",
+        "CAN YOU ELABORATE ON THAT?","WHY DO YOU SAY THAT?","TELL ME MORE."
+      ]);
+    }
+  }
+
+  const doctor=new Eliza();
+  function add(speaker,words,klass){
+    const turn=document.createElement("div"); turn.className=`turn ${klass}`;
+    const who=document.createElement("span"); who.className="speaker"; who.textContent=speaker+">";
+    const body=document.createElement("span"); body.className="words"; body.textContent=words;
+    turn.append(who,body); transcript.append(turn); transcript.scrollTop=transcript.scrollHeight;
+  }
+  function greeting(){ add("ELIZA","HOW DO YOU DO. PLEASE TELL ME YOUR PROBLEM.","eliza"); }
+  $("#chat").addEventListener("submit",e=>{
+    e.preventDefault(); const value=input.value.trim(); if(!value) return;
+    add("USER",value,"user"); input.value=""; input.disabled=true;
+    window.setTimeout(()=>{
+      const response = value.toLowerCase() === "*key"
+        ? `DOCTOR KEYWORDS (${doctorKeywords.length}):\n\n${doctorKeywords.join("  ·  ")}`
+        : doctor.respond(value);
+      add("ELIZA",response,"eliza"); input.disabled=false; input.focus();
+    },180);
+  });
+  $("#clear").addEventListener("click",()=>{ transcript.replaceChildren(); input.focus(); });
+  $("#restart").addEventListener("click",()=>{ doctor.reset(); transcript.replaceChildren(); greeting(); input.value=""; input.focus(); });
+  $("#theme").addEventListener("click",e=>{
+    const amber=document.documentElement.dataset.theme!=="amber";
+    document.documentElement.dataset.theme=amber?"amber":"green"; e.currentTarget.textContent=amber?"GREEN":"AMBER"; input.focus();
+  });
+  greeting();
+})();
+</script>
+</body>
+</html>

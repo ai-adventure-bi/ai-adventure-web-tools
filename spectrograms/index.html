@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spectrogram Playground</title>
+<style>
+  :root{
+    --bg:#07090c;
+    --panel:#11151b;
+    --panel2:#171c23;
+    --line:#2a3441;
+    --text:#f2f7fb;
+    --muted:#8e9aa8;
+    --cyan:#4fe5ff;
+    --green:#92ef5c;
+    --orange:#ffad42;
+    --red:#ff5364;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  body{min-height:100vh;overflow-x:hidden}
+  button,input,select{font:inherit}
+  button{cursor:pointer}
+  .app{min-height:100vh;display:flex;flex-direction:column}
+  .topbar{
+    background:#101318;border-bottom:1px solid #232b35;
+    display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+    padding:12px 16px;position:relative;z-index:2
+  }
+  .brand{font-weight:800;letter-spacing:.02em;margin-right:4px}
+  .brand span{color:var(--cyan)}
+  .control-group{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .btn,.select,.rangebox{
+    min-height:42px;border-radius:999px;border:1px solid #33404d;
+    background:#18202a;color:var(--text);display:inline-flex;align-items:center;
+    gap:8px;padding:9px 14px
+  }
+  .btn:hover{border-color:#5b6d80;background:#202a36}
+  .btn.active{background:#0a5061;border-color:#38bed9}
+  .btn.danger{background:#30161a;border-color:#653039}
+  .btn:focus-visible,.select:focus-visible,input:focus-visible{
+    outline:3px solid rgba(79,229,255,.35);outline-offset:2px
+  }
+  .select{padding-right:30px}
+  .rangebox label{font-size:12px;color:var(--muted)}
+  .rangebox input{accent-color:var(--cyan);width:110px}
+  .spacer{flex:1}
+  .status{
+    color:var(--muted);font-size:13px;max-width:420px;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis
+  }
+
+  .transport{
+    background:#0c1015;border-bottom:1px solid #222a34;
+    padding:8px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap
+  }
+  .transport .btn{min-height:38px;padding:7px 12px}
+  .file-label{position:relative;overflow:hidden}
+  .file-label input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .time{font-variant-numeric:tabular-nums;color:#c9d3dc;font-size:13px}
+  .progress{
+    min-width:180px;flex:1;max-width:620px;accent-color:var(--cyan)
+  }
+
+  .stage-wrap{position:relative;flex:1;min-height:480px;background:#000}
+  #spec{
+    display:block;width:100%;height:calc(100vh - 136px);
+    min-height:480px;touch-action:none;cursor:crosshair;background:#000
+  }
+  #overlay{
+    position:absolute;inset:0;pointer-events:none;
+  }
+  .readout{
+    position:absolute;left:14px;bottom:14px;background:rgba(8,12,16,.82);
+    border:1px solid rgba(255,255,255,.18);border-radius:12px;
+    padding:8px 11px;font-size:13px;color:#eef8ff;backdrop-filter:blur(5px);
+    pointer-events:none
+  }
+  .legend{
+    position:absolute;right:16px;bottom:18px;display:flex;align-items:center;gap:8px;
+    font-size:11px;color:#dce4ea;pointer-events:none
+  }
+  .grad{width:170px;height:8px;border-radius:99px;background:linear-gradient(90deg,#050510,#001b7a,#00a9c8,#62d941,#f0d632,#ff6a27,#fff)}
+  .help{
+    position:absolute;left:50%;top:18px;transform:translateX(-50%);
+    background:rgba(7,10,14,.82);border:1px solid rgba(255,255,255,.16);
+    border-radius:14px;padding:9px 13px;font-size:13px;color:#e6edf3;
+    pointer-events:none;transition:opacity .25s;white-space:nowrap
+  }
+  .help.hide{opacity:0}
+  .axis-label{
+    position:absolute;right:11px;top:10px;color:#b8c4cf;font-size:11px;
+    background:rgba(0,0,0,.5);padding:4px 6px;border-radius:6px;pointer-events:none
+  }
+  .note-chip{
+    min-width:54px;text-align:center;font-weight:800;color:#0a1115;
+    background:var(--green);border-radius:999px;padding:9px 12px
+  }
+  .small{font-size:12px;color:var(--muted)}
+
+  .camera-panel{
+    position:absolute;left:14px;top:14px;width:280px;max-width:calc(100% - 28px);
+    background:rgba(8,12,16,.9);border:1px solid rgba(255,255,255,.2);
+    border-radius:14px;overflow:hidden;z-index:4;display:none;
+    box-shadow:0 6px 24px rgba(0,0,0,.28)
+  }
+  .camera-panel.show{display:block}
+  .camera-head{
+    display:flex;align-items:center;gap:8px;padding:8px 10px;
+    border-bottom:1px solid rgba(255,255,255,.12);font-size:12px;color:#dce7ee
+  }
+  .camera-head strong{font-size:12px}
+  .camera-head .cam-note{color:var(--muted);margin-left:auto}
+  .camera-view{position:relative;aspect-ratio:4/3;background:#05070a}
+  #handVideo,#handOverlay{
+    position:absolute;inset:0;width:100%;height:100%;display:block
+  }
+  #handVideo{object-fit:cover;transform:scaleX(-1)}
+  #handOverlay{pointer-events:none}
+  .finger-notes{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:7px;
+    background:#0c1117
+  }
+  .finger-note{
+    text-align:center;border:1px solid #2b3947;background:#131b24;border-radius:8px;
+    padding:5px 2px;font-size:11px;line-height:1.15;color:#e9f5fb
+  }
+  .finger-note b{display:block;color:var(--green);font-size:12px}
+
+  @media (max-width:760px){
+    .topbar{gap:8px;padding:9px}
+    .status{display:none}
+    .spacer{display:none}
+    .rangebox input{width:80px}
+    .brand{width:100%}
+    #spec{height:70vh;min-height:420px}
+    .help{white-space:normal;width:calc(100% - 30px);text-align:center}
+    .legend{display:none}
+  }
+
+  /* Clear activity switcher, shown above both pages. */
+  .site-switcher {
+    height:64px; display:flex; align-items:center; justify-content:center; gap:10px;
+    padding:10px 16px; background:#101b2d; border-bottom:1px solid #485d79;
+  }
+  .site-switcher button {
+    border:1px solid #4f6685; border-radius:999px; padding:9px 17px;
+    background:#1c2e49; color:#f4f8ff; font:800 1rem/1 system-ui,sans-serif; cursor:pointer;
+    transition:transform .15s ease,background .15s ease,border-color .15s ease;
+  }
+  .site-switcher button:hover { transform:translateY(-1px); border-color:#9bb5d8; }
+  .site-switcher button.active { background:#92ef5c; border-color:#d8ffc1; color:#112011; }
+  #animalQuizBtn { display:none; }
+  #animalQuizFrame { display:none; width:100%; height:calc(100vh - 64px); border:0; background:#fff; }
+  body.quiz-open .app { display:none; }
+  body.quiz-open #animalQuizFrame { display:block; }
+  #backToPlayground { display:none; }
+  @media (max-width:560px) {
+    .site-switcher { gap:7px; padding-inline:9px; }
+    .site-switcher button { flex:1; padding:9px 7px; font-size:.86rem; }
+  }
+
+</style>
+</head>
+<body>
+<nav class="site-switcher" aria-label="Choose an activity">
+  <button id="playgroundTab" class="active" type="button" aria-pressed="true">Spectrogram Playground</button>
+  <button id="jungleTab" type="button" aria-pressed="false">Spectrogram Jungle</button>
+</nav>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">SPECTROGRAM <span>PLAYGROUND</span></div>
+    <button id="animalQuizBtn" class="btn" type="button">🐾 Animal Quiz</button>
+
+    <div class="control-group">
+      <button id="micBtn" class="btn" type="button" title="Turn microphone on/off">🎙️ Mic</button>
+      <button id="handBtn" class="btn" type="button" title="Use your webcam and five fingertips as notes">🖐️ Hand synth</button>
+      <label class="btn file-label" title="Load an audio file">
+        ⤴ Upload audio
+        <input id="fileInput" type="file" accept="audio/*">
+      </label>
+      <label class="btn file-label" title="Turn an image into sound">
+        🖼 Upload image
+        <input id="imageInput" type="file" accept="image/*">
+      </label>
+      <button id="imagePlayBtn" class="btn" type="button" disabled title="Play the uploaded image as sound">▶ Play image</button>
+      <button id="vizPauseBtn" class="btn" type="button" title="Pause the moving spectrogram">⏸ Freeze</button>
+      <button id="clearBtn" class="btn danger" type="button" title="Clear the screen">✕ Clear</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="rangebox">
+      <label for="gain">Volume</label>
+      <input id="gain" type="range" min="0" max="1" step="0.01" value="0.55">
+    </div>
+    <div class="rangebox">
+      <label for="contrast">Contrast</label>
+      <input id="contrast" type="range" min="0.6" max="2.2" step="0.05" value="1.25">
+    </div>
+    <div id="noteChip" class="note-chip">A4</div>
+    <div id="status" class="status">Draw on the graph to make sound.</div>
+  </header>
+
+  <div class="transport">
+    <button id="playBtn" class="btn" type="button" disabled>▶ Play</button>
+    <button id="stopBtn" class="btn" type="button" disabled>■ Stop</button>
+    <input id="progress" class="progress" type="range" min="0" max="1" step="0.001" value="0" disabled aria-label="Audio position">
+    <span id="time" class="time">0:00 / 0:00</span>
+    <span class="small">Drag vertically = pitch · drag sideways = duration</span>
+  </div>
+
+  <main class="stage-wrap">
+    <canvas id="spec" aria-label="Interactive scrolling audio spectrogram. Drag on it to create sine tones."></canvas>
+    <canvas id="overlay"></canvas>
+
+    <section id="cameraPanel" class="camera-panel" aria-label="Hand tracking camera">
+      <div class="camera-head">
+        <strong>🖐️ Five-finger synth</strong>
+        <span id="handStatus" class="cam-note">camera off</span>
+      </div>
+      <div class="camera-view">
+        <video id="handVideo" playsinline muted></video>
+        <canvas id="handOverlay"></canvas>
+      </div>
+      <div class="finger-notes">
+        <div class="finger-note">Thumb<b id="finger0">—</b></div>
+        <div class="finger-note">Index<b id="finger1">—</b></div>
+        <div class="finger-note">Middle<b id="finger2">—</b></div>
+        <div class="finger-note">Ring<b id="finger3">—</b></div>
+        <div class="finger-note">Pinky<b id="finger4">—</b></div>
+      </div>
+    </section>
+
+    <div class="help" id="help">Click + drag anywhere on the spectrogram to draw a sound ✨</div>
+    <div class="readout" id="readout">440 Hz · A4</div>
+    <div class="axis-label">20 Hz → 20 kHz</div>
+    <div class="legend"><span>soft</span><div class="grad"></div><span>loud</span></div>
+  </main>
+</div>
+
+
+<iframe id="animalQuizFrame" title="Animal Spectrogram Quiz"></iframe>
+<button id="backToPlayground" type="button">← Playground</button>
+<template id="animalQuizSource">
+<!doctype html>
+<!--
+  ANIMAL SPECTROGRAM HOVER ACTIVITY
+
+  Put this file beside the video and these two folders:
+
+  index.html
+  ├─ video.mp4
+  ├─ spectrograms/01.png ... 12.png
+  └─ animals/01.jpg ... 12.jpg
+
+  To change the animal names, edit the labels array in the script near the
+  bottom. The image pairing is based on the matching two-digit number.
+-->
+<html lang="en">
+<head><base href="./"><base href="./">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spectrogram Jungle</title>
+  <style>
+    :root {
+      --ink: #1d3154;
+      --blue: #3d8cff;
+      --yellow: #ffd75a;
+      --paper: #f7fbff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", "Arial Rounded MT Bold", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 8%, #fff4bd 0 5%, transparent 5.2%),
+        radial-gradient(circle at 93% 14%, #cdeeff 0 6%, transparent 6.2%),
+        linear-gradient(145deg, #eaf7ff, #fffaf0 52%, #e9fff5);
+    }
+
+    main { max-width: 1240px; margin: auto; padding: 36px 22px 48px; }
+
+    header { text-align: center; margin: 0 auto 30px; max-width: 700px; }
+    h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.7rem); line-height: 1.05; }
+    header p { margin: 12px 0 0; font-size: clamp(1rem, 2.2vw, 1.25rem); line-height: 1.5; }
+
+    .grid {
+      display: grid;
+      /* 12 cards shown as six columns by two rows on larger screens. */
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: clamp(14px, 2.5vw, 26px);
+    }
+
+    .video-panel {
+      margin: 0 0 28px;
+      overflow: hidden;
+      border: 6px solid #fff;
+      border-radius: 24px;
+      background: #10213b;
+      box-shadow: 0 8px 0 rgba(29, 49, 84, .08), 0 15px 25px rgba(29, 49, 84, .13);
+    }
+    .video-panel video { display: block; width: 100%; aspect-ratio: 24 / 7; object-fit: contain; }
+
+    .card {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border: 6px solid #fff;
+      border-radius: 24px;
+      background: #d6e7f4;
+      box-shadow: 0 8px 0 rgba(29, 49, 84, .08), 0 15px 25px rgba(29, 49, 84, .13);
+      cursor: pointer;
+      isolation: isolate;
+      transition: transform .22s ease, box-shadow .22s ease;
+    }
+
+    .card:hover, .card:focus-within {
+      transform: translateY(-5px) rotate(-.35deg);
+      box-shadow: 0 11px 0 rgba(29, 49, 84, .08), 0 20px 30px rgba(29, 49, 84, .18);
+    }
+
+    .card img {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: opacity .5s ease, transform .65s ease;
+    }
+
+    .animal { opacity: 0; transform: scale(1.06); }
+    .card:hover .spectrogram, .card:focus-within .spectrogram, .card.revealed .spectrogram { opacity: 0; }
+    .card:hover .animal, .card:focus-within .animal, .card.revealed .animal { opacity: 1; transform: scale(1); }
+
+    .label {
+      position: absolute; z-index: 2; right: 11px; bottom: 11px; left: 11px;
+      margin: 0; padding: 9px 12px; border-radius: 13px;
+      background: rgba(20, 42, 71, .86); color: #fff; text-align: center;
+      font-size: clamp(.65rem, 1.4vw, .85rem);
+      opacity: 0; transform: translateY(12px);
+      transition: opacity .35s ease .12s, transform .35s ease .12s;
+    }
+    .card:hover .label, .card:focus-within .label, .card.revealed .label { opacity: 1; transform: translateY(0); }
+
+    /* Makes keyboard use work just like hover. */
+    .card button { position: absolute; inset: 0; z-index: 3; border: 0; background: transparent; cursor: pointer; }
+    .card button:focus-visible { outline: 4px solid #183b72; outline-offset: -4px; border-radius: 18px; }
+
+    .preview {
+      width: min(94vw, 1100px); padding: 12px; border: 0; border-radius: 24px;
+      background: #fff; box-shadow: 0 22px 65px rgba(0, 0, 0, .45);
+    }
+    .preview::backdrop { background: rgba(14, 30, 52, .78); backdrop-filter: blur(3px); }
+    .preview img { display: block; width: 100%; max-height: 80vh; object-fit: contain; }
+    .close-preview {
+      position: absolute; top: -14px; right: -14px; width: 42px; height: 42px;
+      border: 3px solid #fff; border-radius: 50%; background: #e44949; color: #fff;
+      font-size: 1.6rem; font-weight: 800; line-height: 1; cursor: pointer;
+    }
+
+    @media (max-width: 1000px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    @media (max-width: 750px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 620px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 420px) { main { padding-inline: 14px; } .grid { gap: 13px; } .card { border-width: 4px; border-radius: 18px; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>🎵 Spectrogram Jungle</h1>
+      <p>Which animal can you hear? Click on an image to enlarge.</p>
+    </header>
+    <!-- Put your wide video next to this file and name it video.mp4. -->
+    <section class="video-panel" aria-label="Animal sounds video">
+      <video controls preload="metadata">
+        <source src="video.mp4" type="video/mp4">
+        Your browser does not support embedded video.
+      </video>
+    </section>
+    <section class="grid" id="activity" aria-label="Animal sound matching activity"></section>
+    <dialog class="preview" id="preview" aria-label="Enlarged spectrogram">
+      <button class="close-preview" type="button" aria-label="Close enlarged spectrogram">×</button>
+      <img id="preview-image" alt="Enlarged spectrogram">
+    </dialog>
+  </main>
+
+  <script>
+    // CHANGE THESE NAMES to match your 12 animals. Their order matches 01–12.
+    const labels = [
+      "Bush Squeaker Frog", "Chimpanzee", "Crow", "Elephant",
+      "Gibbon", "Hyena", "Kookaburra", "Pacific Tree Frog",
+      "Plaintive Rain Frog", "Raccoon", "Red Fox", "Toucan"
+    ];
+
+    const activity = document.querySelector("#activity");
+    const preview = document.querySelector("#preview");
+    const previewImage = document.querySelector("#preview-image");
+    labels.forEach((label, index) => {
+      const fileNumber = String(index + 1).padStart(2, "0");
+      const card = document.createElement("article");
+      card.className = "card";
+      card.innerHTML = `
+        <img class="spectrogram" src="spectrograms/${fileNumber}.png" alt="Spectrogram ${index + 1}">
+        <img class="animal" src="animals/${fileNumber}.jpg" alt="${label}">
+        <p class="label">${label}</p>
+        <button type="button" aria-label="Reveal animal for spectrogram ${index + 1}: ${label}"></button>`;
+
+      // Click a card to view its spectrogram in a larger window.
+      const button = card.querySelector("button");
+      button.addEventListener("click", () => {
+        previewImage.src = `spectrograms/${fileNumber}.png`;
+        previewImage.alt = `Enlarged spectrogram ${index + 1}`;
+        preview.showModal();
+      });
+      activity.appendChild(card);
+    });
+
+    document.querySelector(".close-preview").addEventListener("click", () => preview.close());
+    // A click on the shaded area around the picture also closes the preview.
+    preview.addEventListener("click", event => { if (event.target === preview) preview.close(); });
+  </script>
+</body>
+</html>
+</template>
+
+<script>
+(() => {
+  "use strict";
+
+  const canvas = document.getElementById("spec");
+  const ctx = canvas.getContext("2d", { alpha: false });
+  const overlay = document.getElementById("overlay");
+  const octx = overlay.getContext("2d");
+  const micBtn = document.getElementById("micBtn");
+  const fileInput = document.getElementById("fileInput");
+  const imageInput = document.getElementById("imageInput");
+  const imagePlayBtn = document.getElementById("imagePlayBtn");
+  const playBtn = document.getElementById("playBtn");
+  const stopBtn = document.getElementById("stopBtn");
+  const progress = document.getElementById("progress");
+  const timeEl = document.getElementById("time");
+  const vizPauseBtn = document.getElementById("vizPauseBtn");
+  const clearBtn = document.getElementById("clearBtn");
+  const gainSlider = document.getElementById("gain");
+  const contrastSlider = document.getElementById("contrast");
+  const readout = document.getElementById("readout");
+  const status = document.getElementById("status");
+  const noteChip = document.getElementById("noteChip");
+  const help = document.getElementById("help");
+
+  let audioCtx = null;
+  let analyser = null;
+  let masterGain = null;
+  let freqData = null;
+  let micStream = null;
+  let micSource = null;
+
+  let audioBuffer = null;
+  let fileSource = null;
+  let fileGain = null;
+  let playing = false;
+  let playStartedAt = 0;
+  let playOffset = 0;
+
+  // The uploaded image is converted into a short AudioBuffer, so it can be replayed.
+  let imageAudioBuffer = null;
+  let imageSource = null;
+  let imageName = "image";
+
+  let drawing = false;
+  let drawOsc = null;
+  let drawGain = null;
+  let lastPoint = null;
+  let frozen = false;
+  let lastFrame = 0;
+  let helpHidden = false;
+
+  const MIN_FREQ = 20;
+  const MAX_FREQ = 20000;
+  const FFT_SIZE = 4096;
+
+  function setStatus(msg){ status.textContent = msg; }
+
+  function ensureAudio(){
+    if (!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = FFT_SIZE;
+      analyser.smoothingTimeConstant = 0.70;
+      analyser.minDecibels = -105;
+      analyser.maxDecibels = -15;
+
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = Number(gainSlider.value);
+      masterGain.connect(audioCtx.destination);
+
+      freqData = new Uint8Array(analyser.frequencyBinCount);
+    }
+    if (audioCtx.state === "suspended") audioCtx.resume();
+  }
+
+  function resize(){
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    const old = document.createElement("canvas");
+    old.width = canvas.width; old.height = canvas.height;
+    if (canvas.width && canvas.height) old.getContext("2d").drawImage(canvas,0,0);
+
+    canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+    canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+    overlay.width = canvas.width;
+    overlay.height = canvas.height;
+
+    ctx.imageSmoothingEnabled = false;
+    octx.imageSmoothingEnabled = true;
+
+    if (old.width && old.height){
+      ctx.drawImage(old, 0, 0, old.width, old.height, 0, 0, canvas.width, canvas.height);
+    } else {
+      ctx.fillStyle="#000";ctx.fillRect(0,0,canvas.width,canvas.height);
+    }
+    drawOverlay();
+  }
+  window.addEventListener("resize", resize);
+
+  function yToFreq(yCss){
+    const h = canvas.getBoundingClientRect().height;
+    const p = Math.max(0, Math.min(1, 1 - yCss / h));
+    return MIN_FREQ * Math.pow(MAX_FREQ / MIN_FREQ, p);
+  }
+
+  function freqToY(freq, cssHeight){
+    const p = Math.log(freq / MIN_FREQ) / Math.log(MAX_FREQ / MIN_FREQ);
+    return cssHeight * (1 - p);
+  }
+
+  function noteInfo(freq){
+    if (!isFinite(freq) || freq <= 0) return {name:"—", cents:0};
+    const midi = Math.round(69 + 12 * Math.log2(freq / 440));
+    const names = ["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B"];
+    const octave = Math.floor(midi / 12) - 1;
+    const exact = 440 * Math.pow(2, (midi - 69)/12);
+    const cents = Math.round(1200 * Math.log2(freq / exact));
+    return {name:names[(midi%12+12)%12]+octave, cents};
+  }
+
+  function drawOverlay(pointer){
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = overlay.width/dpr, h=overlay.height/dpr;
+    octx.setTransform(dpr,0,0,dpr,0,0);
+    octx.clearRect(0,0,w,h);
+
+    const marks = [
+      [20,"20 Hz"],[50,"50"],[100,"100"],[200,"200"],[500,"500"],
+      [1000,"1 kHz"],[2000,"2 k"],[5000,"5 k"],[10000,"10 k"],[20000,"20 kHz"]
+    ];
+    octx.font="12px ui-monospace, SFMono-Regular, Menlo, monospace";
+    octx.textBaseline="middle";
+    marks.forEach(([f,label],i)=>{
+      const y = freqToY(f,h);
+      octx.strokeStyle = (i===0 || i===marks.length-1) ? "rgba(160,210,225,.33)" : "rgba(130,175,190,.17)";
+      octx.lineWidth=1;
+      octx.beginPath();octx.moveTo(0,Math.round(y)+.5);octx.lineTo(w,Math.round(y)+.5);octx.stroke();
+      octx.fillStyle="rgba(225,236,242,.72)";
+      octx.fillText(label, Math.max(6,w-58), Math.max(10,Math.min(h-10,y)));
+    });
+
+    // Piano-note guide: A notes
+    for(let midi=21;midi<=108;midi++){
+      const f = 440*Math.pow(2,(midi-69)/12);
+      if(f<MIN_FREQ || f>MAX_FREQ) continue;
+      const y=freqToY(f,h);
+      if(midi%12===9){
+        octx.strokeStyle="rgba(146,239,92,.18)";
+        octx.beginPath();octx.moveTo(0,y);octx.lineTo(w,y);octx.stroke();
+      }
+    }
+
+    if(pointer){
+      octx.strokeStyle="rgba(255,255,255,.55)";
+      octx.setLineDash([5,5]);
+      octx.beginPath();octx.moveTo(0,pointer.y);octx.lineTo(w,pointer.y);octx.stroke();
+      octx.setLineDash([]);
+    }
+  }
+
+  function colorFor(v){
+    // v 0..1, black -> blue -> cyan -> green -> yellow -> orange -> white
+    v=Math.max(0,Math.min(1,v));
+    const stops=[
+      [0,[0,0,0]],[.12,[4,6,30]],[.28,[0,31,126]],[.45,[0,172,205]],
+      [.61,[91,215,67]],[.76,[235,221,47]],[.90,[255,92,27]],[1,[255,255,255]]
+    ];
+    for(let i=1;i<stops.length;i++){
+      if(v<=stops[i][0]){
+        const [p0,c0]=stops[i-1],[p1,c1]=stops[i];
+        const t=(v-p0)/(p1-p0);
+        return [
+          Math.round(c0[0]+(c1[0]-c0[0])*t),
+          Math.round(c0[1]+(c1[1]-c0[1])*t),
+          Math.round(c0[2]+(c1[2]-c0[2])*t)
+        ];
+      }
+    }
+    return [255,255,255];
+  }
+
+  function renderSpectrum(){
+    if(!analyser || frozen) return;
+    analyser.getByteFrequencyData(freqData);
+
+    const w=canvas.width,h=canvas.height;
+    const stripeW=Math.max(2,Math.round((window.devicePixelRatio||1)*2));
+
+    // Scroll left.
+    ctx.drawImage(canvas, stripeW,0,w-stripeW,h, 0,0,w-stripeW,h);
+
+    const img=ctx.createImageData(stripeW,h);
+    const nyquist=audioCtx.sampleRate/2;
+    const contrast=Number(contrastSlider.value);
+
+    for(let y=0;y<h;y++){
+      const p=1-y/(h-1);
+      const f=MIN_FREQ*Math.pow(MAX_FREQ/MIN_FREQ,p);
+      const bin=Math.min(freqData.length-1,Math.max(0,Math.round(f/nyquist*(freqData.length-1))));
+      let v=freqData[bin]/255;
+      v=Math.pow(v, 1/contrast);
+      // light noise-floor suppression
+      v=Math.max(0,(v-.03)/.97);
+      const c=colorFor(v);
+      for(let x=0;x<stripeW;x++){
+        const k=(y*stripeW+x)*4;
+        img.data[k]=c[0];img.data[k+1]=c[1];img.data[k+2]=c[2];img.data[k+3]=255;
+      }
+    }
+    ctx.putImageData(img,w-stripeW,0);
+  }
+
+  function frame(t){
+    // Render faster while drawing so the analysed tone feels attached to the cursor.
+    const frameInterval = drawing ? 12 : 24;
+    if(t-lastFrame>frameInterval){
+      renderSpectrum();
+      lastFrame=t;
+    }
+    updateTransport();
+    requestAnimationFrame(frame);
+  }
+
+  async function toggleMic(){
+    ensureAudio();
+    if(micStream){
+      micStream.getTracks().forEach(t=>t.stop());
+      micStream=null;
+      if(micSource){try{micSource.disconnect()}catch(e){}}
+      micSource=null;
+      micBtn.classList.remove("active");
+      micBtn.textContent="🎙️ Mic";
+      setStatus("Microphone off.");
+      return;
+    }
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      setStatus("Microphone is unavailable here. Try HTTPS or localhost.");
+      return;
+    }
+    try{
+      micStream=await navigator.mediaDevices.getUserMedia({
+        audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}
+      });
+      micSource=audioCtx.createMediaStreamSource(micStream);
+      // Analysis only: DO NOT connect microphone to speakers.
+      micSource.connect(analyser);
+      micBtn.classList.add("active");
+      micBtn.textContent="🎙️ Mic on";
+      setStatus("Microphone listening — it is visualised, not played through the speakers.");
+    }catch(err){
+      console.error(err);
+      setStatus("Microphone permission was blocked or unavailable.");
+    }
+  }
+
+  fileInput.addEventListener("change", async e=>{
+    const file=e.target.files && e.target.files[0];
+    if(!file) return;
+    ensureAudio();
+    stopFile();
+    setStatus("Loading "+file.name+"…");
+    try{
+      const arr=await file.arrayBuffer();
+      audioBuffer=await audioCtx.decodeAudioData(arr.slice(0));
+      playOffset=0;
+      progress.disabled=false;playBtn.disabled=false;stopBtn.disabled=false;
+      progress.value=0;
+      timeEl.textContent=`0:00 / ${formatTime(audioBuffer.duration)}`;
+      setStatus("Loaded "+file.name+". Press Play.");
+    }catch(err){
+      console.error(err);
+      setStatus("That audio file could not be decoded by this browser.");
+    }
+  });
+
+  // Read an image from left to right like a spectrogram. Bright pixels create
+  // louder tones; high pixels create high notes and low pixels create low notes.
+  function imageToAudioBuffer(image){
+    const columns = 180;
+    const bands = 36;
+    const duration = 3.8;
+    const sampleRate = 22050;
+    const samples = Math.floor(duration * sampleRate);
+    const imageCanvas = document.createElement("canvas");
+    imageCanvas.width = columns;
+    imageCanvas.height = bands;
+    const imageContext = imageCanvas.getContext("2d", { willReadFrequently:true });
+    imageContext.drawImage(image, 0, 0, columns, bands);
+    const pixels = imageContext.getImageData(0, 0, columns, bands).data;
+
+    const strengths = new Float32Array(columns * bands);
+    for(let y=0; y<bands; y++){
+      for(let x=0; x<columns; x++){
+        const pixel = (y * columns + x) * 4;
+        // Perceived brightness, with a gentle boost for faint spectrogram lines.
+        const brightness = (pixels[pixel] * .2126 + pixels[pixel + 1] * .7152 + pixels[pixel + 2] * .0722) / 255;
+        strengths[y * columns + x] = Math.pow(brightness, 1.7);
+      }
+    }
+
+    const buffer = audioCtx.createBuffer(1, samples, sampleRate);
+    const output = buffer.getChannelData(0);
+    const phases = new Float64Array(bands);
+    const phaseSteps = new Float64Array(bands);
+    for(let band=0; band<bands; band++){
+      const frequency = 80 * Math.pow(8000 / 80, (bands - 1 - band) / (bands - 1));
+      phaseSteps[band] = 2 * Math.PI * frequency / sampleRate;
+    }
+
+    for(let sample=0; sample<samples; sample++){
+      const column = Math.min(columns - 1, Math.floor(sample * columns / samples));
+      let value = 0;
+      for(let band=0; band<bands; band++){
+        value += Math.sin(phases[band]) * strengths[band * columns + column];
+        phases[band] += phaseSteps[band];
+      }
+      const fade = Math.min(1, sample / (sampleRate * .03), (samples - sample - 1) / (sampleRate * .05));
+      output[sample] = Math.tanh(value * .14) * Math.max(0, fade) * .78;
+    }
+    return buffer;
+  }
+
+  imageInput.addEventListener("change", async e=>{
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    ensureAudio();
+    imagePlayBtn.disabled = true;
+    setStatus("Turning " + file.name + " into sound…");
+    try{
+      const image = await createImageBitmap(file);
+      // Yield once so the loading message is visible before the audio is made.
+      await new Promise(requestAnimationFrame);
+      imageAudioBuffer = imageToAudioBuffer(image);
+      image.close?.();
+      imageName = file.name;
+      imagePlayBtn.disabled = false;
+      setStatus("Image ready: " + file.name + ". Press Play image to hear it.");
+    }catch(err){
+      console.error(err);
+      imageAudioBuffer = null;
+      setStatus("That image could not be read.");
+    }
+  });
+
+  function stopImage(){
+    if(imageSource){
+      try{ imageSource.stop(); }catch(err){}
+      try{ imageSource.disconnect(); }catch(err){}
+      imageSource = null;
+    }
+  }
+
+  function playImage(){
+    if(!imageAudioBuffer) return;
+    ensureAudio();
+    stopImage();
+    const source = audioCtx.createBufferSource();
+    const imageGain = audioCtx.createGain();
+    source.buffer = imageAudioBuffer;
+    imageGain.gain.value = .9;
+    source.connect(imageGain);
+    imageGain.connect(analyser);
+    imageGain.connect(masterGain);
+    imageSource = source;
+    source.onended = () => { if(imageSource === source) imageSource = null; };
+    source.start();
+    setStatus("Playing " + imageName + ". Press Play image again to replay it.");
+  }
+
+  imagePlayBtn.addEventListener("click", playImage);
+
+  function makeFileSource(){
+    if(!audioBuffer) return null;
+    const src=audioCtx.createBufferSource();
+    src.buffer=audioBuffer;
+    fileGain=audioCtx.createGain();
+    fileGain.gain.value=0.90;
+    src.connect(fileGain);
+    // One branch for analysis, one for audible output.
+    fileGain.connect(analyser);
+    fileGain.connect(masterGain);
+    src.onended=()=>{
+      if(playing && audioBuffer && currentFileTime()>=audioBuffer.duration-.05){
+        playing=false;playOffset=0;playBtn.textContent="▶ Play";progress.value=0;
+      }
+    };
+    return src;
+  }
+
+  function playFile(){
+    if(!audioBuffer) return;
+    ensureAudio();
+    if(playing){ pauseFile(); return; }
+    if(playOffset>=audioBuffer.duration) playOffset=0;
+    fileSource=makeFileSource();
+    playStartedAt=audioCtx.currentTime;
+    fileSource.start(0,playOffset);
+    playing=true;
+    playBtn.textContent="⏸ Pause";
+    setStatus("Playing uploaded audio.");
+  }
+
+  function pauseFile(){
+    if(!playing) return;
+    playOffset=currentFileTime();
+    playing=false;
+    if(fileSource){try{fileSource.stop()}catch(e){} try{fileSource.disconnect()}catch(e){}}
+    fileSource=null;
+    playBtn.textContent="▶ Play";
+    setStatus("Audio paused.");
+  }
+
+  function stopFile(){
+    if(fileSource){try{fileSource.stop()}catch(e){} try{fileSource.disconnect()}catch(e){}}
+    fileSource=null;
+    playing=false;playOffset=0;
+    playBtn.textContent="▶ Play";
+    if(progress) progress.value=0;
+  }
+
+  function currentFileTime(){
+    if(!audioBuffer) return 0;
+    return Math.min(audioBuffer.duration, playing ? playOffset+(audioCtx.currentTime-playStartedAt) : playOffset);
+  }
+
+  function seekTo(seconds){
+    if(!audioBuffer) return;
+    const wasPlaying=playing;
+    if(fileSource){try{fileSource.stop()}catch(e){}}
+    playing=false;
+    playOffset=Math.max(0,Math.min(audioBuffer.duration,seconds));
+    if(wasPlaying) playFile();
+  }
+
+  function updateTransport(){
+    if(!audioBuffer) return;
+    const now=currentFileTime();
+    if(!progress.matches(":active")) progress.value=audioBuffer.duration?now/audioBuffer.duration:0;
+    timeEl.textContent=`${formatTime(now)} / ${formatTime(audioBuffer.duration)}`;
+  }
+
+  function formatTime(s){
+    if(!isFinite(s)) return "0:00";
+    const m=Math.floor(s/60), sec=Math.floor(s%60);
+    return `${m}:${String(sec).padStart(2,"0")}`;
+  }
+
+  playBtn.addEventListener("click",playFile);
+  stopBtn.addEventListener("click",()=>{stopFile();setStatus("Audio stopped.");});
+  progress.addEventListener("input",()=>{
+    if(audioBuffer) timeEl.textContent=`${formatTime(Number(progress.value)*audioBuffer.duration)} / ${formatTime(audioBuffer.duration)}`;
+  });
+  progress.addEventListener("change",()=>{
+    if(audioBuffer) seekTo(Number(progress.value)*audioBuffer.duration);
+  });
+
+  function pointerPos(e){
+    const r=canvas.getBoundingClientRect();
+    return {x:e.clientX-r.left,y:e.clientY-r.top,w:r.width,h:r.height};
+  }
+
+  function startDraw(e){
+    if(e.button!==undefined && e.button!==0) return;
+    ensureAudio();
+    const p=pointerPos(e);
+    const f=yToFreq(p.y);
+    drawing=true;
+    lastPoint=p;
+    canvas.setPointerCapture?.(e.pointerId);
+
+    drawOsc=audioCtx.createOscillator();
+    drawGain=audioCtx.createGain();
+    drawOsc.type="sine";
+    drawOsc.frequency.setValueAtTime(f,audioCtx.currentTime);
+    drawGain.gain.setValueAtTime(0.0001,audioCtx.currentTime);
+    drawGain.gain.exponentialRampToValueAtTime(0.16,audioCtx.currentTime+.018);
+
+    drawOsc.connect(drawGain);
+    drawGain.connect(analyser);
+    drawGain.connect(masterGain);
+    drawOsc.start();
+
+    updatePointerUI(p,f);
+    if(!helpHidden){help.classList.add("hide");helpHidden=true;}
+  }
+
+  function moveDraw(e){
+    const p=pointerPos(e);
+    const f=yToFreq(p.y);
+    updatePointerUI(p,f);
+
+    if(!drawing || !drawOsc) return;
+    drawOsc.frequency.exponentialRampToValueAtTime(
+      Math.max(MIN_FREQ,Math.min(MAX_FREQ,f)),
+      audioCtx.currentTime+.025
+    );
+
+    // No separate pencil line is drawn here.
+    // The oscillator is routed into the analyser, so the only visible trace
+    // is the actual spectrogram signal generated by the tone itself.
+    lastPoint=p;
+  }
+
+  function endDraw(e){
+    if(!drawing) return;
+    drawing=false;
+    if(drawGain && audioCtx){
+      const now=audioCtx.currentTime;
+      try{
+        drawGain.gain.cancelScheduledValues(now);
+        drawGain.gain.setValueAtTime(Math.max(.0001,drawGain.gain.value),now);
+        drawGain.gain.exponentialRampToValueAtTime(.0001,now+.045);
+      }catch(err){}
+      const osc=drawOsc, gn=drawGain;
+      setTimeout(()=>{
+        try{osc.stop()}catch(err){}
+        try{osc.disconnect()}catch(err){}
+        try{gn.disconnect()}catch(err){}
+      },80);
+    }
+    drawOsc=null;drawGain=null;lastPoint=null;
+  }
+
+  function updatePointerUI(p,f){
+    const n=noteInfo(f);
+    readout.textContent=`${Math.round(f).toLocaleString()} Hz · ${n.name}${Math.abs(n.cents)>3 ? ` · ${n.cents>0?"+":""}${n.cents}¢` : ""}`;
+    noteChip.textContent=n.name;
+    drawOverlay({x:p.x,y:p.y});
+  }
+
+  canvas.addEventListener("pointerdown",startDraw);
+  canvas.addEventListener("pointermove",moveDraw);
+  canvas.addEventListener("pointerup",endDraw);
+  canvas.addEventListener("pointercancel",endDraw);
+  canvas.addEventListener("pointerleave",e=>{ if(!drawing) drawOverlay(); });
+
+  micBtn.addEventListener("click",toggleMic);
+  gainSlider.addEventListener("input",()=>{
+    ensureAudio();
+    masterGain.gain.setTargetAtTime(Number(gainSlider.value),audioCtx.currentTime,.01);
+  });
+
+  vizPauseBtn.addEventListener("click",()=>{
+    frozen=!frozen;
+    vizPauseBtn.classList.toggle("active",frozen);
+    vizPauseBtn.textContent=frozen?"▶ Unfreeze":"⏸ Freeze";
+    setStatus(frozen?"Spectrogram frozen. Audio can keep playing.":"Spectrogram moving again.");
+  });
+
+  clearBtn.addEventListener("click",()=>{
+    ctx.fillStyle="#000";ctx.fillRect(0,0,canvas.width,canvas.height);
+    setStatus("Screen cleared.");
+  });
+
+  document.addEventListener("visibilitychange",()=>{
+    if(document.hidden && drawing) endDraw({});
+  });
+
+
+  // Five oscillator voices used by the MediaPipe fingertip controller.
+  let handVoices = [];
+
+  function ensureHandVoices(){
+    ensureAudio();
+    if(handVoices.length) return;
+    for(let i=0;i<5;i++){
+      const osc=audioCtx.createOscillator();
+      const g=audioCtx.createGain();
+      osc.type="sine";
+      osc.frequency.value=220*(i+1);
+      g.gain.value=0.0001;
+      osc.connect(g);
+      // Feed each finger into both the analyser and the audible master output.
+      g.connect(analyser);
+      g.connect(masterGain);
+      osc.start();
+      handVoices.push({osc,g});
+    }
+  }
+
+  function setHandFrequencies(freqs){
+    ensureHandVoices();
+    const now=audioCtx.currentTime;
+    freqs.slice(0,5).forEach((f,i)=>{
+      const hz=Math.max(55,Math.min(4200,Number(f)||220));
+      handVoices[i].osc.frequency.setTargetAtTime(hz,now,0.018);
+      handVoices[i].g.gain.setTargetAtTime(0.048,now,0.025);
+    });
+  }
+
+  function silenceHandVoices(){
+    if(!audioCtx || !handVoices.length) return;
+    const now=audioCtx.currentTime;
+    handVoices.forEach(v=>v.g.gain.setTargetAtTime(0.0001,now,0.04));
+  }
+
+  window.__handSynth = {
+    setHandFrequencies,
+    silenceHandVoices,
+    status:setStatus,
+    noteInfo,
+    // A slightly narrower range than the full chart makes the hand controller musical
+    // and avoids spending most of its travel in extreme high frequencies.
+    normYToFreq(y){
+      const lo=80, hi=2400;
+      const p=Math.max(0,Math.min(1,1-y));
+      return lo*Math.pow(hi/lo,p);
+    }
+  };
+
+  resize();
+  drawOverlay();
+  requestAnimationFrame(frame);
+})();
+</script>
+
+<script type="module">
+(async () => {
+  const handBtn = document.getElementById("handBtn");
+  const panel = document.getElementById("cameraPanel");
+  const video = document.getElementById("handVideo");
+  const overlay = document.getElementById("handOverlay");
+  const ctx = overlay.getContext("2d");
+  const handStatus = document.getElementById("handStatus");
+  const noteEls = Array.from({length:5},(_,i)=>document.getElementById("finger"+i));
+  const tipIds = [4,8,12,16,20];
+  const fingerNames = ["Thumb","Index","Middle","Ring","Pinky"];
+
+  let active=false;
+  let cameraStream=null;
+  let tracker=null;
+  let raf=0;
+  let lastVideoTime=-1;
+  let loading=false;
+
+  function status(msg){
+    handStatus.textContent=msg;
+    if(window.__handSynth) window.__handSynth.status(msg);
+  }
+
+  function clearNotes(){
+    noteEls.forEach(el=>el.textContent="—");
+  }
+
+  function resizeHandCanvas(){
+    const r=overlay.getBoundingClientRect();
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    overlay.width=Math.max(1,Math.round(r.width*dpr));
+    overlay.height=Math.max(1,Math.round(r.height*dpr));
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  async function ensureTracker(){
+    if(tracker) return tracker;
+    if(loading) {
+      while(loading) await new Promise(r=>setTimeout(r,50));
+      return tracker;
+    }
+    loading=true;
+    status("loading hand model…");
+    try{
+      const visionModule = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/+esm");
+      const { HandLandmarker, FilesetResolver } = visionModule;
+      const vision = await FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm"
+      );
+      tracker = await HandLandmarker.createFromOptions(vision,{
+        baseOptions:{
+          modelAssetPath:"https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+          delegate:"GPU"
+        },
+        runningMode:"VIDEO",
+        numHands:1,
+        minHandDetectionConfidence:0.5,
+        minHandPresenceConfidence:0.5,
+        minTrackingConfidence:0.5
+      });
+      return tracker;
+    }catch(err){
+      console.error(err);
+      status("MediaPipe could not load");
+      throw err;
+    }finally{
+      loading=false;
+    }
+  }
+
+  function drawHand(points){
+    const w=overlay.getBoundingClientRect().width;
+    const h=overlay.getBoundingClientRect().height;
+    ctx.clearRect(0,0,w,h);
+
+    const connections=[
+      [0,1],[1,2],[2,3],[3,4],
+      [0,5],[5,6],[6,7],[7,8],
+      [5,9],[9,10],[10,11],[11,12],
+      [9,13],[13,14],[14,15],[15,16],
+      [13,17],[17,18],[18,19],[19,20],[0,17]
+    ];
+
+    ctx.lineWidth=2;
+    ctx.strokeStyle="rgba(79,229,255,.70)";
+    ctx.beginPath();
+    for(const [a,b] of connections){
+      const pa=points[a], pb=points[b];
+      const ax=(1-pa.x)*w, ay=pa.y*h;
+      const bx=(1-pb.x)*w, by=pb.y*h;
+      ctx.moveTo(ax,ay); ctx.lineTo(bx,by);
+    }
+    ctx.stroke();
+
+    tipIds.forEach((id,i)=>{
+      const p=points[id], x=(1-p.x)*w, y=p.y*h;
+      ctx.beginPath();
+      ctx.arc(x,y,7,0,Math.PI*2);
+      ctx.fillStyle="rgba(146,239,92,.95)";
+      ctx.fill();
+      ctx.lineWidth=2;
+      ctx.strokeStyle="#071016";
+      ctx.stroke();
+
+      ctx.font="bold 11px system-ui,sans-serif";
+      ctx.textAlign="center";
+      ctx.textBaseline="bottom";
+      ctx.fillStyle="#fff";
+      ctx.fillText(fingerNames[i],x,y-10);
+    });
+  }
+
+  function process(){
+    if(!active) return;
+    if(video.readyState>=2 && tracker && video.currentTime!==lastVideoTime){
+      lastVideoTime=video.currentTime;
+      let results;
+      try{
+        results=tracker.detectForVideo(video,performance.now());
+      }catch(err){
+        console.error(err);
+      }
+
+      if(results && results.landmarks && results.landmarks.length){
+        const points=results.landmarks[0];
+        drawHand(points);
+
+        const freqs=tipIds.map(id=>window.__handSynth.normYToFreq(points[id].y));
+        window.__handSynth.setHandFrequencies(freqs);
+
+        freqs.forEach((f,i)=>{
+          const n=window.__handSynth.noteInfo(f);
+          noteEls[i].textContent=n.name;
+        });
+        handStatus.textContent="5 notes live";
+      }else{
+        const w=overlay.getBoundingClientRect().width;
+        const h=overlay.getBoundingClientRect().height;
+        ctx.clearRect(0,0,w,h);
+        window.__handSynth.silenceHandVoices();
+        clearNotes();
+        handStatus.textContent="show one hand";
+      }
+    }
+    raf=requestAnimationFrame(process);
+  }
+
+  async function start(){
+    if(active) return;
+    active=true;
+    handBtn.classList.add("active");
+    handBtn.textContent="🖐️ Hand synth on";
+    panel.classList.add("show");
+    resizeHandCanvas();
+
+    try{
+      await ensureTracker();
+      if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+        throw new Error("Camera API unavailable");
+      }
+      status("asking for camera…");
+      cameraStream=await navigator.mediaDevices.getUserMedia({
+        video:{facingMode:"user",width:{ideal:640},height:{ideal:480}},
+        audio:false
+      });
+      video.srcObject=cameraStream;
+      await video.play();
+      resizeHandCanvas();
+      status("show one hand");
+      process();
+    }catch(err){
+      console.error(err);
+      status("camera blocked/unavailable");
+      stop();
+    }
+  }
+
+  function stop(){
+    active=false;
+    cancelAnimationFrame(raf);
+    window.__handSynth?.silenceHandVoices();
+    if(cameraStream){
+      cameraStream.getTracks().forEach(t=>t.stop());
+      cameraStream=null;
+    }
+    video.srcObject=null;
+    handBtn.classList.remove("active");
+    handBtn.textContent="🖐️ Hand synth";
+    panel.classList.remove("show");
+    clearNotes();
+    const w=overlay.getBoundingClientRect().width;
+    const h=overlay.getBoundingClientRect().height;
+    ctx.clearRect(0,0,w,h);
+    handStatus.textContent="camera off";
+  }
+
+  handBtn.addEventListener("click",()=>active?stop():start());
+  window.addEventListener("resize",()=>{ if(active) resizeHandCanvas(); });
+})();
+</script>
+
+
+<script>
+  const playgroundTab = document.querySelector("#playgroundTab");
+  const jungleTab = document.querySelector("#jungleTab");
+  const animalQuizFrame = document.querySelector("#animalQuizFrame");
+  animalQuizFrame.srcdoc = document.querySelector("#animalQuizSource").innerHTML;
+  function showActivity(activity) {
+    const showingJungle = activity === "jungle";
+    document.body.classList.toggle("quiz-open", showingJungle);
+    playgroundTab.classList.toggle("active", !showingJungle);
+    jungleTab.classList.toggle("active", showingJungle);
+    playgroundTab.setAttribute("aria-pressed", String(!showingJungle));
+    jungleTab.setAttribute("aria-pressed", String(showingJungle));
+  }
+  playgroundTab.addEventListener("click", () => showActivity("playground"));
+  jungleTab.addEventListener("click", () => showActivity("jungle"));
+</script>
+
+</body>
+</html>
+
+

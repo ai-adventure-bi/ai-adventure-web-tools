@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mix-a-Monster</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <p class="eyebrow"></p>
+    <h1>Mix-a-Monster <span>✦</span></h1>
+    <p>Choose a head, torso and some legs. What crazy characters can we create?</p>
+  </header>
+
+  <nav class="page-tabs" aria-label="Tool sections">
+    <button class="tab active" type="button" data-page="mixer">✦ Mix characters</button>
+    <button class="tab" type="button" data-page="prepare">✂ Prepare a character</button>
+  </nav>
+
+  <main>
+    <section id="mixerPage" class="page active">
+    <section class="controls card" aria-label="Character controls">
+      <div class="control-copy">
+        <h2>Character cupboard</h2>
+        <p id="libraryStatus">Loading your picture library…</p>
+      </div>
+      <!-- <label class="upload-button" for="filePicker">+ Add character pictures</label> -->
+      <input id="filePicker" type="file" accept="image/*" multiple hidden>
+      <button id="shuffleButton" class="shuffle" type="button">↯ Shuffle</button>
+      <button id="saveMonsterButton" type="button">↓ Save this monster</button>
+      <button id="manageButton" type="button">Manage library</button>
+    </section>
+    <section id="libraryManager" class="library-manager card" hidden>
+      <div><h2>Character library</h2><p>Removing a character hides it permanently from this flip book. Browser uploads are deleted too; shared-folder source files remain safely on your computer.</p></div>
+      <div id="libraryGrid" class="library-grid"></div>
+    </section>
+
+    <section class="workbench" aria-label="Your mixed character">
+      <div class="flap-row" data-part="0">
+        <button class="arrow previous" type="button" aria-label="Previous head">‹</button>
+        <div class="flap"><canvas id="panel0" aria-label="Head section"></canvas></div>
+        <button class="arrow next" type="button" aria-label="Next head">›</button>
+      </div>
+      <div class="flap-row" data-part="1">
+        <button class="arrow previous" type="button" aria-label="Previous torso and arms">‹</button>
+        <div class="flap"><canvas id="panel1" aria-label="Torso and arms section"></canvas></div>
+        <button class="arrow next" type="button" aria-label="Next torso and arms">›</button>
+      </div>
+      <div class="flap-row" data-part="2">
+        <button class="arrow previous" type="button" aria-label="Previous legs">‹</button>
+        <div class="flap"><canvas id="panel2" aria-label="Legs section"></canvas></div>
+        <button class="arrow next" type="button" aria-label="Next legs">›</button>
+      </div>
+      <p id="emptyState" class="empty-state">Add a few full-body, front-facing T-pose character pictures to begin.</p>
+    </section>
+
+    <section class="card slicing">
+      <div>
+        <!-- <h2>How to use</h2> -->
+        <p>Select <strong>✂ Prepare a character</strong> to slice an image and add it to the library.</p>
+      </div>
+      <!-- <p class="tip">For the tidiest results, use <strong>Prepare a character</strong> first. Pictures added directly still work, but were not placed in the common template.</p> -->
+    </section>
+    </section>
+
+    <section id="preparePage" class="page" hidden>
+      <section class="preparation card">
+        <div class="prep-intro">
+          <!-- <p class="eyebrow">Make it flip-flap ready</p> -->
+          <h2>Prepare a character</h2>
+          <p>Place your character behind the guide. Adjust the neck and waist lines to fit your character, then select <strong>+ Add to library</strong> when it is ready!</p>
+          <label class="upload-button" for="prepPicker">Choose a picture</label>
+          <input id="prepPicker" type="file" accept="image/*" hidden>
+        </div>
+        <div class="template-stage" aria-label="T-pose positioning template">
+          <canvas id="templateCanvas" width="800" height="800"></canvas>
+          <svg class="pose-guide" viewBox="0 0 800 800" aria-hidden="true">
+            <g fill="none" stroke="#8d78e6" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" opacity=".52">
+              <rect x="337" y="135" width="126" height="112" rx="42" fill="#8d78e6" opacity=".3"/>
+              <path d="M400 247 L400 284 M400 284 L400 495 M155 340 L645 340 M400 495 L315 650 M400 495 L485 650"/>
+            </g>
+            <g stroke="#ff719d" stroke-width="5" stroke-dasharray="16 13" opacity=".9"><path id="guideCutOne" d="M0 284 H800"/><path id="guideCutTwo" d="M0 500 H800"/></g>
+          </svg>
+        </div>
+        <div class="template-controls">
+          <label>Size <output id="scaleOutput">82%</output><input id="scaleControl" type="range" min="30" max="220" value="82"></label>
+          <label>Left / right <output id="xOutput">0</output><input id="xControl" type="range" min="-400" max="400" value="0"></label>
+          <label>Up / down <output id="yOutput">0</output><input id="yControl" type="range" min="-400" max="400" value="0"></label>
+          <label>Neck line <output id="prepCutOneOutput">36%</output><input id="prepCutOne" type="range" min="24" max="45" value="36"></label>
+          <label>Waist line <output id="prepCutTwoOutput">63%</output><input id="prepCutTwo" type="range" min="52" max="76" value="63"></label>
+          <button id="centreButton" type="button">Centre picture</button>
+        </div>
+        <div class="prep-actions">
+          <button id="addPreparedButton" class="shuffle" type="button" disabled>+ Add to library</button>
+          <button id="downloadPreparedButton" type="button" disabled>↓ Save prepared PNG</button>
+        </div>
+        <!-- <p class="tip">The purple shape and pink cut lines are only guides — they will not appear in the saved image. Move the pink lines with their controls (or drag them), then the saved character is gently fitted into the standard flip-flap sections.</p> -->
+      </section>
+    </section>
+  </main>
+
+  <footer>✿</footer>
+  <script src="app.js"></script>
+</body>
+</html>

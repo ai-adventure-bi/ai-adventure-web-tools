@@ -1,0 +1,20 @@
+# Generated dependencies and build output
+**/node_modules/
+**/dist/
+**/.next/
+**/.vinext/
+**/.wrangler/
+
+# Local-only settings and operating-system files
+**/.env
+**/.env.*
+!.env.example
+!example.env
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+**/__pycache__/
+
+# Duplicate nested copy already present in the main FlyBrain folder
+flybrain-child-edition/flybrain-child-edition/

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Adventure Web Tools</title>
+  <style>
+    :root { --ink:#173a52; --muted:#5f7889; --paper:#f7fcff; --blue:#2d9cdb; --pink:#ee6c90; --yellow:#ffd166; --green:#75c878; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; color:var(--ink); background:linear-gradient(145deg,#e6f7ff,#fffdf4 54%,#eaffeb); font-family:"Trebuchet MS",system-ui,sans-serif; }
+    main { width:min(1120px,calc(100% - 32px)); margin:auto; padding:52px 0 72px; }
+    header { max-width:720px; margin:0 auto 34px; text-align:center; }
+    h1 { margin:0; font-size:clamp(2.2rem,6vw,4.6rem); line-height:.98; letter-spacing:-.045em; }
+    header p { margin:16px auto 0; color:var(--muted); font-size:clamp(1rem,2.2vw,1.22rem); line-height:1.5; }
+    .tools { display:grid; grid-template-columns:repeat(auto-fit,minmax(245px,1fr)); gap:22px; }
+    .tool { display:flex; min-height:258px; padding:25px; border:5px solid #fff; border-radius:27px; color:inherit; background:var(--card,#fff); box-shadow:0 10px 0 rgba(23,58,82,.08),0 18px 34px rgba(23,58,82,.12); text-decoration:none; transition:transform .2s ease,box-shadow .2s ease; }
+    .tool:hover,.tool:focus-visible { transform:translateY(-6px) rotate(-.25deg); box-shadow:0 14px 0 rgba(23,58,82,.08),0 24px 42px rgba(23,58,82,.16); outline:4px solid var(--blue); outline-offset:3px; }
+    .tool-inner { display:flex; width:100%; flex-direction:column; align-items:flex-start; }
+    .icon { display:grid; width:66px; height:66px; place-items:center; border-radius:20px; background:rgba(255,255,255,.72); font-size:2.55rem; }
+    h2 { margin:18px 0 7px; font-size:1.48rem; }
+    .description { margin:0; color:#35566b; line-height:1.45; }
+    .open { margin-top:auto; padding-top:18px; color:#173a52; font-size:.9rem; font-weight:900; }
+    .hint { max-width:760px; margin:38px auto 0; padding:17px 20px; border:1px dashed #9ac6d8; border-radius:16px; color:#456879; background:rgba(255,255,255,.58); line-height:1.45; text-align:center; }
+    @media (prefers-reduced-motion:reduce) { * { transition:none!important; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>AI Adventure<br>Web Tools</h1>
+      <p>Interactive activities for investigating AI.</p>
+    </header>
+    <section class="tools" id="tools" aria-label="Available web tools"></section>
+    <!-- <p class="hint">To add a new activity later, add one item to the <strong>tools</strong> list near the bottom of this HTML file. Its folder should sit next to this page.</p> -->
+  </main>
+  <script>
+    // ADD NEW TOOLS HERE. `path` is the folder name beside this index.html.
+    // A tool with a `liveUrl` uses its local development address on this computer
+    // and its public address when this hub is online.
+    const tools = [
+      { path: "flybrain-child-edition", icon: "🪰", title: "FlyBrain", description: "Experiment with a digital fly’s senses, brain pathways, internal states, and behaviour.", color: "#8FD388" },
+      { path: "mix-a-monster-tool", icon: "👹", title: "Mix-a-Monster", description: "Combine body parts to invent a new character.", color: "#FFDE5C" },
+      { path: "spectrograms", icon: "🎵", title: "Spectrograms", description: "Visualise sound and identify sounds in the jungle.", color: "#998AFF" },
+      { path: "is-it-intelligent", icon: "🧠", title: "Is It Intelligent?", description: "Discuss the intelligence of various autonomous things.", color: "#FF5C5C" },
+      { path: "quake-quest", liveUrl: "https://quake-quest-detective.hally4815162342.chatgpt.site", localUrl: "http://localhost:3000", icon: "🌍", title: "Quake Quest", description: "Use real seismograph station data to detect and simulate earthquakes.", color: "#FFA05C" },
+      { path: "art-styles", icon: "🎨", title: "Art Styles", description: "Sort the artworks of various painters.", color: "#F863DA" },
+      { path: "boids", icon: "🪶", title: "Boids", description: "Interact with a flocking simulation.", color: "#ABABAB" },
+      { path: "game-of-life", icon: "🧬", title: "Conway's Game of Life", description: "A zero-player rules-based cellular automaton.", color: "#D063F8" },
+      { path: "eliza", icon: "🖥️", title: "ELIZA", description: "Talk to ELIZA, early natural language processing computer program.", color: "#0EAB00" },
+      { path: "topbot", icon: "🌀", title: "TopBot", description: "Use natural language processing to design 3D-printable spinning tops and yo-yos.", color: "#00AAFF" }
+    ];
+
+    const toolsEl = document.querySelector("#tools");
+    tools.forEach(tool => {
+      const card = document.createElement("a");
+      card.className = "tool";
+      const runningLocally = location.protocol === "file:" || ["localhost", "127.0.0.1"].includes(location.hostname);
+      card.href = tool.liveUrl ? (runningLocally ? tool.localUrl : tool.liveUrl) : `${tool.path}/index.html`;
+      card.style.setProperty("--card", tool.color);
+      card.innerHTML = `<div class="tool-inner"><div class="icon" aria-hidden="true">${tool.icon}</div><h2>${tool.title}</h2><p class="description">${tool.description}</p><span class="open">Open web tool →</span></div>`;
+      toolsEl.append(card);
+    });
+  </script>
+</body>
+</html>
