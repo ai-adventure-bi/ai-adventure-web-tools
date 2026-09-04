@@ -6,6 +6,6 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "build": "npm --prefix quake-quest ci && npm --prefix quake-quest run build && node scripts/assemble-vercel-site.mjs"
+    "build": "npm --prefix quake-quest ci && node quake-quest/scripts/update-snapshot.mjs && npm --prefix quake-quest run build && node scripts/assemble-vercel-site.mjs"
   }
 }

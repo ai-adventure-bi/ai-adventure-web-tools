@@ -5,6 +5,18 @@
   "functions": {
     "api/design.mjs": {
       "maxDuration": 60
+    },
+    "api/seismic.mjs": {
+      "maxDuration": 30
+    },
+    "api/station-environment.mjs": {
+      "maxDuration": 30
+    },
+    "api/station-photo.mjs": {
+      "maxDuration": 30
+    },
+    "api/waveform.mjs": {
+      "maxDuration": 30
     }
   },
   "headers": [
