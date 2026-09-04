@@ -49,10 +49,13 @@ jobs:
             --exclude '**/.vinext/' \
             --exclude '**/.wrangler/'
           mkdir -p _site/quake-quest
-          app_entry="$(find quake-quest/dist/client -type f -name index.html | head -n 1)"
-          test -n "$app_entry"
-          app_root="$(dirname "$app_entry")"
-          cp -R "$app_root"/. _site/quake-quest/
+          test -f quake-quest/dist/client/index.html
+          cp -R quake-quest/dist/client/. _site/quake-quest/
+          prefixed_assets="_site/quake-quest/ai-adventure-web-tools/quake-quest"
+          if [ -d "$prefixed_assets" ]; then
+            cp -R "$prefixed_assets"/. _site/quake-quest/
+            rm -rf _site/quake-quest/ai-adventure-web-tools
+          fi
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
