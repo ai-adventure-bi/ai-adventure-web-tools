@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-static';
+
 import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useState } from 'react';
 import type { MapStation } from './quake-map';
