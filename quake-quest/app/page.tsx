@@ -2,12 +2,12 @@
 
 export const dynamic = 'force-static';
 
-import dynamic from 'next/dynamic';
-import { useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useState, type ComponentProps } from 'react';
 import type { MapStation } from './quake-map';
 import LiveWaveform from './live-waveform';
 import SimulatedWaveform from './simulated-waveform';
-const QuakeMap=dynamic(()=>import('./quake-map'),{ssr:false,loading:()=> <div className="map-loading">Drawing the real map…</div>});
+const LazyQuakeMap=lazy(()=>import('./quake-map'));
+const QuakeMap=(props:ComponentProps<typeof LazyQuakeMap>)=><Suspense fallback={<div className="map-loading">Drawing the real map…</div>}><LazyQuakeMap {...props}/></Suspense>;
 
 type Quake={id:string;title:string;place:string;lat:number;lon:number;magnitude:number;depth:number;time:string;link:string};
 type BgsStation={network:string;code:string;name:string;lat:number;lon:number;elevation:number};
