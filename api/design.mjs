@@ -16,10 +16,9 @@ export default async function handler(req,res){
     return res.status(415).json({error:'TopBot expects a JSON request.'});
   }
   const origin=req.headers.origin;
-  if(origin){
-    let originHost='';
-    try{originHost=new URL(origin).host;}catch{return res.status(403).json({error:'Request origin is not valid.'});}
-    if(originHost!==requestHost(req))return res.status(403).json({error:'Cross-site requests are not allowed.'});
-  }
+  if(!origin)return res.status(403).json({error:'A browser origin is required.'});
+  let originHost='';
+  try{originHost=new URL(origin).host;}catch{return res.status(403).json({error:'Request origin is not valid.'});}
+  if(originHost!==requestHost(req))return res.status(403).json({error:'Cross-site requests are not allowed.'});
   return chat(req,res);
 }
