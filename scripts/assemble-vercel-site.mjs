@@ -3,7 +3,7 @@ import {join} from 'node:path';
 
 const root=new URL('../',import.meta.url);
 const output=new URL('../_site/',import.meta.url);
-const staticTools=['art-styles','boids','eliza','game-of-life','is-it-intelligent','mix-a-monster-tool','spectrograms'];
+const staticTools=['art-styles','auto-agents','boids','eliza','game-of-life','is-it-intelligent','mix-a-monster-tool','spectrograms'];
 const ignore=source=>source.name==='node_modules'||source.name==='.git'||source.name==='.github'||source.name==='_site'||source.name==='.next'||source.name==='dist'||source.name==='static-dist'||source.name==='.vinext'||source.name==='.wrangler';
 
 await rm(output,{recursive:true,force:true});
