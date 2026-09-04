@@ -49,7 +49,10 @@ jobs:
             --exclude '**/.vinext/' \
             --exclude '**/.wrangler/'
           mkdir -p _site/quake-quest
-          cp -R quake-quest/dist/client/. _site/quake-quest/
+          app_entry="$(find quake-quest/dist/client -type f -name index.html | head -n 1)"
+          test -n "$app_entry"
+          app_root="$(dirname "$app_entry")"
+          cp -R "$app_root"/. _site/quake-quest/
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
