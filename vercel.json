@@ -1,0 +1,32 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "outputDirectory": "_site",
+  "functions": {
+    "api/design.mjs": {
+      "maxDuration": 60
+    },
+    "api/seismic.mjs": {
+      "maxDuration": 30
+    },
+    "api/station-environment.mjs": {
+      "maxDuration": 30
+    },
+    "api/station-photo.mjs": {
+      "maxDuration": 30
+    },
+    "api/waveform.mjs": {
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
+      ]
+    }
+  ]
+}
