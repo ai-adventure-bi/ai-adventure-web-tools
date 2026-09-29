@@ -183,7 +183,7 @@ const characterToggle=document.createElement('label');characterToggle.className=
 
 const CONTROL_GROUPS={
 
- top:[['Core body',['bodyDiameter','bodyHeight','tipLength','color']],['Outer rim',['rimStyle','rimPattern','lobes','secondaryLobes','waveDepth','rimLift','rimSweep','armSpiral','armReach','twist','holes','holeSize']],['Body crown',['bodyCrownStyle','bodyCrownSize','bodyCrownHeight','bodyCrownLobes','bodyCrownTwist']],['Inner hub',['hubStyle','hubHeight','hubDepth','hubLobes','hubTwist']],['Handle',['stemHeight','stemDiameter','handleStyle','handleTwist','handleFins','handleFlare','pommelStyle']],['Totem',['topperHeight','topperWidth','topperFeatures','topperTwist','topperRelief']]],
+ top:[['Core body',['bodyDiameter','bodyHeight','tipLength']],['Outer rim',['rimStyle','rimPattern','lobes','secondaryLobes','waveDepth','rimLift','rimSweep','armSpiral','armReach','twist','holes','holeSize']],['Body crown',['bodyCrownStyle','bodyCrownSize','bodyCrownHeight','bodyCrownLobes','bodyCrownTwist']],['Inner hub',['hubStyle','hubHeight','hubDepth','hubLobes','hubTwist']],['Handle',['stemHeight','stemDiameter','handleStyle','handleTwist','handleFins','handleFlare','pommelStyle']],['Totem',['topperHeight','topperWidth','topperFeatures','topperTwist','topperRelief']]],
 
 
 
