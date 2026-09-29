@@ -17,7 +17,7 @@ for(const part of ['index.html','css','js','svg']){
   await mkdir(new URL('../_site/flybrain-child-edition/',import.meta.url),{recursive:true});
   await cp(source,target,{recursive:true});
 }
-for(const part of ['index.html','css','js']){
+for(const part of ['index.html','css','js','vendor','examples']){
   const source=new URL(`../topbot/${part}`,import.meta.url);
   const target=new URL(`../_site/topbot/${part}`,import.meta.url);
   await mkdir(new URL('../_site/topbot/',import.meta.url),{recursive:true});

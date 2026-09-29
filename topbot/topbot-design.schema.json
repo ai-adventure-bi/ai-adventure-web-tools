@@ -1,0 +1,455 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TopBot 3 spinning-top recipe",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "toyType",
+    "experimentalEnabled",
+    "outlineStyle",
+    "outlineAmount",
+    "alienStyle",
+    "alienAmount",
+    "complexity",
+    "designSeed",
+    "bodyTheme",
+    "themeAmount",
+    "themeSize",
+    "bodyDiameter",
+    "bodyHeight",
+    "stemHeight",
+    "stemDiameter",
+    "tipLength",
+    "rimStyle",
+    "rimPattern",
+    "rimSweep",
+    "armSpiral",
+    "armReach",
+    "bodyCrownStyle",
+    "bodyCrownSize",
+    "bodyCrownHeight",
+    "bodyCrownLobes",
+    "bodyCrownTwist",
+    "handleStyle",
+    "pommelStyle",
+    "hubStyle",
+    "hubHeight",
+    "hubDepth",
+    "hubLobes",
+    "hubTwist",
+    "lobes",
+    "waveDepth",
+    "rimLift",
+    "secondaryLobes",
+    "twist",
+    "handleTwist",
+    "handleFins",
+    "handleFlare",
+    "holes",
+    "holeSize",
+    "topperStyle",
+    "topperHeight",
+    "topperWidth",
+    "topperFeatures",
+    "topperTwist",
+    "topperRelief",
+    "color"
+  ],
+  "properties": {
+    "toyType": {
+      "type": "string",
+      "enum": [
+        "top"
+      ]
+    },
+    "experimentalEnabled": {
+      "type": "boolean"
+    },
+    "outlineStyle": {
+      "type": "string",
+      "enum": [
+        "round",
+        "flower",
+        "starfish",
+        "octopus",
+        "gear",
+        "sun",
+        "snowflake",
+        "amoeba",
+        "spiral",
+        "shell",
+        "manta",
+        "whaleTail",
+        "fish",
+        "shark",
+        "butterfly",
+        "bat",
+        "leaf",
+        "maple",
+        "ginkgo",
+        "strawberry",
+        "heart",
+        "shield",
+        "rocket",
+        "comet",
+        "crystal"
+      ]
+    },
+    "outlineAmount": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "alienStyle": {
+      "type": "string",
+      "enum": [
+        "none",
+        "orbitalWaves",
+        "coiledRibs",
+        "eyePetals"
+      ]
+    },
+    "alienAmount": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "complexity": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "designSeed": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9999
+    },
+    "bodyTheme": {
+      "type": "string",
+      "enum": [
+        "none",
+        "coral",
+        "scales",
+        "bubbles",
+        "armour",
+        "craters",
+        "mushrooms"
+      ]
+    },
+    "themeAmount": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "themeSize": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "bodyDiameter": {
+      "type": "number",
+      "minimum": 25,
+      "maximum": 65
+    },
+    "bodyHeight": {
+      "type": "number",
+      "minimum": 8,
+      "maximum": 30
+    },
+    "stemHeight": {
+      "type": "number",
+      "minimum": 8,
+      "maximum": 34
+    },
+    "stemDiameter": {
+      "type": "number",
+      "minimum": 5,
+      "maximum": 12
+    },
+    "tipLength": {
+      "type": "number",
+      "minimum": 3,
+      "maximum": 12
+    },
+    "rimStyle": {
+      "type": "string",
+      "enum": [
+        "smooth",
+        "wavy",
+        "scalloped",
+        "spiky",
+        "organic",
+        "petal",
+        "enchanted",
+        "crystal"
+      ]
+    },
+    "rimPattern": {
+      "type": "string",
+      "enum": [
+        "radial",
+        "turbine",
+        "hooked",
+        "comet",
+        "claw"
+      ]
+    },
+    "rimSweep": {
+      "type": "number",
+      "minimum": -10,
+      "maximum": 10
+    },
+    "armSpiral": {
+      "type": "number",
+      "minimum": -12,
+      "maximum": 12
+    },
+    "armReach": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "bodyCrownStyle": {
+      "type": "string",
+      "enum": [
+        "none",
+        "jewelled",
+        "tiara",
+        "petals",
+        "crystal",
+        "runes"
+      ]
+    },
+    "bodyCrownSize": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "bodyCrownHeight": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 8
+    },
+    "bodyCrownLobes": {
+      "type": "integer",
+      "minimum": 3,
+      "maximum": 18
+    },
+    "bodyCrownTwist": {
+      "type": "number",
+      "minimum": -10,
+      "maximum": 10
+    },
+    "handleStyle": {
+      "type": "string",
+      "enum": [
+        "lighthouse",
+        "strawberry",
+        "castle",
+        "crystal",
+        "pawn",
+        "straight",
+        "flared",
+        "mushroom",
+        "twisted",
+        "crown",
+        "spire",
+        "chalice",
+        "vine",
+        "winged"
+      ]
+    },
+    "pommelStyle": {
+      "type": "string",
+      "enum": [
+        "simple",
+        "orb",
+        "crystal",
+        "flame",
+        "crown"
+      ]
+    },
+    "hubStyle": {
+      "type": "string",
+      "enum": [
+        "smooth",
+        "crown",
+        "petal",
+        "gear",
+        "crystal",
+        "halo"
+      ]
+    },
+    "hubHeight": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 12
+    },
+    "hubDepth": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 8
+    },
+    "hubLobes": {
+      "type": "integer",
+      "minimum": 3,
+      "maximum": 16
+    },
+    "hubTwist": {
+      "type": "number",
+      "minimum": -10,
+      "maximum": 10
+    },
+    "lobes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 16
+    },
+    "waveDepth": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "rimLift": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "secondaryLobes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 24
+    },
+    "twist": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "handleTwist": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "handleFins": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 12
+    },
+    "handleFlare": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "holes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 20
+    },
+    "holeSize": {
+      "type": "number",
+      "minimum": 2,
+      "maximum": 7
+    },
+    "topperStyle": {
+      "type": "string",
+      "enum": [
+        "none",
+        "dolphinTail",
+        "tentacle",
+        "trident",
+        "coral",
+        "skull",
+        "cyclops",
+        "mushroom",
+        "robot",
+        "ghost",
+        "crystal"
+      ]
+    },
+    "topperHeight": {
+      "type": "number",
+      "minimum": 14,
+      "maximum": 34
+    },
+    "topperWidth": {
+      "type": "number",
+      "minimum": 10,
+      "maximum": 25
+    },
+    "topperFeatures": {
+      "type": "integer",
+      "minimum": 3,
+      "maximum": 12
+    },
+    "topperTwist": {
+      "type": "number",
+      "minimum": -10,
+      "maximum": 10
+    },
+    "topperRelief": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 7
+    },
+    "color": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "material": {
+      "type": "string",
+      "enum": [
+        "white",
+        "pastelRainbow",
+        "vividRainbow"
+      ]
+    },
+    "rainbowPhase": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "paint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strokes"
+      ],
+      "properties": {
+        "strokes": {
+          "type": "array",
+          "maxItems": 1500,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "p",
+              "size",
+              "color"
+            ],
+            "properties": {
+              "p": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": -150,
+                  "maximum": 150
+                },
+                "minItems": 3,
+                "maxItems": 3
+              },
+              "size": {
+                "type": "number",
+                "minimum": 0.5,
+                "maximum": 12
+              },
+              "color": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

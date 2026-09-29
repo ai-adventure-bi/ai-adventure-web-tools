@@ -1,0 +1,95 @@
+{
+  "toyType": "top",
+  "complexity": 65,
+  "designSeed": 4837,
+  "bodyTheme": "none",
+  "themeAmount": 4,
+  "themeSize": 4,
+  "bodyDiameter": 60,
+  "bodyHeight": 20,
+  "stemHeight": 25,
+  "stemDiameter": 9,
+  "tipLength": 8,
+  "rimStyle": "spiky",
+  "rimPattern": "hooked",
+  "rimSweep": 7,
+  "armSpiral": 10,
+  "armReach": 9,
+  "bodyCrownStyle": "jewelled",
+  "bodyCrownSize": 6,
+  "bodyCrownHeight": 5,
+  "bodyCrownLobes": 10,
+  "bodyCrownTwist": 2,
+  "handleStyle": "spire",
+  "pommelStyle": "crystal",
+  "hubStyle": "smooth",
+  "hubHeight": 3,
+  "hubDepth": 2,
+  "hubLobes": 8,
+  "hubTwist": 0,
+  "lobes": 6,
+  "waveDepth": 7,
+  "rimLift": 3,
+  "secondaryLobes": 12,
+  "twist": 4,
+  "handleTwist": 5,
+  "handleFins": 4,
+  "handleFlare": 4,
+  "holes": 0,
+  "holeSize": 3,
+  "topperStyle": "none",
+  "topperHeight": 24,
+  "topperWidth": 18,
+  "topperFeatures": 6,
+  "topperTwist": 2,
+  "topperRelief": 4,
+  "color": "#8e6df2",
+  "design": {
+    "version": 2,
+    "body": {
+      "shape": "round",
+      "width": 56,
+      "height": 12,
+      "asymmetry": 0,
+      "twist": 0,
+      "stretch": 1
+    },
+    "edge": {
+      "style": "smooth",
+      "amount": 0,
+      "repetition": 8
+    },
+    "handle": {
+      "shape": "lighthouse",
+      "height": 18,
+      "width": 9,
+      "twist": 0
+    },
+    "tip": {
+      "style": "rounded"
+    },
+    "surface": {
+      "texture": "none",
+      "relief": "emboss",
+      "depth": 0.6
+    },
+    "attachments": [],
+    "material": "pastelRainbow",
+    "rainbowPhase": 0,
+    "paint": {
+      "strokes": []
+    },
+    "safety": {
+      "minimumThickness": 2.4,
+      "maximumOverhang": 45,
+      "balanceCorrection": true
+    },
+    "hybrid": {
+      "style": "alienShell",
+      "amount": 1.4,
+      "repetition": 6,
+      "twist": 0.7,
+      "printMode": "single"
+    }
+  }
+}
