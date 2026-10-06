@@ -1,0 +1,1740 @@
+{
+  "dataset": "FlyWire FAFB v783",
+  "coordinateSpace": "FAFB14.1 / FlyWire",
+  "units": "nanometres",
+  "layers": 15,
+  "bounds": [
+    [
+      71876.9921875,
+      911142.0625
+    ],
+    [
+      47143.13671875,
+      457796.40625
+    ],
+    [
+      44.25,
+      281614.875
+    ]
+  ],
+  "neurons": [
+    {
+      "id": "720575940644919240",
+      "type": "R1-6",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 300,
+      "edges": 299,
+      "sha256": "66080075ba9e85f9d2f0f0a5fd11a9421d8d2360d5e172786eea7e9f0c54b0b0",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940644919240"
+    },
+    {
+      "id": "720575940633081169",
+      "type": "R1-6",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 358,
+      "edges": 357,
+      "sha256": "aad8aaf0a6dd45420f14c616e4c8078cda81753dac6aebb196479c4101c8348c",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940633081169"
+    },
+    {
+      "id": "720575940635871839",
+      "type": "optic",
+      "class": "optic",
+      "side": "left",
+      "nodes": 674,
+      "edges": 673,
+      "sha256": "2bb59fcece0f275c004000ee40c8060a138927658d2e6b4832ccc90a9ea162d0",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940635871839"
+    },
+    {
+      "id": "720575940620745808",
+      "type": "R1-6",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 407,
+      "edges": 406,
+      "sha256": "6e692446a4f5c37020a3829e9e144780f8e562fa32e6cdf50eab0dcb9a4da4e6",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940620745808"
+    },
+    {
+      "id": "720575940625823101",
+      "type": "R1-6",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 170,
+      "edges": 169,
+      "sha256": "3dae1fcb0de4b1dfd097b4467abbc6332feada459b9e30379169794c9de0b3d6",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940625823101"
+    },
+    {
+      "id": "720575940615703446",
+      "type": "R1-6",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 310,
+      "edges": 309,
+      "sha256": "425102e9c944cb3ca2d8c98363eaf156e5c511f63a68b0cfa5334d16970d337f",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940615703446"
+    },
+    {
+      "id": "720575940616981947",
+      "type": "R1-6",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 343,
+      "edges": 342,
+      "sha256": "dc4e3de0817af3c0d60080426a4181bedb6d896208837cf128243d9b7b93b715",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940616981947"
+    },
+    {
+      "id": "720575940641277904",
+      "type": "R1-6",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 190,
+      "edges": 189,
+      "sha256": "1c6e49b7dfbcaef0e8dac73ba7d2bca8811c9dc09edf6379942409956de05952",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940641277904"
+    },
+    {
+      "id": "720575940614892595",
+      "type": "R8",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 443,
+      "edges": 442,
+      "sha256": "d51f5994b16e6bb3f58cf330c13b55925ca72c42e8ccf78f05ce57649b527c60",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940614892595"
+    },
+    {
+      "id": "720575940630207703",
+      "type": "L3",
+      "class": "optic",
+      "side": "left",
+      "nodes": 533,
+      "edges": 532,
+      "sha256": "38bd30ccbc68fb20f72de4b6a927cd1c2369a638962524974dadc5693986329a",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940630207703"
+    },
+    {
+      "id": "720575940626286097",
+      "type": "L5",
+      "class": "optic",
+      "side": "left",
+      "nodes": 752,
+      "edges": 751,
+      "sha256": "9bc24d1da10122f8934a270108258519a331d91ba4709667ca15b03423dbab8a",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940626286097"
+    },
+    {
+      "id": "720575940618248541",
+      "type": "R1-6",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 277,
+      "edges": 276,
+      "sha256": "f6843d2c28367e72a87ff360770278707521ce09ca719dfaf495d31bd5150f71",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940618248541"
+    },
+    {
+      "id": "720575940629956879",
+      "type": "Tm5e",
+      "class": "optic",
+      "side": "left",
+      "nodes": 1816,
+      "edges": 1815,
+      "sha256": "bbc25ef4a11323c7f83beed1db18025392a1f1b82afc889a928f004a9bfc8033",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940629956879"
+    },
+    {
+      "id": "720575940626738992",
+      "type": "Tm5e",
+      "class": "optic",
+      "side": "left",
+      "nodes": 1953,
+      "edges": 1952,
+      "sha256": "787def124de391e91d7da36143fc47d972329143f13358f921950d3d33cdf92d",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940626738992"
+    },
+    {
+      "id": "720575940621898480",
+      "type": "Mi10",
+      "class": "optic",
+      "side": "left",
+      "nodes": 1502,
+      "edges": 1501,
+      "sha256": "14e4f6796e57ad957b1c90080d95950481fc4747f0df64c7d4f3369959f05c5e",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940621898480"
+    },
+    {
+      "id": "720575940626416016",
+      "type": "Sm09",
+      "class": "optic",
+      "side": "left",
+      "nodes": 1603,
+      "edges": 1602,
+      "sha256": "08d4d1fbc6895c46995af2bc593d4fca18d90c62f0e6afbb1154d7acf6998bc7",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940626416016"
+    },
+    {
+      "id": "720575940624806397",
+      "type": "R1-6",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 286,
+      "edges": 285,
+      "sha256": "d723f8e9f9f5ceaee89de64214703e1ac323cee0ecb1870583a1a88238f4fae8",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940624806397"
+    },
+    {
+      "id": "720575940620587569",
+      "type": "optic",
+      "class": "optic",
+      "side": "left",
+      "nodes": 645,
+      "edges": 644,
+      "sha256": "c30f0dbacc95340bda874d2d8dd5d3a6f12a2d5d27421636cac207c0e5f2b746",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940620587569"
+    },
+    {
+      "id": "720575940637974896",
+      "type": "L1",
+      "class": "optic",
+      "side": "left",
+      "nodes": 384,
+      "edges": 383,
+      "sha256": "857290ac21d9a5a3c9eadd8c69e5c053f76db72f6c5448a6e21ede64cd20f5e8",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940637974896"
+    },
+    {
+      "id": "720575940620054174",
+      "type": "L2",
+      "class": "optic",
+      "side": "left",
+      "nodes": 612,
+      "edges": 611,
+      "sha256": "410db9377147faafb88bbaebdc088dffbc38bc38da0d679edd5b2459d34f2c63",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940620054174"
+    },
+    {
+      "id": "720575940615771458",
+      "type": "L2",
+      "class": "optic",
+      "side": "left",
+      "nodes": 768,
+      "edges": 767,
+      "sha256": "ad42ca22d69df1a4002dd101ea1f17dc0d87e92886054fd168d3f65e3e709913",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940615771458"
+    },
+    {
+      "id": "720575940613060058",
+      "type": "L1",
+      "class": "optic",
+      "side": "left",
+      "nodes": 351,
+      "edges": 350,
+      "sha256": "1f01724f2cc35133f6ced42c6254703d4b0b310368011f3ea7a7b56ec7262dea",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940613060058"
+    },
+    {
+      "id": "720575940641611739",
+      "type": "Mi1",
+      "class": "optic",
+      "side": "left",
+      "nodes": 1077,
+      "edges": 1076,
+      "sha256": "771519a509ce085f235b6fcda0560d6a68ee3e4453f7b1dc1c28b7ad6f92c24b",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940641611739"
+    },
+    {
+      "id": "720575940609659145",
+      "type": "T1",
+      "class": "optic",
+      "side": "left",
+      "nodes": 1081,
+      "edges": 1080,
+      "sha256": "9d8084d13af6511ecfe9b40336d2d617ce34f47016df617c3826cad076f9333f",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940609659145"
+    },
+    {
+      "id": "720575940635555423",
+      "type": "Tm3",
+      "class": "optic",
+      "side": "left",
+      "nodes": 806,
+      "edges": 805,
+      "sha256": "2a934446600234fa5e5da741d977431666a2d752133230f071fd3f2c48757926",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940635555423"
+    },
+    {
+      "id": "720575940616832598",
+      "type": "Dm11",
+      "class": "optic",
+      "side": "left",
+      "nodes": 1419,
+      "edges": 1418,
+      "sha256": "ee96a463a4e1b0f546d7d151d58848b668c896723a4597e5ded5ca0fe08ccf52",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940616832598"
+    },
+    {
+      "id": "720575940638266943",
+      "type": "Tm9",
+      "class": "optic",
+      "side": "left",
+      "nodes": 613,
+      "edges": 612,
+      "sha256": "366ceeb275630cebf079646abed910b17c6cacf53683bae1561db2e9f3055031",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940638266943"
+    },
+    {
+      "id": "720575940631718475",
+      "type": "T1",
+      "class": "optic",
+      "side": "left",
+      "nodes": 776,
+      "edges": 775,
+      "sha256": "fd442bcf8da9da58d0b167d2ba9f18eb35c70048baeecd158fdb4865ef32b3f5",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940631718475"
+    },
+    {
+      "id": "720575940622840790",
+      "type": "Mi13",
+      "class": "optic",
+      "side": "left",
+      "nodes": 724,
+      "edges": 723,
+      "sha256": "5a5d2de34e695caee0e452dc9fcca869f50466c6d57a15373eef3be71e86f6cf",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940622840790"
+    },
+    {
+      "id": "720575940617951003",
+      "type": "T3",
+      "class": "optic",
+      "side": "left",
+      "nodes": 606,
+      "edges": 605,
+      "sha256": "281d0a153fbf274056a1a6c59a3641c64c6d10ff0fea46bd0208ac13d5c0456b",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940617951003"
+    },
+    {
+      "id": "720575940622006622",
+      "type": "C3",
+      "class": "optic",
+      "side": "left",
+      "nodes": 880,
+      "edges": 879,
+      "sha256": "3e2d24212b46993529aad5b293cbf676ca547f9caae1ce46951e5dd70116c002",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940622006622"
+    },
+    {
+      "id": "720575940624665236",
+      "type": "CB1211",
+      "class": "central",
+      "side": "left",
+      "nodes": 4078,
+      "edges": 4077,
+      "sha256": "034fdbc20a3508e57412a16aa9d2411a216716fcb39f2a86a92933128ffbdc98",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940624665236"
+    },
+    {
+      "id": "720575940630383045",
+      "type": "AVLP306",
+      "class": "central",
+      "side": "left",
+      "nodes": 5141,
+      "edges": 5140,
+      "sha256": "a1e073ded836501bc4be1caf364b09b2226b3af57f97d8691cbd2d98cf9df362",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940630383045"
+    },
+    {
+      "id": "720575940625734714",
+      "type": "CL097",
+      "class": "central",
+      "side": "left",
+      "nodes": 5388,
+      "edges": 5387,
+      "sha256": "c63167671ec1ef024dc2a74045e4de7575424f483588e45248c98230774b43d4",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940625734714"
+    },
+    {
+      "id": "720575940634916709",
+      "type": "TuBu06a",
+      "class": "central",
+      "side": "left",
+      "nodes": 1515,
+      "edges": 1514,
+      "sha256": "5060d662b0859e17cc3134ad4dd4875f05518434db9fb278eb221ee8cd61f663",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940634916709"
+    },
+    {
+      "id": "720575940624194232",
+      "type": "CB0158",
+      "class": "central",
+      "side": "left",
+      "nodes": 3044,
+      "edges": 3043,
+      "sha256": "7bd0632788a0838f3b8b9cc962c18bd6cc3e0791048a1acd0372414b9799ff4a",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940624194232"
+    },
+    {
+      "id": "720575940617499205",
+      "type": "PVLP074",
+      "class": "central",
+      "side": "left",
+      "nodes": 6613,
+      "edges": 6612,
+      "sha256": "94d9f144826e248ddeb140b6af22898a16390fa75d859088dfcc7649ba381b01",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940617499205"
+    },
+    {
+      "id": "720575940635475055",
+      "type": "SLP158",
+      "class": "central",
+      "side": "left",
+      "nodes": 2190,
+      "edges": 2189,
+      "sha256": "946ed0eb5fabf1a1a352a4e5770a3a9a269816d3b42ca7abd944ecf99c8c7849",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940635475055"
+    },
+    {
+      "id": "720575940635777893",
+      "type": "CB1753",
+      "class": "central",
+      "side": "left",
+      "nodes": 3047,
+      "edges": 3046,
+      "sha256": "4e9e062102fc0e076d336bbc4b0c888639c88db3ae87356760434c45e716989e",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940635777893"
+    },
+    {
+      "id": "720575940618309440",
+      "type": "CB1191",
+      "class": "central",
+      "side": "left",
+      "nodes": 2265,
+      "edges": 2264,
+      "sha256": "056813fce3809be965d31870d4a3e327c9ccffd4a3678dbc7c6781cf7f681375",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940618309440"
+    },
+    {
+      "id": "720575940618164829",
+      "type": "Dm3q",
+      "class": "optic",
+      "side": "left",
+      "nodes": 728,
+      "edges": 727,
+      "sha256": "0d39d0002632e1b19512c43f7d0ac59a9e5b33656f1d429ea08ee2722a0288da",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940618164829"
+    },
+    {
+      "id": "720575940632025913",
+      "type": "Mi9",
+      "class": "optic",
+      "side": "left",
+      "nodes": 854,
+      "edges": 853,
+      "sha256": "1bfb5f1f3a7e1d57674dcc2f7de812cadb7e45df2ae351065dfac1ea8f126a03",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940632025913"
+    },
+    {
+      "id": "720575940631002063",
+      "type": "Tm9",
+      "class": "optic",
+      "side": "left",
+      "nodes": 606,
+      "edges": 605,
+      "sha256": "61eeb848152373b7ea88136d1a90cf6f35c81ddb34c1876a23c6265a8ec81b34",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940631002063"
+    },
+    {
+      "id": "720575940616052166",
+      "type": "T4a",
+      "class": "optic",
+      "side": "left",
+      "nodes": 901,
+      "edges": 900,
+      "sha256": "5e788aff4d4add574c180dede751c405be546c6e8a5c7beddf3981a2c9349ba0",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940616052166"
+    },
+    {
+      "id": "720575940622004545",
+      "type": "T5a",
+      "class": "optic",
+      "side": "left",
+      "nodes": 854,
+      "edges": 853,
+      "sha256": "4d54946fd738152072b055e3c2ec022a3229afaa2756e6569990dd8e8d25b231",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940622004545"
+    },
+    {
+      "id": "720575940624141064",
+      "type": "T5b",
+      "class": "optic",
+      "side": "left",
+      "nodes": 723,
+      "edges": 722,
+      "sha256": "fbc301fa2b095145edaf6c2b0bc53474093ffbc2c988625b1f53cdcc69ce8771",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940624141064"
+    },
+    {
+      "id": "720575940630303287",
+      "type": "T3",
+      "class": "optic",
+      "side": "left",
+      "nodes": 847,
+      "edges": 846,
+      "sha256": "24c2b5f82aab799707e0649b4361c3c0de83ca7f86a0367bd46fc60bf152de79",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940630303287"
+    },
+    {
+      "id": "720575940618889595",
+      "type": "Tm2",
+      "class": "optic",
+      "side": "left",
+      "nodes": 884,
+      "edges": 883,
+      "sha256": "2c48ca4814aa322b65a471c1fc1ad7a9ba6697f8dcaed348fc66edfa1f8ef539",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940618889595"
+    },
+    {
+      "id": "720575940617934139",
+      "type": "LPi05",
+      "class": "optic",
+      "side": "left",
+      "nodes": 1655,
+      "edges": 1654,
+      "sha256": "7dea63e792449c2a30716afe42f4101b4dc7c9116fb5131c3a8ffa2285e316fb",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940617934139"
+    },
+    {
+      "id": "720575940630744940",
+      "type": "T2a",
+      "class": "optic",
+      "side": "left",
+      "nodes": 1051,
+      "edges": 1050,
+      "sha256": "8d8f3d6e10337434e1101b2eb954fd819e9259eb1dcc71526fe6f5130ef8d340",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940630744940"
+    },
+    {
+      "id": "720575940626915109",
+      "type": "T4d",
+      "class": "optic",
+      "side": "left",
+      "nodes": 663,
+      "edges": 662,
+      "sha256": "82e61f724540ae59a04e34df15ad16ce5c6cc3fbcbadc2914d90334a5028cb02",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940626915109"
+    },
+    {
+      "id": "720575940628822906",
+      "type": "ORN_DM3",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 585,
+      "edges": 584,
+      "sha256": "818856f0d1e33ceacf641c491b5f24ff093df31dfc9b89b0886d7b600ce5c1e9",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940628822906"
+    },
+    {
+      "id": "720575940628202089",
+      "type": "ORN_DL2d",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 994,
+      "edges": 993,
+      "sha256": "09fbf2052ceddecd67130abf54b2fbfb989264a3d031e6ee0583a9b4422c68ed",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940628202089"
+    },
+    {
+      "id": "720575940623274935",
+      "type": "ORN_DP1m",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 1340,
+      "edges": 1339,
+      "sha256": "ca0b0434251fe68367c4d57073efce89fcce32eb76057d902204661d742fc771",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940623274935"
+    },
+    {
+      "id": "720575940630835195",
+      "type": "ORN_DM6",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 319,
+      "edges": 318,
+      "sha256": "f5666e90ea640911d5f8be6063fce26a0c96eb828de787cf3bf6bb4f67fcd0c1",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940630835195"
+    },
+    {
+      "id": "720575940620257345",
+      "type": "JO-mz",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 538,
+      "edges": 537,
+      "sha256": "521899845cd509c60fdad80f83d7b2f51020c7a870f584f35ea2b4a51aeee52a",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940620257345"
+    },
+    {
+      "id": "720575940618779294",
+      "type": "CB2550",
+      "class": "central",
+      "side": "left",
+      "nodes": 2695,
+      "edges": 2694,
+      "sha256": "c918a1f667727af66c086045cc64520360d5de5a4b8db48980efdcae0ddd4bac",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940618779294"
+    },
+    {
+      "id": "720575940609530653",
+      "type": "JO-FD2",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 550,
+      "edges": 549,
+      "sha256": "aee15e7d0d7ad43ee3ef63e81d07824d800a246c1367926a3477012fe62c3791",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940609530653"
+    },
+    {
+      "id": "720575940645599268",
+      "type": "CB2018",
+      "class": "central",
+      "side": "left",
+      "nodes": 3219,
+      "edges": 3218,
+      "sha256": "c489d1d18abc874c11f44851c8063eb43e695cc5157c193fadd39cd0d30a750c",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940645599268"
+    },
+    {
+      "id": "720575940631423263",
+      "type": "claw_tpGRN",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 376,
+      "edges": 375,
+      "sha256": "3f664c5dfd131526d0fef6468a397059caa2246feaeaf25db133d7955b21d615",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940631423263"
+    },
+    {
+      "id": "720575940628972048",
+      "type": "CB0542",
+      "class": "central",
+      "side": "left",
+      "nodes": 5412,
+      "edges": 5411,
+      "sha256": "91f4a98b02daeeea1d4ef8d852f31d574c116153104c9c4e193adbfd04ee8e89",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940628972048"
+    },
+    {
+      "id": "720575940630812663",
+      "type": "SMP555,SMP556",
+      "class": "central",
+      "side": "left",
+      "nodes": 5485,
+      "edges": 5484,
+      "sha256": "f3fda8c2c00912edbfd4395e91d83108eb95f095a2c6c455985935eec98e3967",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940630812663"
+    },
+    {
+      "id": "720575940620539227",
+      "type": "SLP025b",
+      "class": "central",
+      "side": "left",
+      "nodes": 2003,
+      "edges": 2002,
+      "sha256": "98b8e403285934ef7dfc0597d07739a51730acf4c2282876ccb22f2332515c38",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940620539227"
+    },
+    {
+      "id": "720575940619757488",
+      "type": "BM_InOm",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 238,
+      "edges": 237,
+      "sha256": "4af87fa1514e19644cabc253ac3240eb73ebbe4b04d969410c50c621d56b8ae4",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940619757488"
+    },
+    {
+      "id": "720575940611440346",
+      "type": "SLP312",
+      "class": "central",
+      "side": "left",
+      "nodes": 2563,
+      "edges": 2562,
+      "sha256": "386977bdf764a0c782246875a18a7ac0fab3998437f260b5460c8dd8a6fab521",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940611440346"
+    },
+    {
+      "id": "720575940622939912",
+      "type": "BM_InOm",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 251,
+      "edges": 250,
+      "sha256": "62f26c313aebb0e6627dafb82ae9c5c550691f33c104fe89537b3ad56d9e0cca",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940622939912"
+    },
+    {
+      "id": "720575940621846783",
+      "type": "FB1D",
+      "class": "central",
+      "side": "left",
+      "nodes": 2437,
+      "edges": 2436,
+      "sha256": "a4b17f1f1be323bd59a34c9a9ca13d4eca892c00bd64b49a034b84cea90afd00",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940621846783"
+    },
+    {
+      "id": "720575940635008607",
+      "type": "CB1011",
+      "class": "central",
+      "side": "left",
+      "nodes": 1356,
+      "edges": 1355,
+      "sha256": "19096add8b162a37fc861c999bed0330cdff88329793776a1cb4d16df56d0e30",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940635008607"
+    },
+    {
+      "id": "720575940614203916",
+      "type": "KCapbp-m",
+      "class": "central",
+      "side": "left",
+      "nodes": 1293,
+      "edges": 1292,
+      "sha256": "1aedda433f7177221d8bd52f3ab357ab86e4fe38dcd4dcd96cd71cf39e505e51",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940614203916"
+    },
+    {
+      "id": "720575940617380241",
+      "type": "KCab",
+      "class": "central",
+      "side": "left",
+      "nodes": 1418,
+      "edges": 1417,
+      "sha256": "5ebc04662b8312d6d8ac9bfd622b60694631f5d8ca0eee21dfa1ecacddfab940",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940617380241"
+    },
+    {
+      "id": "720575940612269747",
+      "type": "CB3133",
+      "class": "central",
+      "side": "left",
+      "nodes": 1814,
+      "edges": 1813,
+      "sha256": "26ecf2a1ed7de2a2274d04ded259b8e48e37c5e13fea03a042da1495cc014873",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940612269747"
+    },
+    {
+      "id": "720575940623895807",
+      "type": "LPi08",
+      "class": "optic",
+      "side": "left",
+      "nodes": 2010,
+      "edges": 2009,
+      "sha256": "28e62679f59a8748d413b1698f3935508212736506e604c8d530ad694e81f129",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940623895807"
+    },
+    {
+      "id": "720575940618587170",
+      "type": "LPi11",
+      "class": "optic",
+      "side": "left",
+      "nodes": 2709,
+      "edges": 2708,
+      "sha256": "764854368dcc254476155f1b068a8a408e5f78c6be23cb5587da1544e8e93408",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940618587170"
+    },
+    {
+      "id": "720575940628736873",
+      "type": "LPi11",
+      "class": "optic",
+      "side": "left",
+      "nodes": 2502,
+      "edges": 2501,
+      "sha256": "58a48adf40f7a7ea21e4a9176919b47211de379975d9d76d08c7daf451879007",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940628736873"
+    },
+    {
+      "id": "720575940653200374",
+      "type": "LPi08",
+      "class": "optic",
+      "side": "left",
+      "nodes": 807,
+      "edges": 806,
+      "sha256": "ad0832f9c220a41d394878638a97400abedb07524f9f96b4839e8fec8b3eddc4",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940653200374"
+    },
+    {
+      "id": "720575940610926762",
+      "type": "ORN_VM4",
+      "class": "sensory",
+      "side": "right",
+      "nodes": 586,
+      "edges": 585,
+      "sha256": "5bd2880609e4bf10927e6a2a40b21a79a48f001c474aa1bcee2d5fb55156f836",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940610926762"
+    },
+    {
+      "id": "720575940625148174",
+      "type": "HRN_VP1l",
+      "class": "sensory",
+      "side": "right",
+      "nodes": 600,
+      "edges": 599,
+      "sha256": "03912aacca26ba52bf3d57634a67bbe7b75259c741fc138e2b886e94d498a4cf",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940625148174"
+    },
+    {
+      "id": "720575940606053041",
+      "type": "ORN_V",
+      "class": "sensory",
+      "side": "right",
+      "nodes": 421,
+      "edges": 420,
+      "sha256": "dfaff17b8b2e95e010bef30fe5453727fef85fa5f4b0f261ac831f7a01b508b9",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940606053041"
+    },
+    {
+      "id": "720575940626607626",
+      "type": "ORN_VA3",
+      "class": "sensory",
+      "side": "right",
+      "nodes": 1145,
+      "edges": 1144,
+      "sha256": "70d7a35efd10402cc412cd70b58745b33659e727e8dad734042af3b9f8fedc86",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940626607626"
+    },
+    {
+      "id": "720575940610259406",
+      "type": "PhG12",
+      "class": "sensory",
+      "side": "right",
+      "nodes": 1223,
+      "edges": 1222,
+      "sha256": "0010f40a155ad4d6ec039ea96f5a56626c09e67e0599d391824100723f4e03cf",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940610259406"
+    },
+    {
+      "id": "720575940637151807",
+      "type": "CB2367",
+      "class": "central",
+      "side": "right",
+      "nodes": 3983,
+      "edges": 3982,
+      "sha256": "156e330c06e469c70a266ce2f6a88537fa907ffa51a8b4e87295b2fa6fd6f65c",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940637151807"
+    },
+    {
+      "id": "720575940631282247",
+      "type": "FB2K",
+      "class": "central",
+      "side": "right",
+      "nodes": 3321,
+      "edges": 3320,
+      "sha256": "567b7184525051331e2e69a70b7f105029d993a0e10a7bdb51671f4720b4d26f",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940631282247"
+    },
+    {
+      "id": "720575940620805545",
+      "type": "ORN_DM6",
+      "class": "sensory",
+      "side": "left",
+      "nodes": 713,
+      "edges": 712,
+      "sha256": "117aa93df0906c4fa067d7d042b37859a934c653100b8e296bc11704fd0451d8",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940620805545"
+    },
+    {
+      "id": "720575940625376062",
+      "type": "DNg08_a",
+      "class": "descending",
+      "side": "right",
+      "nodes": 2728,
+      "edges": 2727,
+      "sha256": "ba457fcf0446a67cb8f9326f1860fe4bedeee2a8f458e4b071e0acb74f159532",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940625376062"
+    },
+    {
+      "id": "720575940616950161",
+      "type": "CB0710",
+      "class": "central",
+      "side": "right",
+      "nodes": 15751,
+      "edges": 15750,
+      "sha256": "90324e5d5333e3303dc9b1322ebd1fb3340e3de575a87408a9f113fdc5d648b6",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940616950161"
+    },
+    {
+      "id": "720575940624393715",
+      "type": "BM_InOm",
+      "class": "sensory",
+      "side": "right",
+      "nodes": 278,
+      "edges": 277,
+      "sha256": "1db2c9d42bc7d2e218cffd17486674dffedbf09369c209fdc805121b731cd761",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940624393715"
+    },
+    {
+      "id": "720575940628136809",
+      "type": "FC2B",
+      "class": "central",
+      "side": "left",
+      "nodes": 3978,
+      "edges": 3977,
+      "sha256": "c0d3f72357a7e38ad5aa2632537bcbb0cd5286889e258118b4246019a010dcff",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940628136809"
+    },
+    {
+      "id": "720575940631967831",
+      "type": "CB1071",
+      "class": "central",
+      "side": "left",
+      "nodes": 3066,
+      "edges": 3065,
+      "sha256": "df25b7eee1935a6f553726d77f8b25eff9be6014cc77d3a71097ae361472c0d4",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940631967831"
+    },
+    {
+      "id": "720575940622590558",
+      "type": "IB045",
+      "class": "central",
+      "side": "right",
+      "nodes": 4095,
+      "edges": 4094,
+      "sha256": "d5011211654342e23ba9f4fa8d9773b43262fcfcce1a15d50e02890c12cc73a3",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940622590558"
+    },
+    {
+      "id": "720575940611679461",
+      "type": "vDeltaB",
+      "class": "central",
+      "side": "right",
+      "nodes": 1430,
+      "edges": 1429,
+      "sha256": "8aec86bb68441eb9edc08226788b38a4c5919fe0d30aeb3e2f975581798ffcba",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940611679461"
+    },
+    {
+      "id": "720575940631714119",
+      "type": "CB0698",
+      "class": "central",
+      "side": "right",
+      "nodes": 7460,
+      "edges": 7459,
+      "sha256": "7088ab023fbda9ba66c5782537157a54030b42a3cbe57222ab9372dbab3dbc66",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940631714119"
+    },
+    {
+      "id": "720575940630274459",
+      "type": "DNg26",
+      "class": "descending",
+      "side": "left",
+      "nodes": 5550,
+      "edges": 5549,
+      "sha256": "bcd7bf647d29491e10b39971f06cf807823b6e63ab06d20d85f16ced834e0e08",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940630274459"
+    },
+    {
+      "id": "720575940615961542",
+      "type": "AN_GNG_WED_1",
+      "class": "ascending",
+      "side": "right",
+      "nodes": 2847,
+      "edges": 2846,
+      "sha256": "4c6351169aa0ba441d74e1a3f2037560d9c9d1cddfa77db172980fccff26fb48",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940615961542"
+    },
+    {
+      "id": "720575940626894394",
+      "type": "AN_IPS_GNG_1",
+      "class": "ascending",
+      "side": "left",
+      "nodes": 1114,
+      "edges": 1113,
+      "sha256": "948c7448ed17bebc9d930a57cc1b39ff9e03dae50eb1649dff4a65f3f5644266",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940626894394"
+    },
+    {
+      "id": "720575940620189004",
+      "type": "AN_GNG_36",
+      "class": "ascending",
+      "side": "left",
+      "nodes": 971,
+      "edges": 970,
+      "sha256": "2da499f20f4eb27bd61c2f51b493cc5e531e0cbf8d1fa39746bddc32316d9844",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940620189004"
+    },
+    {
+      "id": "720575940620937897",
+      "type": "BM_dPoOr",
+      "class": "sensory",
+      "side": "right",
+      "nodes": 556,
+      "edges": 555,
+      "sha256": "94b5576907c4fd925851002ba022c9d892684a013591ff7d6b5b9bfceab38432",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940620937897"
+    },
+    {
+      "id": "720575940619559956",
+      "type": "ORN_VL2a",
+      "class": "sensory",
+      "side": "right",
+      "nodes": 811,
+      "edges": 810,
+      "sha256": "8855b64241898fa52af56441158dd0309f4c0c8c577a899c3e4001f0af92c2ae",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940619559956"
+    },
+    {
+      "id": "720575940629683500",
+      "type": "LAL104,LAL105",
+      "class": "central",
+      "side": "right",
+      "nodes": 7861,
+      "edges": 7860,
+      "sha256": "3404bb8d208f48a5cc03b7dff24ade97e448be79e288c3c2b94a6ac184852dcf",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940629683500"
+    },
+    {
+      "id": "720575940604938342",
+      "type": "CB2248",
+      "class": "central",
+      "side": "right",
+      "nodes": 6088,
+      "edges": 6087,
+      "sha256": "d7510891d82deaac802038a040bebe23de0eef2298cb7662f3bb23c38f05a555",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940604938342"
+    },
+    {
+      "id": "720575940620023024",
+      "type": "ORN_DP1l",
+      "class": "sensory",
+      "side": "right",
+      "nodes": 1171,
+      "edges": 1170,
+      "sha256": "9ba9b1258fb6c2011c83b5b409e47e43ec44bf561c4d330759fb8b431cef141a",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940620023024"
+    },
+    {
+      "id": "720575940631449667",
+      "type": "CRE060,CRE067",
+      "class": "central",
+      "side": "right",
+      "nodes": 3884,
+      "edges": 3883,
+      "sha256": "599b4dcf320b092b3bf36f2a7044e0a7d1100b01682321f1a0e00ff023a21230",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940631449667"
+    },
+    {
+      "id": "720575940615645034",
+      "type": "PVLP007",
+      "class": "central",
+      "side": "right",
+      "nodes": 6677,
+      "edges": 6676,
+      "sha256": "a43cac9a0b24a2ab2181f7e42e5268161aed7af42f02586f67fc98931337ad85",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940615645034"
+    },
+    {
+      "id": "720575940631824455",
+      "type": "TuBu05",
+      "class": "central",
+      "side": "right",
+      "nodes": 957,
+      "edges": 956,
+      "sha256": "d7726a34b74706f3ef72c43ba61263d04d05a138c1b8f77064e29f332bdcb581",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940631824455"
+    },
+    {
+      "id": "720575940628993783",
+      "type": "CB3635",
+      "class": "central",
+      "side": "right",
+      "nodes": 4265,
+      "edges": 4264,
+      "sha256": "1f07250daafc871d4a515c008841ef895540522c9bc9be1e01005840997d2ded",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940628993783"
+    },
+    {
+      "id": "720575940613508325",
+      "type": "Li01",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1290,
+      "edges": 1289,
+      "sha256": "22946d045ce14a9f1e4611df1a6c1db8a459e9a36fc6f8a0fa30923e7515574c",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940613508325"
+    },
+    {
+      "id": "720575940623945254",
+      "type": "Tm5a",
+      "class": "optic",
+      "side": "right",
+      "nodes": 687,
+      "edges": 686,
+      "sha256": "53262dc895f4371ad722e711fb6ceeb23ec18660ecf2dc05d5dd95e4b6401ef4",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940623945254"
+    },
+    {
+      "id": "720575940626363394",
+      "type": "LHPV5c1",
+      "class": "central",
+      "side": "right",
+      "nodes": 2574,
+      "edges": 2573,
+      "sha256": "c1ace2a3b39ec07ae7e185f29ba5a9ec31b88b4702f71d7fe58def3b03d1c46a",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940626363394"
+    },
+    {
+      "id": "720575940632323640",
+      "type": "Tm9",
+      "class": "optic",
+      "side": "right",
+      "nodes": 300,
+      "edges": 299,
+      "sha256": "aa926078ef7247e9e396f74a9d14ac62cbad915903dfad554f0f5d84680a510d",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940632323640"
+    },
+    {
+      "id": "720575940650480374",
+      "type": "CB1646",
+      "class": "central",
+      "side": "right",
+      "nodes": 3158,
+      "edges": 3157,
+      "sha256": "e1376ecfb0f9858798f1380e0229342e7c9b8487e04cc03bfb8854c026319110",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940650480374"
+    },
+    {
+      "id": "720575940608431043",
+      "type": "Li17",
+      "class": "optic",
+      "side": "right",
+      "nodes": 4698,
+      "edges": 4697,
+      "sha256": "1abd03ba21094524c268583d70872d7517a68c84a9c3effc6336525e480c253d",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940608431043"
+    },
+    {
+      "id": "720575940627544984",
+      "type": "SLP398b",
+      "class": "central",
+      "side": "right",
+      "nodes": 2325,
+      "edges": 2324,
+      "sha256": "7fea18b13ba2cfd17c720f7af406c53619ae0a6006925a323d7cdec71aef07ed",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940627544984"
+    },
+    {
+      "id": "720575940625940456",
+      "type": "KCg-m",
+      "class": "central",
+      "side": "right",
+      "nodes": 1215,
+      "edges": 1214,
+      "sha256": "21559ccdcd8e3216b209a26e5ea5f7f0ce7d267656152baf5805a870b071744f",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940625940456"
+    },
+    {
+      "id": "720575940611130744",
+      "type": "T5c",
+      "class": "optic",
+      "side": "right",
+      "nodes": 448,
+      "edges": 447,
+      "sha256": "887248c711301eddcb43df22f1960b5749e64f028605d51089f44ecc14b4424a",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940611130744"
+    },
+    {
+      "id": "720575940610983634",
+      "type": "T4b",
+      "class": "optic",
+      "side": "right",
+      "nodes": 785,
+      "edges": 784,
+      "sha256": "2b0c899cee2a9935b67c9000abb2a744634f07758da3df9e5b421e9c6a976a4d",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940610983634"
+    },
+    {
+      "id": "720575940612748003",
+      "type": "LPi05",
+      "class": "optic",
+      "side": "right",
+      "nodes": 2624,
+      "edges": 2623,
+      "sha256": "65e87fffbb772fce6605624cec34c5e3f2df62486320d7050f7071892364b4ee",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940612748003"
+    },
+    {
+      "id": "720575940644475040",
+      "type": "LPi08",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1898,
+      "edges": 1897,
+      "sha256": "d1ab7b04fb7867afeb432175b519884627959d8835e5b51757caf500b797b1c4",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940644475040"
+    },
+    {
+      "id": "720575940633656345",
+      "type": "T5a",
+      "class": "optic",
+      "side": "right",
+      "nodes": 572,
+      "edges": 571,
+      "sha256": "f1e0853a395bf5bec5d6909c8a02104a26d7e783b7c6bb7eb93259ee9e30536f",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940633656345"
+    },
+    {
+      "id": "720575940629984220",
+      "type": "T5d",
+      "class": "optic",
+      "side": "right",
+      "nodes": 614,
+      "edges": 613,
+      "sha256": "a63875f643b6f9372259b75b4cc6033f450e883c2b1300851db72f1130b2db6d",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940629984220"
+    },
+    {
+      "id": "720575940618537373",
+      "type": "LPi05",
+      "class": "optic",
+      "side": "right",
+      "nodes": 2697,
+      "edges": 2696,
+      "sha256": "d4da61ccf78ed2ed4bb045e41ef952fc7e7eefd5fcd12d717ad06b00aa552faa",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940618537373"
+    },
+    {
+      "id": "720575940638105968",
+      "type": "LPi05",
+      "class": "optic",
+      "side": "right",
+      "nodes": 2588,
+      "edges": 2587,
+      "sha256": "65a2313a0ea482cdaddbc75cce07dae57d78996be516bc29d04d9e73c2857a98",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940638105968"
+    },
+    {
+      "id": "720575940641598171",
+      "type": "Sm02",
+      "class": "optic",
+      "side": "right",
+      "nodes": 443,
+      "edges": 442,
+      "sha256": "510042e8db971837cfafabc7425a26e84c3fd755cee1be1ba1be2c0ca40b8740",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940641598171"
+    },
+    {
+      "id": "720575940605676972",
+      "type": "T1",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1088,
+      "edges": 1087,
+      "sha256": "fa45e2ec96c46ade4d67333fd4b6bad77ffcc2c0eb14ba06ea44af0cec9cf33c",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940605676972"
+    },
+    {
+      "id": "720575940640322136",
+      "type": "TmY3",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1231,
+      "edges": 1230,
+      "sha256": "940ccec5a36b0e6970e660f8d531e8a1462a6f4b42bd9b4151dd77dc65c7c5c2",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940640322136"
+    },
+    {
+      "id": "720575940626381564",
+      "type": "Tm3",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1015,
+      "edges": 1014,
+      "sha256": "cbdade68b233f44c39d7f5c27b08d8e7fb6e926ca96e29ac0a81d679ed107a9e",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940626381564"
+    },
+    {
+      "id": "720575940608785673",
+      "type": "Tm36",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1384,
+      "edges": 1383,
+      "sha256": "4b8d8ade6f6de3a8006ec01466369ea5a0547eec5cdc35de8f81485f4657792c",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940608785673"
+    },
+    {
+      "id": "720575940622076329",
+      "type": "Tm4",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1223,
+      "edges": 1222,
+      "sha256": "6475ddee096deab6cc2783ea7512508b7a0b5e747fc2f6b766a1effb984ce0fb",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940622076329"
+    },
+    {
+      "id": "720575940613140466",
+      "type": "Mi4",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1429,
+      "edges": 1428,
+      "sha256": "a12a9258373f5f0c18f9ebbaf6e83bfbc475e45a30247ef5ff9add809f6ab699",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940613140466"
+    },
+    {
+      "id": "720575940637221173",
+      "type": "Tm1",
+      "class": "optic",
+      "side": "right",
+      "nodes": 768,
+      "edges": 767,
+      "sha256": "d2292237e55fed13e92e240e17a43e199195e37a0274a072706cafec8f403dd8",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940637221173"
+    },
+    {
+      "id": "720575940612502245",
+      "type": "Tm4",
+      "class": "optic",
+      "side": "right",
+      "nodes": 592,
+      "edges": 591,
+      "sha256": "d1891cf73988bf68dcc6745e2cb0030e879d2129c93ad91b0f6946e50adf0ea7",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940612502245"
+    },
+    {
+      "id": "720575940617859677",
+      "type": "Tm20",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1035,
+      "edges": 1034,
+      "sha256": "e284d16cf7359f0e81749eba24f5c8bdeaaf6969bfed35a68d8912b5f63568e1",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940617859677"
+    },
+    {
+      "id": "720575940632717772",
+      "type": "Dm3v",
+      "class": "optic",
+      "side": "right",
+      "nodes": 937,
+      "edges": 936,
+      "sha256": "b48c9eacaeec72029227954a4bd83b329207fdfad10d4c4c1ee33b119d21e8a4",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940632717772"
+    },
+    {
+      "id": "720575940620951472",
+      "type": "T5b",
+      "class": "optic",
+      "side": "right",
+      "nodes": 668,
+      "edges": 667,
+      "sha256": "8204d2358b7b73e3bdc96d34e15aa8e6aa9b50a3f2ec761ccb5fecf26477c6e2",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940620951472"
+    },
+    {
+      "id": "720575940619938384",
+      "type": "T2",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1171,
+      "edges": 1170,
+      "sha256": "dbaa12556456e08bdbcf8f36ecc2369432fba0476d294962ef942160a9573127",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940619938384"
+    },
+    {
+      "id": "720575940645761303",
+      "type": "C2",
+      "class": "optic",
+      "side": "right",
+      "nodes": 850,
+      "edges": 849,
+      "sha256": "b7a9ffe6e065585578587c0265edd7cd93b365018a295fc6c01e766f73200d54",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940645761303"
+    },
+    {
+      "id": "720575940614717438",
+      "type": "Mi9",
+      "class": "optic",
+      "side": "right",
+      "nodes": 971,
+      "edges": 970,
+      "sha256": "62100d3cdab13d6fb161283260ffabedc8d2fa1cec6a523046730c7ad520d10f",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940614717438"
+    },
+    {
+      "id": "720575940626302138",
+      "type": "T4b",
+      "class": "optic",
+      "side": "right",
+      "nodes": 840,
+      "edges": 839,
+      "sha256": "5e2c0f535a4682a6ec9ecb16b15a9e6afc70017d0cb9836f3d62b42bfdb6f670",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940626302138"
+    },
+    {
+      "id": "720575940620371371",
+      "type": "T4d",
+      "class": "optic",
+      "side": "right",
+      "nodes": 849,
+      "edges": 848,
+      "sha256": "e2ead46961d0d667b96655ed5c41b615075365472edb7663740a7aef8a179198",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940620371371"
+    },
+    {
+      "id": "720575940632632365",
+      "type": "T5b",
+      "class": "optic",
+      "side": "right",
+      "nodes": 564,
+      "edges": 563,
+      "sha256": "5496c02648fc60e72caecb10c4933fe469a965b6690c1371aa51b14fabea8a7d",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940632632365"
+    },
+    {
+      "id": "720575940628994203",
+      "type": "T4c",
+      "class": "optic",
+      "side": "right",
+      "nodes": 822,
+      "edges": 821,
+      "sha256": "3c7e9c4556af7e8c30a635c307fd351c8d61f2348f40a806015d3969af5257f4",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940628994203"
+    },
+    {
+      "id": "720575940629403639",
+      "type": "Y11",
+      "class": "optic",
+      "side": "right",
+      "nodes": 2946,
+      "edges": 2945,
+      "sha256": "a3ff4517a1e66c3b65f80f2e3a5fc6e4327374d841cd17520e445ee3ec617b15",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940629403639"
+    },
+    {
+      "id": "720575940622760584",
+      "type": "L1",
+      "class": "optic",
+      "side": "right",
+      "nodes": 650,
+      "edges": 649,
+      "sha256": "014d3c2c16ee521767b15175f5459d086a12d5f3bc9bb597f40e7cd9d81dc2b6",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940622760584"
+    },
+    {
+      "id": "720575940625363529",
+      "type": "R1-6",
+      "class": "sensory",
+      "side": "right",
+      "nodes": 220,
+      "edges": 219,
+      "sha256": "fe33f0c3e80ebfbf978d4479a29f54e8b747d378661dde63abd2b9d30d81b4bf",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940625363529"
+    },
+    {
+      "id": "720575940630740268",
+      "type": "R1-6",
+      "class": "sensory",
+      "side": "right",
+      "nodes": 308,
+      "edges": 307,
+      "sha256": "4686d24a63a3a41def079f5983962fc774bf6f0cc86ad3b22fe68ba4988d7f14",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940630740268"
+    },
+    {
+      "id": "720575940640536179",
+      "type": "R8",
+      "class": "sensory",
+      "side": "right",
+      "nodes": 331,
+      "edges": 330,
+      "sha256": "0fae0465038a6a2e6dc8e843c12430052bc8c9b6b3f25dbdf220f324a96dc6f4",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940640536179"
+    },
+    {
+      "id": "720575940637678558",
+      "type": "L4",
+      "class": "optic",
+      "side": "right",
+      "nodes": 393,
+      "edges": 392,
+      "sha256": "ae1c264eade1ae8c4bd37df0e6c487d4fb6d0be6f1186124fa9a5bedce65265f",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940637678558"
+    },
+    {
+      "id": "720575940617259963",
+      "type": "L2",
+      "class": "optic",
+      "side": "right",
+      "nodes": 711,
+      "edges": 710,
+      "sha256": "9e3de56962467aebd036148479a246671390e596f57efb216871349fdf52b25f",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940617259963"
+    },
+    {
+      "id": "720575940612019150",
+      "type": "L1",
+      "class": "optic",
+      "side": "right",
+      "nodes": 592,
+      "edges": 591,
+      "sha256": "9dada938577de70f49a5957d7f1fda16bce40a48cd59285be05fe7e9f27f1950",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940612019150"
+    },
+    {
+      "id": "720575940630848460",
+      "type": "L4",
+      "class": "optic",
+      "side": "right",
+      "nodes": 371,
+      "edges": 370,
+      "sha256": "8ded14db65e22ce5d42a51071f55dcc82f284b022ba82098adf067b7b935d2b9",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940630848460"
+    },
+    {
+      "id": "720575940618947230",
+      "type": "L3",
+      "class": "optic",
+      "side": "right",
+      "nodes": 563,
+      "edges": 562,
+      "sha256": "6040ba683aa51653fc9fec4d641d7f8e46325ad3edb31f8691c2dda5a9d5aa94",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940618947230"
+    },
+    {
+      "id": "720575940615659682",
+      "type": "R8",
+      "class": "sensory",
+      "side": "right",
+      "nodes": 298,
+      "edges": 297,
+      "sha256": "4951ec7b900886b3e3eff7752d826add84def9d6af34893563d712a7da153d8c",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940615659682"
+    },
+    {
+      "id": "720575940635156159",
+      "type": "TmY3",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1522,
+      "edges": 1521,
+      "sha256": "adf0b702a471d58646f200cb107d25245f86ba69e407734cfa066d872386d075",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940635156159"
+    },
+    {
+      "id": "720575940631273676",
+      "type": "Tm21",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1261,
+      "edges": 1260,
+      "sha256": "a745a7a138c94f91ac011e9e462a40db969e6aed6a93d0e8be9a63396f99859f",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940631273676"
+    },
+    {
+      "id": "720575940623000600",
+      "type": "Tm5c",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1163,
+      "edges": 1162,
+      "sha256": "4e443e80b91ce56580c31fa5ddf336f2f407671ffbf9fdeea5d1f0e4347f9318",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940623000600"
+    },
+    {
+      "id": "720575940627176566",
+      "type": "Mi1",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1038,
+      "edges": 1037,
+      "sha256": "7532b7e8502b6985951ae23d7f17c0b6107fcc5719c72ed635884bc7a6d02700",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940627176566"
+    },
+    {
+      "id": "720575940643866784",
+      "type": "Tm21",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1055,
+      "edges": 1054,
+      "sha256": "bee55d584540785b23c7010434a1b5159359d234942238899ae9d2219b09b439",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940643866784"
+    },
+    {
+      "id": "720575940637587172",
+      "type": "Tm1",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1047,
+      "edges": 1046,
+      "sha256": "297629dae05bf298f12ef22f23a8967228eb7a52ac5bb66ff83fa4e48ca5c44f",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940637587172"
+    },
+    {
+      "id": "720575940629562873",
+      "type": "T3",
+      "class": "optic",
+      "side": "right",
+      "nodes": 864,
+      "edges": 863,
+      "sha256": "7c444901763394171e6d6b12ad01ca4f52b2079818fae592d7701f8021ce8122",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940629562873"
+    },
+    {
+      "id": "720575940635298040",
+      "type": "T2a",
+      "class": "optic",
+      "side": "right",
+      "nodes": 1228,
+      "edges": 1227,
+      "sha256": "235afc03f4a17210891da8f10314a0a40722bd5f126d32ead08b879019e05028",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940635298040"
+    },
+    {
+      "id": "720575940633974355",
+      "type": "T3",
+      "class": "optic",
+      "side": "right",
+      "nodes": 768,
+      "edges": 767,
+      "sha256": "ff967b977f8ec7d68030200ad41d51926383c295d6c8a5c97a9a881f364b3c42",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940633974355"
+    },
+    {
+      "id": "720575940629112394",
+      "type": "T3",
+      "class": "optic",
+      "side": "right",
+      "nodes": 756,
+      "edges": 755,
+      "sha256": "4b517f0d9947c78be2b8468f28dabc251f1e3fcedecbc557d58f0c21f3a50b47",
+      "url": "https://flyem.mrc-lmb.cam.ac.uk/flyconnectome/flywire_skeletons_783/720575940629112394"
+    }
+  ],
+  "meshSource": "https://raw.githubusercontent.com/navis-org/navis-flybrains/main/flybrains/meshes/FLYWIRE_whole_brain.ply",
+  "meshDescription": "https://raw.githubusercontent.com/navis-org/navis-flybrains/main/flybrains/meshes/FLYWIRE_whole_brain.md",
+  "skeletonSource": "https://fafbseg-py.readthedocs.io/en/latest/source/generated/fafbseg.flywire.get_skeletons.html",
+  "paper": "https://doi.org/10.1038/s41586-024-07686-5",
+  "annotations": "https://github.com/flyconnectome/flywire_annotations",
+  "note": "Spatial sample of published neuron skeletons, not the entire connectome or raw electron microscopy. Display uses straight skeleton edges, artificial neuron colours and enlarged line widths. Slabs are exact geometric cuts of the same reconstructions. The tissue surface is a processed anatomical reference mesh in matching coordinate space.",
+  "layerData": [
+    {
+      "segments": 626,
+      "triangles": 1916,
+      "centre": -131.399625
+    },
+    {
+      "segments": 2828,
+      "triangles": 6361,
+      "centre": -112.62825
+    },
+    {
+      "segments": 6413,
+      "triangles": 6365,
+      "centre": -93.856875
+    },
+    {
+      "segments": 17618,
+      "triangles": 8482,
+      "centre": -75.0855
+    },
+    {
+      "segments": 25295,
+      "triangles": 7487,
+      "centre": -56.314125
+    },
+    {
+      "segments": 33856,
+      "triangles": 10332,
+      "centre": -37.54275
+    },
+    {
+      "segments": 34917,
+      "triangles": 11243,
+      "centre": -18.771375
+    },
+    {
+      "segments": 34518,
+      "triangles": 10150,
+      "centre": 0.0
+    },
+    {
+      "segments": 31669,
+      "triangles": 10653,
+      "centre": 18.771375
+    },
+    {
+      "segments": 24369,
+      "triangles": 12156,
+      "centre": 37.54275
+    },
+    {
+      "segments": 22327,
+      "triangles": 10974,
+      "centre": 56.314125
+    },
+    {
+      "segments": 15152,
+      "triangles": 10125,
+      "centre": 75.0855
+    },
+    {
+      "segments": 12718,
+      "triangles": 8796,
+      "centre": 93.856875
+    },
+    {
+      "segments": 7472,
+      "triangles": 7280,
+      "centre": 112.62825
+    },
+    {
+      "segments": 343,
+      "triangles": 3862,
+      "centre": 131.399625
+    }
+  ],
+  "slabThicknessMicrons": 18.771375,
+  "crossingCounts": [
+    28,
+    60,
+    165,
+    346,
+    415,
+    461,
+    434,
+    439,
+    339,
+    383,
+    312,
+    135,
+    152,
+    24
+  ],
+  "sampling": {
+    "method": "Four neurons per occupied x/z anchor-position bin, sampled without replacement",
+    "seed": 783,
+    "grid": [
+      8,
+      6
+    ],
+    "occupiedBins": 40,
+    "classes": {
+      "sensory": 33,
+      "optic": 84,
+      "central": 38,
+      "descending": 2,
+      "ascending": 3
+    },
+    "coordinateConversion": "Annotation pos_x/pos_y/pos_z multiplied by 4/4/40 nm",
+    "notCircuitSelected": true
+  }
+}
