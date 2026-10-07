@@ -1,0 +1,140 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Fly Goes Bowling</title><link rel="stylesheet" href="style.css"></head><body>
+<div id="app"><aside id="panel"><h1>🪰🎳 Fly Goes Bowling</h1><div class="sub"></div>
+<div class="card"><h2>🍬 Reward Recipe</h2>
+<details class="reward-object" name="reward-objects"><summary>BALL</summary><div class="reward-options">
+<div class="reward"><label for="reward-ball.approach">Move towards</label><input id="reward-ball.approach" data-r="ball.approach" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-ball.touch">Touch</label><input id="reward-ball.touch" data-r="ball.touch" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-ball.push">Push</label><input id="reward-ball.push" data-r="ball.push" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-ball.usefulPush">Useful / meaningful push</label><input id="reward-ball.usefulPush" data-r="ball.usefulPush" type="number" value="0" step="0.1"></div>
+<p class="tiny">Useful pushes point towards a standing pin and move the ball closer. Push and useful push rewards add together when both apply.</p>
+</div></details>
+<details class="reward-object" name="reward-objects"><summary>PINS</summary><div class="reward-options">
+<div class="reward"><label for="reward-pins.approach">Move towards</label><input id="reward-pins.approach" data-r="pins.approach" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-pins.touch">Touch / reach</label><input id="reward-pins.touch" data-r="pins.touch" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-pins.knockBody">Knock over with body</label><input id="reward-pins.knockBody" data-r="pins.knockBody" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-pins.knockBall">Knock over with ball</label><input id="reward-pins.knockBall" data-r="pins.knockBall" type="number" value="0" step="0.1"></div>
+<p class="tiny">Run into pins for body knockdowns, or hit them with the ball. Chain reactions keep the cause of the first hit.</p>
+</div></details>
+<details class="reward-object" name="reward-objects"><summary>SOFA</summary><div class="reward-options">
+<div class="reward"><label for="reward-sofa.approach">Move towards</label><input id="reward-sofa.approach" data-r="sofa.approach" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-sofa.touch">Touch</label><input id="reward-sofa.touch" data-r="sofa.touch" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-sofa.sit">Sit</label><input id="reward-sofa.sit" data-r="sofa.sit" type="number" value="0" step="0.1"></div>
+</div></details>
+<details class="reward-object" name="reward-objects"><summary>ARCADE MACHINE</summary><div class="reward-options">
+<div class="reward"><label for="reward-arcade.approach">Move towards</label><input id="reward-arcade.approach" data-r="arcade.approach" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-arcade.touch">Touch</label><input id="reward-arcade.touch" data-r="arcade.touch" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-arcade.arcade">Play</label><input id="reward-arcade.arcade" data-r="arcade.arcade" type="number" value="0" step="0.1"></div>
+</div></details>
+<details class="reward-object" name="reward-objects"><summary>FIZZY POP</summary><div class="reward-options">
+<div class="reward"><label for="reward-drink.approach">Move towards</label><input id="reward-drink.approach" data-r="drink.approach" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-drink.touch">Touch</label><input id="reward-drink.touch" data-r="drink.touch" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-drink.drink">Drink</label><input id="reward-drink.drink" data-r="drink.drink" type="number" value="0" step="0.1"></div>
+</div></details>
+<details class="reward-object" name="reward-objects"><summary>PIZZA</summary><div class="reward-options">
+<div class="reward"><label for="reward-pizza.approach">Move towards</label><input id="reward-pizza.approach" data-r="pizza.approach" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-pizza.touch">Touch</label><input id="reward-pizza.touch" data-r="pizza.touch" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-pizza.eat">Eat</label><input id="reward-pizza.eat" data-r="pizza.eat" type="number" value="0" step="0.1"></div>
+</div></details>
+<details class="reward-object" name="reward-objects"><summary>EXIT</summary><div class="reward-options">
+<div class="reward"><label for="reward-exit.approach">Move towards</label><input id="reward-exit.approach" data-r="exit.approach" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-exit.touch">Touch / reach</label><input id="reward-exit.touch" data-r="exit.touch" type="number" value="0" step="0.1"></div>
+<div class="reward"><label for="reward-exit.exit">Exit</label><input id="reward-exit.exit" data-r="exit.exit" type="number" value="0" step="0.1"></div>
+</div></details>
+<div class="reward"><label for="wallReward">Hit wall / furniture</label><input id="wallReward" data-r="wall" type="number" value="0" step=".01"></div>
+<div class="reward"><label for="stepReward">Each step</label><input id="stepReward" data-r="step" type="number" value="0" step=".01"></div>
+<!-- <p class="tiny">Expand an object and set any combination of rewards, then TRAIN. Collapsing an object keeps its settings active. Touch and lounge actions score once per episode; moving towards scores by distance gained (moving away subtracts). Push scores per contact and pins per fall. All zeros means no preference!</p>
+<p class="tiny">After changing a recipe, ERASE LEARNING for a fresh comparison. Each run uses the settings chosen when it starts.</p></div> -->
+<div class="card"><h2>🧠 Learning Personality</h2>
+<label>Careful ↔ Curious<input id="eps" type="range" min="5" max="75" value="32"></label>
+<label>Gentle ↔ Fast change<input id="alpha" type="range" min="8" max="85" value="42"></label>
+<label>Now ↔ Later reward<input id="gamma" type="range" min="50" max="99" value="92"></label>
+<label>Training episodes
+  <select id="speed">
+    <option value="1000" selected>1000</option>
+    <option value="2000">2000</option>
+    <option value="3000">3000</option>
+    <option value="5000">5000</option>
+  </select></label>
+
+
+
+</div><div class="card wide"><div class="buttons">
+  <button class="primary" id="train">TRAIN</button>
+  <button id="test">TEST</button>
+  <button id="erase">ERASE LEARNING</button>
+  <!-- <button id="general">NEW ALLEY</button>
+  <button id="randomTest">UNTRAINED FLY</button> -->
+</div>
+<!-- <p class="tiny">TRAIN uses randomized starts across the lane and lounge, heading and ball position. Room landmarks encode a coarse floor cell and nearby objects; body direction helps navigation. No action is scripted to seek a reward. TEST also randomizes the start. An untrained policy breaks ties randomly instead of secretly choosing “walk”.</p></div> -->
+</aside><main id="world"><div id="trainingProgress" style="display:none;">
+  <div style="font-size:12px;font-weight:bold;margin-bottom:5px;">
+    Training fly… <span id="trainingProgressText">0 / 0</span>
+  </div>
+
+  <div style="height:14px;background:#e5e5e5;border:2px solid #26343d;border-radius:8px;overflow:hidden;">
+    <div id="trainingProgressBar"
+         style="height:100%;width:0%;background:#ffe35d;"></div>
+  </div>
+
+  <div style="font-size:11px;margin-top:4px;">
+    Pins knocked down during training:
+    <span id="trainingProgressPins">0</span>
+  </div>
+</div><div id="learningPanel">
+  <div class="learningTitle">Q-TABLE</div>
+
+  <div class="qState">
+    Current state:
+    <span id="qState">—</span>
+  </div>
+
+  <div class="qHeader">
+    <span>ACTION</span>
+    <span>Q VALUE</span>
+  </div>
+
+  <div id="qRows">
+    <div><span>Walk</span><span data-q="0">0.00</span></div>
+    <div><span>Left</span><span data-q="1">0.00</span></div>
+    <div><span>Right</span><span data-q="2">0.00</span></div>
+    <div><span>Push</span><span data-q="3">0.00</span></div>
+    <div><span>Stop</span><span data-q="4">0.00</span></div>
+    <div><span>Drink fizzy drink</span><span data-q="5">0.00</span></div>
+    <div><span>Sit on sofa</span><span data-q="6">0.00</span></div>
+    <div><span>Eat pizza</span><span data-q="7">0.00</span></div>
+    <div><span>Play arcade game</span><span data-q="8">0.00</span></div>
+    <div><span>Exit</span><span data-q="9">0.00</span></div>
+  </div>
+
+  <div class="rewardDivider"></div>
+
+  <div class="learningTitle">REWARD</div>
+
+  <div class="rewardRow">
+    <span>Current test</span>
+    <span id="currentReward">0.00</span>
+  </div>
+
+  <div class="rewardRow">
+    <span>Overall</span>
+    <span id="overallReward">0.00</span>
+  </div>
+</div>
+
+<div id="hud">
+  Training episodes <span id="ep">0</span> ·
+  states <span id="states">0</span><br>
+  <span title="Cumulative training totals. Chain reactions count towards the fly or ball that started them.">Training pins: fly <span id="trainingFlyPins">0</span> · ball <span id="trainingBallPins">0</span></span><br>
+  <span title="Cumulative TEST and NEW ALLEY totals. Chain reactions count towards the fly or ball that started them.">Testing pins: fly <span id="testingFlyPins">0</span> · ball <span id="testingBallPins">0</span></span>
+</div>
+<div id="status">Ready. Try UNTRAINED FLY first.</div>
+<section id="science"><button id="closeScience">← BACK TO ALLEY</button><div class="legend">🧬 solid = biological grounding &nbsp; | &nbsp; 🧪 dashed = this experiment</div>
+<p class="science-note">This experiment uses tabular Q-learning with hand-defined observations, actions and rewards. The biological diagram is conceptual grounding; no BANC, FlyWire, connectome or neural-network data drives this fly.</p><div class="flow"><div class="node">🧬 <b>SENSORY SYSTEMS</b><br><small>real fly sensory pathways</small></div><div class="arrow">→</div>
+<div class="node">🧬 <b>DESCENDING CONTROL</b><br><small>DNa01 · DNa02<br>DNg100 · DNg97 · DNp09</small></div><div class="arrow">→</div>
+<div class="node">🧬 <b>VNC</b><br><small>interneurons</small></div><div class="arrow">→</div>
+<div class="node">🧬 <b>LEG MOTOR NETWORKS</b></div></div>
+<div class="flow"><div class="node exp">🧪 <b>OBSERVATIONS</b><br><small>ball, pins + room landmarks</small></div><div class="arrow">→</div>
+<div class="node exp">🧪 <b>Q-LEARNING</b><br><small>learned action values</small></div><div class="arrow">→</div>
+<div class="node exp">🧪 <b>BOWLING ACTIONS</b><br><small>walk · turn · push · rest · eat · drink · play · exit</small></div></div></section>
+</main></div><script type="module" src="app.js"></script></body></html>
