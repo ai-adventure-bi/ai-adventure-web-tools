@@ -1448,7 +1448,7 @@ $('#erase').onclick=()=>{
 
     reset();
 
-    status('Learning erased. UNTRAINED FLY should now be useless again.');
+    status('Learning erased. The fly should now be useless again.');
 };
 $$('.reward-object').forEach(section=>section.addEventListener('toggle',()=>{
     if(section.open)$$('.reward-object').forEach(other=>{if(other!==section)other.open=false;});
