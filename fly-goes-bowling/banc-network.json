@@ -1,0 +1,61 @@
+{
+  "dataset": {
+    "name": "BANC",
+    "version": "v888",
+    "species": "Drosophila melanogaster"
+  },
+  "scientific_boundary": {
+    "biology": "BANC-derived/named nervous-system categories and walking-control cell identities.",
+    "experiment": "Bowling observations, discretisation, Q-learning, rewards, action mapping and toy physics.",
+    "warning": "Conceptual pathway arrows are not represented as exact synapse-level edges until a v888 subgraph is extracted."
+  },
+  "modules": [
+    {
+      "id": "sensory",
+      "label": "Sensory pathways",
+      "biology": true
+    },
+    {
+      "id": "descending",
+      "label": "Descending control",
+      "biology": true,
+      "examples": [
+        {
+          "name": "DNa01",
+          "role": "turning"
+        },
+        {
+          "name": "DNa02",
+          "role": "walking/steering"
+        },
+        {
+          "name": "DNg100",
+          "role": "walking-related"
+        },
+        {
+          "name": "DNg97",
+          "role": "walking-related"
+        },
+        {
+          "name": "DNp09",
+          "role": "halting"
+        }
+      ]
+    },
+    {
+      "id": "vnc",
+      "label": "VNC interneurons",
+      "biology": true
+    },
+    {
+      "id": "motor",
+      "label": "Leg motor networks",
+      "biology": true
+    },
+    {
+      "id": "policy",
+      "label": "Bowling Q-policy",
+      "biology": false
+    }
+  ]
+}
