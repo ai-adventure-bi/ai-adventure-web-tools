@@ -115,6 +115,70 @@ input[type=range]{
   label input{width:65px}
   .timeline{bottom:45px}
 }
+
+
+.magnitude{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:10;
+  min-width:145px;
+  padding:13px 17px;
+  background:rgba(250,249,245,.94);
+  border:1px solid #d2cdc2;
+  border-radius:8px;
+  text-align:center;
+  box-shadow:0 3px 15px #00000010;
+  pointer-events:none;
+}
+
+.mag-heading{
+  font-size:9px;
+  font-weight:600;
+  letter-spacing:1px;
+  color:#817c73;
+}
+
+.mag-value{
+  display:flex;
+  justify-content:center;
+  align-items:baseline;
+  gap:5px;
+  margin:3px 0;
+}
+
+#magNumber{
+  font-size:42px;
+  font-weight:300;
+  letter-spacing:-2px;
+  font-variant-numeric:tabular-nums;
+  line-height:1.2;
+}
+
+.mag-unit{
+  font-size:15px;
+  color:#999;
+}
+
+.mag-description{
+  font-size:11px;
+  color:#777;
+}
+
+@media(max-width:700px){
+  .magnitude{
+    right:8px;
+    bottom:8px;
+    min-width:110px;
+    padding:9px;
+  }
+
+  #magNumber{
+    font-size:32px;
+  }
+}
+
+
 </style>
 </head>
 <body>
@@ -127,7 +191,7 @@ input[type=range]{
   <button id="rewind">Rewind</button>
   <label>
     Sensitivity
-    <input id="sensitivity" type="range" min="1" max="30" value="12">
+    <input id="sensitivity" type="range" min="1" max="50" value="30">
   </label>
   <button id="clear">Clear</button>
 </div>
@@ -141,6 +205,19 @@ input[type=range]{
 <div class="status" id="status">
   Waiting for motion sensors
 </div>
+
+
+<div class="magnitude">
+  <div class="mag-heading">SIMULATED MAGNITUDE</div>
+  <div class="mag-value">
+    <span id="magNumber">0.0</span>
+    <span class="mag-unit">M</span>
+  </div>
+  <div class="mag-description" id="magDescription">
+    No movement
+  </div>
+</div>
+
 
 <script>
 (() => {
@@ -156,6 +233,75 @@ const clearBtn=document.getElementById("clear");
 const sensitivity=document.getElementById("sensitivity");
 const scrub=document.getElementById("scrub");
 const status=document.getElementById("status");
+
+const magNumber=document.getElementById("magNumber");
+const magDescription=document.getElementById("magDescription");
+
+// Magnitude simulation.
+// These are educational calibration values,
+// not real earthquake magnitude measurements.
+const MAG_REFERENCE=0.002;
+const MAG_OFFSET=2.0;
+
+let magnitudePeak=0;
+let magnitudeLastUpdate=performance.now();
+let magnitudeHistory=[];
+let magnitudeDisplay=0;
+
+function calculateMagnitude(acceleration){
+  const now=performance.now();
+
+  // Store recent acceleration readings.
+  magnitudeHistory.push({
+    time:now,
+    value:Math.abs(acceleration)
+  });
+
+  // Keep the last three seconds.
+  magnitudeHistory=magnitudeHistory.filter(
+    item=>now-item.time<3000
+  );
+
+  // Use peak acceleration over that period.
+  let peak=0;
+
+  for(const item of magnitudeHistory){
+    peak=Math.max(peak,item.value);
+  }
+
+  // Logarithmic educational magnitude.
+  let magnitude=0;
+
+  if(peak>MAG_REFERENCE){
+    magnitude=
+      Math.log10(peak/MAG_REFERENCE)+MAG_OFFSET;
+  }
+
+  magnitude=Math.max(0,Math.min(9.9,magnitude));
+
+  magnitudeDisplay=magnitude;
+
+  magNumber.textContent=magnitude.toFixed(1);
+
+  let description="No movement";
+
+  if(magnitude>=7){
+    description="Major earthquake";
+  }else if(magnitude>=6){
+    description="Strong earthquake";
+  }else if(magnitude>=5){
+    description="Moderate earthquake";
+  }else if(magnitude>=4){
+    description="Light earthquake";
+  }else if(magnitude>=2){
+    description="Minor earthquake";
+  }else if(magnitude>0){
+    description="Micro movement";
+  }
+
+  magDescription.textContent=description;
+}
+
 const currentTime=document.getElementById("currentTime");
 const totalTime=document.getElementById("totalTime");
 
@@ -164,7 +310,7 @@ let W=0,H=0,DPR=1;
 // Recording settings.
 const SAMPLE_RATE=120;
 const STEP=1/SAMPLE_RATE;
-const PIXELS_PER_SECOND=95;
+const PIXELS_PER_SECOND=20;
 const MAX_SECONDS=600;
 const MAX_SAMPLES=SAMPLE_RATE*MAX_SECONDS;
 
@@ -301,9 +447,17 @@ function readMotion(event){
     valid=true;
   }
 
+
   if(!valid)return;
 
+  // Physical acceleration magnitude, independent
+  // of visual pen sensitivity.
+  const accelerationStrength=Math.hypot(ax,ay,az);
+
+  calculateMagnitude(accelerationStrength);
+
   // Signed motion rather than magnitude.
+
   const combined=
     ax*.8+
     ay*.55+
@@ -647,8 +801,17 @@ canvas.addEventListener("pointermove",e=>{
   const dx=e.clientX-previousPointer.x;
   const dy=e.clientY-previousPointer.y;
 
+  
   pointerImpulse+=dx*.045+dy*.08;
   pointerImpulse=Math.max(-12,Math.min(12,pointerImpulse));
+
+  // Simulate acceleration for the magnitude display
+  // when testing with a mouse or touchscreen.
+  if(!sensorActive){
+    const simulatedAcceleration=Math.hypot(dx,dy)*0.025;
+    calculateMagnitude(simulatedAcceleration);
+  }
+
 
   previousPointer={x:e.clientX,y:e.clientY};
 });
@@ -686,8 +849,44 @@ function animate(now){
     accumulator=0;
   }
 
+  
+  // Remove readings older than three seconds.
+  magnitudeHistory=magnitudeHistory.filter(
+    item=>now-item.time<3000
+  );
+
+  // Update magnitude even when stationary.
+  const peak=magnitudeHistory.reduce(
+    (max,item)=>Math.max(max,item.value),0
+  );
+
+  const magnitude=peak>MAG_REFERENCE
+    ?Math.max(0,Math.min(9.9,
+        Math.log10(peak/MAG_REFERENCE)+MAG_OFFSET
+      ))
+    :0;
+
+  magNumber.textContent=magnitude.toFixed(1);
+
+  if(magnitude>=7){
+    magDescription.textContent="Major earthquake";
+  }else if(magnitude>=6){
+    magDescription.textContent="Strong earthquake";
+  }else if(magnitude>=5){
+    magDescription.textContent="Moderate earthquake";
+  }else if(magnitude>=4){
+    magDescription.textContent="Light earthquake";
+  }else if(magnitude>=2){
+    magDescription.textContent="Minor earthquake";
+  }else if(magnitude>0){
+    magDescription.textContent="Micro movement";
+  }else{
+    magDescription.textContent="No movement";
+  }
+
   render();
   requestAnimationFrame(animate);
+
 }
 
 window.addEventListener("resize",resize);
