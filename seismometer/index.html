@@ -1,0 +1,634 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Quake Quest — Seismometer</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #e9e7df;
+    color: #292d2c;
+    overflow: hidden;
+  }
+
+  .app {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 18px;
+    background: #f6f5ef;
+    border-bottom: 1px solid #d2d0c7;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 17px;
+    letter-spacing: -.4px;
+  }
+
+  .status {
+    font-size: 12px;
+    color: #777;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    border: 1px solid #c8c5bc;
+    background: white;
+    color: #292d2c;
+    padding: 9px 14px;
+    border-radius: 7px;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  button.primary {
+    background: #b52d2d;
+    color: white;
+    border-color: #b52d2d;
+  }
+
+  button:disabled {
+    opacity: .5;
+  }
+
+  .sensitivity {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  input[type=range] {
+    width: 110px;
+    accent-color: #b52d2d;
+  }
+
+  .paper {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    background: #faf8f0;
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 18px;
+    background: #f6f5ef;
+    border-top: 1px solid #d2d0c7;
+    font-size: 12px;
+  }
+
+  .meter {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .meter-track {
+    width: 100px;
+    height: 7px;
+    background: #dedbd2;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .meter-fill {
+    width: 0%;
+    height: 100%;
+    background: #b52d2d;
+    transition: width .08s;
+  }
+
+  .hint {
+    color: #888;
+    text-align: right;
+  }
+
+  @media (max-width: 650px) {
+    header { padding: 9px 12px; }
+    h1 { font-size: 15px; }
+    .controls { gap: 7px; }
+    button { padding: 7px 10px; }
+    .footer { padding: 8px 12px; }
+    .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div>
+      <h1>QUAKE QUEST / SEISMOMETER</h1>
+      <div class="status" id="status">Waiting for motion sensors</div>
+    </div>
+
+    <div class="controls">
+      <button class="primary" id="start">Start Seismometer</button>
+
+      <label class="sensitivity">
+        Sensitivity
+        <input type="range" id="sensitivity" min="1" max="20" value="8">
+      </label>
+
+      <button id="clear">Clear</button>
+    </div>
+  </header>
+
+  <div class="paper" id="paper">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <div class="footer">
+    <div class="meter">
+      <span id="intensity">STILL</span>
+      <div class="meter-track">
+        <div class="meter-fill" id="meter"></div>
+      </div>
+    </div>
+    <div class="hint">Move or gently shake your iPad to record seismic activity</div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const paper = document.getElementById('paper');
+  const status = document.getElementById('status');
+  const startBtn = document.getElementById('start');
+  const clearBtn = document.getElementById('clear');
+  const sensitivity = document.getElementById('sensitivity');
+  const meter = document.getElementById('meter');
+  const intensity = document.getElementById('intensity');
+
+  let width = 0;
+  let height = 0;
+  let dpr = 1;
+
+  let x = 0;
+  let row = 0;
+  let rowHeight = 54;
+  let rows = 1;
+
+  let signal = 0;
+  let filtered = 0;
+  let displayed = 0;
+  let previousY = null;
+
+  let sensorActive = false;
+  let sensorSeen = false;
+  let sensorTimer = null;
+  let lastSensorTime = 0;
+  let lastAcceleration = null;
+
+  let pointerActive = false;
+  let pointerSignal = 0;
+  let lastPointer = null;
+
+  let lastFrame = performance.now();
+  let sampleAccumulator = 0;
+
+  // Approximately 60 horizontal pixels per second.
+  const pixelsPerSecond = 60;
+
+  // Draw graph paper.
+  function drawGrid() {
+    ctx.fillStyle = '#faf8f0';
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.lineWidth = 1;
+
+    // Small squares.
+    ctx.strokeStyle = '#e7dfd5';
+    ctx.beginPath();
+
+    for (let gx = 0.5; gx < width; gx += 12) {
+      ctx.moveTo(gx, 0);
+      ctx.lineTo(gx, height);
+    }
+
+    for (let gy = 0.5; gy < height; gy += 12) {
+      ctx.moveTo(0, gy);
+      ctx.lineTo(width, gy);
+    }
+
+    ctx.stroke();
+
+    // Larger grid.
+    ctx.strokeStyle = '#d7c9c0';
+    ctx.beginPath();
+
+    for (let gx = 0.5; gx < width; gx += 60) {
+      ctx.moveTo(gx, 0);
+      ctx.lineTo(gx, height);
+    }
+
+    for (let gy = 0.5; gy < height; gy += 60) {
+      ctx.moveTo(0, gy);
+      ctx.lineTo(width, gy);
+    }
+
+    ctx.stroke();
+
+    // Baseline for each helicorder row.
+    ctx.strokeStyle = '#ddc9c3';
+    ctx.setLineDash([3, 5]);
+
+    for (let r = 0; r < rows; r++) {
+      const cy = r * rowHeight + rowHeight / 2;
+      ctx.beginPath();
+      ctx.moveTo(0, cy);
+      ctx.lineTo(width, cy);
+      ctx.stroke();
+    }
+
+    ctx.setLineDash([]);
+  }
+
+  function resize() {
+    const rect = paper.getBoundingClientRect();
+
+    // Preserve existing trace where possible.
+    const oldCanvas = document.createElement('canvas');
+    oldCanvas.width = canvas.width;
+    oldCanvas.height = canvas.height;
+
+    if (canvas.width && canvas.height) {
+      oldCanvas.getContext('2d').drawImage(canvas, 0, 0);
+    }
+
+    width = Math.max(1, rect.width);
+    height = Math.max(1, rect.height);
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    rows = Math.max(1, Math.floor(height / rowHeight));
+    row = Math.min(row, rows - 1);
+    x = Math.min(x, width - 1);
+
+    drawGrid();
+
+    if (oldCanvas.width && oldCanvas.height) {
+      ctx.drawImage(
+        oldCanvas,
+        0, 0,
+        oldCanvas.width, oldCanvas.height,
+        0, 0,
+        width, height
+      );
+    }
+
+    previousY = null;
+  }
+
+  function clear() {
+    x = 0;
+    row = 0;
+    previousY = null;
+    signal = 0;
+    filtered = 0;
+    displayed = 0;
+    pointerSignal = 0;
+    lastAcceleration = null;
+    drawGrid();
+  }
+
+  // Incoming accelerometer and gyroscope data.
+  function onMotion(event) {
+    sensorSeen = true;
+    lastSensorTime = performance.now();
+
+    if (!sensorActive) {
+      sensorActive = true;
+      status.textContent = 'Live iPad motion sensors connected';
+      startBtn.textContent = 'Sensors Active';
+      startBtn.disabled = true;
+    }
+
+    const a = event.acceleration;
+    const g = event.rotationRate;
+
+    let motion = 0;
+
+    // Prefer gravity-excluded acceleration.
+    if (
+      a &&
+      Number.isFinite(a.x) &&
+      Number.isFinite(a.y) &&
+      Number.isFinite(a.z)
+    ) {
+      motion = Math.hypot(a.x, a.y, a.z);
+    } else {
+      // Fallback: differences between successive
+      // accelerationIncludingGravity readings.
+      const raw = event.accelerationIncludingGravity;
+
+      if (
+        raw &&
+        Number.isFinite(raw.x) &&
+        Number.isFinite(raw.y) &&
+        Number.isFinite(raw.z)
+      ) {
+        if (lastAcceleration) {
+          motion = Math.hypot(
+            raw.x - lastAcceleration.x,
+            raw.y - lastAcceleration.y,
+            raw.z - lastAcceleration.z
+          );
+        }
+
+        lastAcceleration = {
+          x: raw.x,
+          y: raw.y,
+          z: raw.z
+        };
+      }
+    }
+
+    // Gyroscope contribution detects rotation.
+    if (g) {
+      const gx = Number.isFinite(g.alpha) ? g.alpha : 0;
+      const gy = Number.isFinite(g.beta) ? g.beta : 0;
+      const gz = Number.isFinite(g.gamma) ? g.gamma : 0;
+
+      motion += Math.hypot(gx, gy, gz) * 0.012;
+    }
+
+    // Keep a little of the movement direction so that
+    // the waveform oscillates rather than only rising.
+    const direction = a && Number.isFinite(a.x)
+      ? Math.sign(a.x || a.y || a.z || 1)
+      : Math.sin(performance.now() * 0.025);
+
+    signal = Math.min(motion, 30) * direction;
+  }
+
+  async function startSensors() {
+    startBtn.disabled = true;
+    status.textContent = 'Requesting motion access...';
+
+    if (!('DeviceMotionEvent' in window)) {
+      status.textContent = 'Motion sensors unavailable — use touch to test';
+      startBtn.disabled = false;
+      return;
+    }
+
+    try {
+      if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        const permission = await DeviceMotionEvent.requestPermission();
+
+        if (permission !== 'granted') {
+          status.textContent = 'Motion permission denied — use touch to test';
+          startBtn.disabled = false;
+          return;
+        }
+      }
+
+      window.addEventListener('devicemotion', onMotion);
+
+      status.textContent = 'Waiting for sensor readings...';
+
+      clearTimeout(sensorTimer);
+      sensorTimer = setTimeout(() => {
+        if (!sensorSeen) {
+          status.textContent =
+            'No sensor readings received — check Safari permissions';
+          startBtn.disabled = false;
+        }
+      }, 3000);
+
+    } catch (error) {
+      status.textContent = 'Motion access unavailable: ' + error.message;
+      startBtn.disabled = false;
+    }
+  }
+
+  startBtn.addEventListener('click', startSensors);
+  clearBtn.addEventListener('click', clear);
+
+  // Mouse/touch fallback.
+  paper.addEventListener('pointerdown', event => {
+    pointerActive = true;
+    lastPointer = { x: event.clientX, y: event.clientY };
+    pointerSignal = 0;
+    paper.setPointerCapture(event.pointerId);
+  });
+
+  paper.addEventListener('pointermove', event => {
+    if (!pointerActive || !lastPointer) return;
+
+    const dx = event.clientX - lastPointer.x;
+    const dy = event.clientY - lastPointer.y;
+
+    pointerSignal = Math.max(
+      -20,
+      Math.min(20, (dx + dy) * 0.16)
+    );
+
+    lastPointer = { x: event.clientX, y: event.clientY };
+
+    if (!sensorActive) {
+      status.textContent = 'Touch simulation — not real sensor data';
+    }
+  });
+
+  function stopPointer() {
+    pointerActive = false;
+    lastPointer = null;
+  }
+
+  paper.addEventListener('pointerup', stopPointer);
+  paper.addEventListener('pointercancel', stopPointer);
+
+  // Draw a short segment of the red trace.
+  function drawSample() {
+    const gain = Number(sensitivity.value);
+
+    if (sensorActive && performance.now() - lastSensorTime > 1500) {
+      sensorActive = false;
+      status.textContent = 'Sensor signal lost — tap Start to reconnect';
+      startBtn.disabled = false;
+      startBtn.textContent = 'Start Seismometer';
+    }
+
+    const source = pointerActive
+      ? pointerSignal
+      : sensorActive ? signal : 0;
+
+    // Smooth incoming movement slightly.
+    filtered += (source - filtered) * 0.28;
+    displayed += (filtered - displayed) * 0.38;
+
+    if (!pointerActive && !sensorActive) {
+      signal *= 0.9;
+    }
+
+    pointerSignal *= 0.84;
+
+    const amplitude = Math.max(
+      -rowHeight * 0.43,
+      Math.min(rowHeight * 0.43, displayed * gain * 0.7)
+    );
+
+    const cy = row * rowHeight + rowHeight / 2;
+    const y = cy - amplitude;
+
+    // Clear a narrow advancing strip so the current
+    // trace does not draw over older recordings.
+    const stripWidth = 3;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, row * rowHeight, stripWidth, rowHeight);
+    ctx.clip();
+
+    // Repaint grid in advancing area.
+    ctx.fillStyle = '#faf8f0';
+    ctx.fillRect(x, row * rowHeight, stripWidth, rowHeight);
+
+    ctx.strokeStyle = '#e7dfd5';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+
+    for (
+      let gy = Math.ceil(row * rowHeight / 12) * 12;
+      gy < (row + 1) * rowHeight;
+      gy += 12
+    ) {
+      ctx.moveTo(x, gy + .5);
+      ctx.lineTo(x + stripWidth, gy + .5);
+    }
+
+    ctx.stroke();
+    ctx.restore();
+
+    // Red seismic trace.
+    ctx.strokeStyle = '#b52d2d';
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    ctx.beginPath();
+
+    if (previousY === null) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.moveTo(Math.max(0, x - 1), previousY);
+      ctx.lineTo(x, y);
+    }
+
+    ctx.stroke();
+
+    previousY = y;
+
+    x += 1;
+
+    // Wrap to the next row.
+    if (x >= width) {
+      x = 0;
+      row++;
+      previousY = null;
+
+      if (row >= rows) {
+        row = 0;
+      }
+
+      // Clear the new row while retaining other rows.
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, row * rowHeight, width, rowHeight);
+      ctx.clip();
+
+      ctx.fillStyle = '#faf8f0';
+      ctx.fillRect(0, row * rowHeight, width, rowHeight);
+
+      ctx.strokeStyle = '#e7dfd5';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+
+      for (let gx = 0.5; gx < width; gx += 12) {
+        ctx.moveTo(gx, row * rowHeight);
+        ctx.lineTo(gx, (row + 1) * rowHeight);
+      }
+
+      for (
+        let gy = Math.ceil(row * rowHeight / 12) * 12;
+        gy < (row + 1) * rowHeight;
+        gy += 12
+      ) {
+        ctx.moveTo(0, gy + .5);
+        ctx.lineTo(width, gy + .5);
+      }
+
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    const level = Math.min(100, Math.abs(displayed) * gain * 2);
+    meter.style.width = level + '%';
+
+    intensity.textContent =
+      level < 8 ? 'STILL' :
+      level < 25 ? 'LIGHT MOVEMENT' :
+      level < 60 ? 'SHAKING' :
+      'STRONG SHAKING';
+  }
+
+  function animate(now) {
+    const dt = Math.min((now - lastFrame) / 1000, 0.1);
+    lastFrame = now;
+
+    sampleAccumulator += dt * pixelsPerSecond;
+
+    while (sampleAccumulator >= 1) {
+      drawSample();
+      sampleAccumulator -= 1;
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener('resize', resize);
+
+  resize();
+  requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>
