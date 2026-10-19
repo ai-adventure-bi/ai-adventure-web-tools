@@ -1,5 +1,5 @@
 {
-  "name": "sites-project",
+  "name": "quake-quest",
   "version": "0.1.0",
   "private": true,
   "engines": {
@@ -9,7 +9,8 @@
     "dev": "vinext dev",
     "build": "vite build --config vite.static.config.ts",
     "start": "vinext start",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "build:vercel": "npm run build && node scripts/assemble-standalone.mjs"
   },
   "dependencies": {
     "@types/leaflet": "^1.9.22",

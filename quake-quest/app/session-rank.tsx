@@ -1,0 +1,5 @@
+export const ranks=[
+ [500,'Signal Scout'],[1250,'Wave Tracker'],[2250,'Field Analyst'],[3500,'Seismic Sleuth'],[5000,'Signal Specialist'],[6750,'Senior Investigator'],[8750,'Operations Lead'],[11000,'Chief Analyst'],[14000,'Master Investigator'],[18000,'Seismic Director']
+] as const;
+export const rankIndex=(score:number)=>ranks.reduce((rank,[threshold],i)=>score>=threshold?i:rank,-1);
+export default function SessionRank({score}:{score:number}){const index=rankIndex(score),next=ranks[index+1];return <details className="session-rank"><summary><span>⌖ {index<0?'Recruit':ranks[index][1]}</span><small>{index<0?'Unranked':`Rank ${index+1} / 10`}</small></summary><div className="rank-ladder"><b>SESSION RANKS</b><p>{next?`${(next[0]-score).toLocaleString()} points to ${next[1]}`:'Maximum rank reached'} · resets on refresh</p><ol>{ranks.map(([threshold,name],i)=><li key={name} className={i===index?'current':''}><span>{i+1}. {name}</span><b>{threshold.toLocaleString()}</b></li>)}</ol></div></details>}
