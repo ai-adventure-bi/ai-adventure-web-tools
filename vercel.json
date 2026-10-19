@@ -9,6 +9,9 @@
     "api/topbot-data.mjs": {
       "maxDuration": 60
     },
+    "api/quake-quest/[...route].mjs": {
+  "maxDuration": 300
+    },
     "api/design.mjs": {
       "maxDuration": 60
     },
