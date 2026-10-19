@@ -1,19 +1,33 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm run build:vercel",
+  "buildCommand": "npm run build",
   "outputDirectory": "_site",
   "functions": {
-    "api/quake-quest/[...route].mjs": {
+    "api/topbot-admin-login.mjs": {
+      "maxDuration": 30
+    },
+    "api/topbot-data.mjs": {
+      "maxDuration": 60
+    },
+    "api/design.mjs": {
+      "maxDuration": 60
+    },
+    "api/seismic.mjs": {
+      "maxDuration": 30
+    },
+    "api/station-environment.mjs": {
+      "maxDuration": 30
+    },
+    "api/station-photo.mjs": {
+      "maxDuration": 30
+    },
+    "api/waveform.mjs": {
+      "maxDuration": 30
+    },
+    "api/quake-quest-gateway.mjs": {
       "maxDuration": 300
     }
   },
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/quake-quest/",
-      "permanent": false
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -25,8 +39,18 @@
         {
           "key": "Referrer-Policy",
           "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
         }
       ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/quake-quest/:path*",
+      "destination": "/api/quake-quest-gateway?__qqroute=:path*"
     }
   ]
 }
