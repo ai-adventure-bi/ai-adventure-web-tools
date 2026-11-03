@@ -1,0 +1,14 @@
+{
+  "name": "3d-lab-sandbox",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node lab/server.mjs",
+    "build": "node lab/build.mjs",
+    "test": "node --test lab/tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "22.1.0"
+  }
+}

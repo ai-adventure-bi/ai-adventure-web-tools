@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {gzipSync} from 'node:zlib';import {readStoredFile,readStoredProject} from '../files.js';
+test('old plain projects and new compressed projects open identically',async()=>{const project={format:'3d-lab-v1',objects:[]},raw=JSON.stringify(project);for(const data of [raw,gzipSync(raw)])assert.deepEqual(await readStoredProject(new Response(data)),project);});
+test('compressed STLs download as their original bytes',async()=>{const bytes=Buffer.alloc(134);bytes.writeUInt32LE(1,80);assert.deepEqual(Buffer.from(await (await readStoredFile(new Response(gzipSync(bytes)))).arrayBuffer()),bytes);});
+test('decompression is bounded and failed downloads are rejected',async()=>{await assert.rejects(readStoredFile(new Response(gzipSync(Buffer.alloc(41*1024*1024)))),/limit/);await assert.rejects(readStoredFile(new Response('offline',{status:503})),/saved file/);});

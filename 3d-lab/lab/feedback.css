@@ -1,0 +1,1 @@
+.canvasFeedback{position:absolute;z-index:7;left:18px;right:18px;bottom:60px;padding:12px 15px;border:1px solid #a5b69a;border-radius:12px;background:#fffdf6f2;box-shadow:0 3px 15px #17231d15;pointer-events:none;font-size:12px;line-height:1.5}.canvasFeedback.error{background:#fff1e8f5;border-color:#e6a98c;color:#8b3320}.canvasFeedback[hidden]{display:none}

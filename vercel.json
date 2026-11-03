@@ -26,6 +26,9 @@
     },
     "api/quake-quest-gateway.mjs": {
       "maxDuration": 300
+    },
+    "api/3d-lab.mjs": {
+      "maxDuration": 300
     }
   },
   "headers": [

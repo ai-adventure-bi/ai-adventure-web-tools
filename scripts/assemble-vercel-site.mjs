@@ -24,6 +24,8 @@ for(const part of ['index.html','css','js','vendor','examples']){
   await cp(source,target,{recursive:true});
 }
 await cp(new URL('../quake-quest/static-dist/',import.meta.url),new URL('../_site/quake-quest/',import.meta.url),{recursive:true});
+// Copy only the Lab public build, never server code or local settings.
+await cp(new URL('../3d-lab/dist/',import.meta.url),new URL('../_site/3d-lab/',import.meta.url),{recursive:true});
 await writeFile(new URL('../_site/.nojekyll',import.meta.url),'');
 
 console.log(`Assembled the public site in ${join(root.pathname,'_site')}`);
