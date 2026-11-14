@@ -1,5 +1,7 @@
+import {teacherCredential,signInLab} from '../auth.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import {gzipSync,gunzipSync} from 'node:zlib';
 import handler,{dispatch} from '../api.mjs';import {issueSession} from '../../../server/session.mjs';import * as THREE from '../../vendor/three.module.js';import {packObjects} from '../mesh.js';
+const teacherAccess=teacherCredential();
 const id='A'.repeat(24),req={headers:{},socket:{remoteAddress:'test'}};
 process.env.SUPABASE_URL='https://test.supabase.co';process.env.SUPABASE_SECRET_KEY='sb_secret_test';process.env.TRIPO_API_KEY='test';process.env.TOPBOT_ADMIN_CODE='test-admin';process.env.TOPBOT_SESSION_SECRET='test-secret-'.repeat(4);
 const adminReq={...req,headers:{authorization:`Bearer ${issueSession().token}`}};
@@ -12,6 +14,7 @@ globalThis.fetch=async(url,options={})=>{
  const u=new URL(url),body=options.body&&typeof options.body==='string'?JSON.parse(options.body):options.body;
  if(u.href==='https://api.chat.heyotto.app/v1/chat/completions'){assert.equal(options.headers.Authorization,'Bearer ak_route_fixture');assert.equal(body.model,'heyotto');assert.equal(body.stream,false);assert.ok(body.messages.every(m=>m.role==='user'));assert.equal(body.tools,undefined);return response({choices:[{message:{content:'Created: ![Image](https://fixture.public.blob.vercel-storage.com/dragon.png)'}}]});}
  if(u.pathname==='/rest/v1/rpc/topbot_rate_limit')return response(true);
+ if(u.pathname==='/rest/v1/lab_classroom_access')return response([{class_code:'1234',salt:teacherAccess.salt,key_hash:teacherAccess.key_hash,active:true}]);
  if(u.pathname==='/rest/v1/topbot_schools')return response([{classCode:'1234',active:true}]);
  if(u.pathname==='/rest/v1/rpc/lab_reserve'){
   // Mock only: models the SQL row lock. Real Postgres concurrency remains an integration check.
@@ -25,7 +28,7 @@ globalThis.fetch=async(url,options={})=>{
  }
  if(u.pathname==='/rest/v1/lab_students'){
   if(options.method==='PATCH'){
-   const state=u.searchParams.get('state'),model=u.searchParams.get('model_path');if(state?.startsWith('eq.')&&student.state!==state.slice(3)||model?.startsWith('eq.')&&student.model_path!==model.slice(3))return response([]);
+   const version=u.searchParams.get('updated_at');if(version?.startsWith('eq.')&&student.updated_at!==version.slice(3))return response([]);if(u.searchParams.get('state')==='not.in.(reserved,processing)'&&['reserved','processing'].includes(student.state))return response([]);const state=u.searchParams.get('state'),model=u.searchParams.get('model_path');if(state?.startsWith('eq.')&&student.state!==state.slice(3)||model?.startsWith('eq.')&&student.model_path!==model.slice(3))return response([]);
    Object.assign(student,body);return response([{...student}]);
   }return response([{...student}]);
  }
@@ -103,3 +106,7 @@ test('an untrusted image link cannot replace an approved image',async()=>{reset(
 test('image generation configuration is enabled without exposing server keys',async()=>{reset();assert.deepEqual(await dispatch({action:'config'},req),{imageGeneration:true});});
 
 test('image API forwards the student key to normal chat without starting Tripo or replacing the reviewed image',async()=>{reset();const original=student.image_path,result=await dispatch({action:'image',prompt:'A watercolour dragon',confirm:true,requestId:'image-route-fixture'}, {...req,headers:{'x-heyotto-api-key':'ak_route_fixture'}});assert.deepEqual(result.images,['https://fixture.public.blob.vercel-storage.com/dragon.png']);assert.equal(student.image_path,original);assert.equal(saved.length,0);assert.equal(paid,0);});
+
+test('only authenticated staff can bypass allowances, and duplicate staff requests claim one job',async()=>{reset();student.used=4;student.allowance=1;student.view_used=5;student.view_allowance=1;const input={action:'generate',code:id,staff:true,confirm:true,confirmMultiview:true};await assert.rejects(dispatch(input,req),e=>e.status===401);assert.equal(paid,0);await assert.rejects(dispatch({...input,staff:false},req),e=>e.status===409);await Promise.all([dispatch(input,adminReq),dispatch(input,adminReq)]);assert.equal(paid,1);assert.equal(student.allowance,1);assert.equal(student.view_allowance,1);taskStatus='success';await dispatch({action:'status',code:id,staff:true},adminReq);await dispatch({action:'continueViews',code:id,staff:true,confirm:true},adminReq);assert.equal(paid,2);await dispatch({action:'status',code:id,staff:true},adminReq);assert.equal(student.state,'review');const pending=await dispatch({action:'resume',code:id,staff:true},adminReq);assert.ok(pending.url);await assert.rejects(dispatch({action:'resume',code:id},req),e=>e.status===403);await dispatch(input,adminReq);assert.equal(paid,3);});
+
+test('classroom teachers cannot use staff generation or status outside their classroom',async()=>{reset();const identity=await signInLab({classCode:'1234',accessCode:teacherAccess.accessCode}),teacherReq={...req,headers:{authorization:'Bearer '+identity.token}};student.class_code='4321';for(const action of ['generate','status','uploadImage','resume'])await assert.rejects(dispatch({action,staff:true,code:id,confirm:true,confirmMultiview:true},teacherReq),e=>e.status===403);assert.equal(paid,0);});

@@ -82,7 +82,8 @@ function viewImages(task){
 }
 export async function dispatch(input,req){
  const adminActions=['issue','list','schools','createTeacherAccess','reviewImage','createSchool','setSchoolActive','review','teacherSave','teacherRestore','teacherFile','replace','allowance','reconcile','archive','printed'];
- const admin=adminActions.includes(input.action),scope=admin?await requireLabAccess(req):null;
+ const staff=input.staff===true&&['generate','continueViews','status','uploadImage','discardViews','resume','file','save','submit','restore'].includes(input.action);
+ const admin=staff||adminActions.includes(input.action),scope=admin?await requireLabAccess(req):null;
  const scopedClass=classCode=>{if(scope?.role==='teacher'&&String(classCode)!==scope.classCode)bad(403,'This teacher account can only access its assigned classroom.');};
  if(scope?.role==='teacher'&&['createSchool','setSchoolActive','createTeacherAccess'].includes(input.action))bad(403,'Only the owner can manage schools and teacher access.');
  await rateLimit(req,`lab-${admin?'teacher-'+(scope.classCode||'owner'):'student'}`,admin?300:3000,60);
@@ -119,7 +120,7 @@ export async function dispatch(input,req){
   const result=await database(`lab_students?${scope?.classCode?`class_code=eq.${scope.classCode}&`:""}select=*&order=created_at.desc&limit=100&offset=${offset}`);return result.map(({image_path,model_path,project_path,stl_path,image_review_path,reviewed_project_path,...r})=>({...r,has_image:!!image_path,has_model:!!model_path,has_project:!!project_path,has_stl:!!stl_path,edits_reviewed:!!project_path&&reviewed_project_path===project_path,display_code:shortCode(r.code)}));
  }
  if(input.action==='assist')bad(410,'Workshop assistance has been removed.');
- const s=await row(input.code);if(admin)scopedClass(s.class_code);
+ const s=await row(input.code);if(admin)scopedClass(s.class_code);if(staff){if(s.archived)bad(404,'Restore this project before generating.');const active=await database(`topbot_schools?classCode=eq.${s.class_code}&active=eq.true`);if(!active.length)bad(403,'Restore this classroom before generating.');}
  const workflow=()=>{if(!Object.hasOwn(s,'image_approval'))bad(503,'The classroom/image approval database update is needed. Run lab/003_classrooms.sql once in Supabase.');};
  if(!admin){
   if(s.archived)bad(404,'This project is archived. Ask your teacher to restore it.');
@@ -148,7 +149,7 @@ export async function dispatch(input,req){
  case 'continueViews':{workflow();if(s.image_approval!=='approved'||s.image_review_path!==s.image_path)bad(403,'Your teacher must approve the uploaded image before building the model.');
   if(input.confirm!==true)bad(400,'Confirm the 20-credit model step after checking your four views.');
   if(s.state!=='processing'||!s.task_id?.startsWith('preview:'))bad(409,'Check your four views before starting the model, or refresh its current status.');
-  if(s.used>=s.allowance)bad(409,'Your successful-generation allowance is used. Ask your teacher before starting the model.');
+  if(!staff&&s.used>=s.allowance)bad(409,'Your successful-generation allowance is used. Ask your teacher before starting the model.');
   const providerId=s.task_id.slice(8),claim=`starting:${providerId}`;
   const claimed=await patch(s.code,{state:'reserved',task_id:claim},`&state=eq.processing&task_id=eq.${encodeURIComponent(s.task_id)}`);
   if(!claimed.length)return studentView(await row(s.code));
@@ -162,7 +163,7 @@ export async function dispatch(input,req){
   await patch(s.code,{state:'failed',task_id:null},`&state=eq.processing&task_id=eq.${encodeURIComponent(s.task_id)}`);return studentView(await row(s.code));
  }
  case 'resume':{
-  if(!canReadModel(s))bad(403,'Your teacher is checking this model. It is not ready to open yet.');
+  if(!canReadModel(s,staff))bad(403,'Your teacher is checking this model. It is not ready to open yet.');
   const released=s.reviewed_project_path,kind=(!input.original&&s.project_path)||released?'project':'model';return {kind,url:await signed(kind==='project'?(input.original?released:s.project_path||released):s.model_path),version:s.updated_at};
  }
  case 'restore':case 'teacherRestore':{
@@ -173,19 +174,19 @@ export async function dispatch(input,req){
  case 'uploadImage':{workflow();
   if(['reserved','processing'].includes(s.state))bad(409,'Please wait for the current generation.');
   let image;if(input.url!==undefined)image=await downloadOttoImage(input.url);else{if(typeof input.data!=='string'||input.data.length>4e6)bad(413,'Choose an image smaller than 3 MB.');const buffer=Buffer.from(input.data,'base64');image={buffer,...imageType(buffer)};}
-  const path=await store(`${s.code}/${randomUUID()}.${image.ext}`,image.buffer,image.type),changed=await patch(s.code,{image_path:path,image_approval:'pending',image_review_path:null},`&state=not.in.(reserved,processing)&updated_at=eq.${encodeURIComponent(s.updated_at)}`);if(!changed.length)bad(409,'This project changed while sending the image. Refresh its status before sending again.');return {saved:true};
+  const path=await store(`${s.code}/${randomUUID()}.${image.ext}`,image.buffer,image.type),changed=await patch(s.code,{image_path:path,image_approval:staff?'approved':'pending',image_review_path:staff?path:null},`&state=not.in.(reserved,processing)&updated_at=eq.${encodeURIComponent(s.updated_at)}`);if(!changed.length)bad(409,'This project changed while sending the image. Refresh its status before sending again.');return {saved:true};
  }
  case 'generate':{workflow();
   if(s.image_approval!=='approved'||s.image_review_path!==s.image_path)bad(403,'Your teacher must approve this exact uploaded image before Tripo can run.');
-  if(!['reserved','processing'].includes(s.state)&&s.view_used>=s.view_allowance)bad(409,'This project has used its view-generation attempt. Ask your teacher for another code or allowance.');
+  if(!staff&&!['reserved','processing'].includes(s.state)&&s.view_used>=s.view_allowance)bad(409,'This project has used its view-generation attempt. Ask your teacher for another code or allowance.');
   if(input.confirm!==true)bad(400,'Confirm before using your 3D generation allowance.');
   if(input.confirmMultiview!==true)bad(400,'Confirm the 10-credit multiview image step before generating.');
   if(!process.env.TRIPO_API_KEY)bad(503,'Tripo is not configured.');
   if(!['reserved','processing'].includes(s.state)){
-   if(s.used>=s.allowance)bad(409,'Your successful-generation allowance is used. Ask your teacher for an extra generation.');
+   if(!staff&&s.used>=s.allowance)bad(409,'Your successful-generation allowance is used. Ask your teacher for an extra generation.');
    if(!s.image_path)bad(400,'Choose and save an image before generating a model.');
   }
-  const result=await database('rpc/lab_reserve',{method:'POST',body:{student_code:s.code}});
+  let result;if(staff){if(['reserved','processing'].includes(s.state))return studentView(s);const changed=await patch(s.code,{state:'reserved',task_id:null,approval:'pending',model_path:null,project_path:null,reviewed_project_path:null,stl_path:null,submitted:false,printed:false,view_used:(s.view_used||0)+1},`&updated_at=eq.${encodeURIComponent(s.updated_at)}&state=not.in.(reserved,processing)`);result={reserved:changed.length>0};}else result=await database('rpc/lab_reserve',{method:'POST',body:{student_code:s.code}});
   if(!result.reserved)return studentView(await row(s.code));
   // An ambiguous network failure stays reserved. Never retry a paid POST automatically.
   const image=await signed(s.image_path);
@@ -202,14 +203,14 @@ export async function dispatch(input,req){
   return {url:await signed(s[`${input.kind}_path`]),filename:`${school}_${s.class_code}_${shortCode(s.code)}.${extension}`};
  }
  case 'save':{
-  if(!canReadModel(s))bad(403,'Wait for teacher approval before saving edits.');
+  if(!canReadModel(s,staff))bad(403,'Wait for teacher approval before saving edits.');
   if(input.baseVersion&&input.baseVersion!==s.updated_at)bad(409,'Your teacher or another tab updated this project. Save a device copy of your edits, then reopen the latest version.');
   disposeMeshes(readProject(input));
   const path=await storeProject(s.code,input.project);
   const changed=await patch(s.code,{project_path:path,submitted:false,printed:false,stl_path:null},`&updated_at=eq.${encodeURIComponent(s.updated_at)}`);if(!changed.length)bad(409,'Your project changed in another tab or during teacher review. Reopen it before saving again.');return {saved:true,code:s.code,submissionReset:!!s.submitted,version:changed[0].updated_at};
  }
  case 'submit':{
-  if(!canReadModel(s)||input.classCode!==undefined&&input.classCode!==s.class_code)bad(403,'Check your project code and teacher approval.');
+  if(!canReadModel(s,staff)||input.classCode!==undefined&&input.classCode!==s.class_code)bad(403,'Check your project code and teacher approval.');
   if(input.baseVersion&&input.baseVersion!==s.updated_at)bad(409,'This project changed in another tab or during teacher review. Reopen the latest version before sending.');
   if(input.packed||input.project){const b=printMesh(readProject(input)),projectPath=await storeProject(s.code,input.project),stlPath=await storeSTL(s.code,b);const changed=await patch(s.code,{project_path:projectPath,stl_path:stlPath,submitted:true,printed:false},`&updated_at=eq.${encodeURIComponent(s.updated_at)}`);if(!changed.length)bad(409,'Your project changed while sending. The previous version was kept; reopen the latest project.');return {saved:true,submitted:true,version:changed[0].updated_at};}
   if(!s.project_path)bad(409,'Save your editable project before submitting.');

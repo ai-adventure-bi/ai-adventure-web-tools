@@ -14,7 +14,7 @@ export const server=http.createServer(async(req,res)=>{
   if(url.pathname==='/api/topbot-admin-login')return await login(req,res);
   const name=url.pathname==='/'?'index.html':decodeURIComponent(url.pathname.slice(1));
   // Deliberate allow-list: never expose source, SQL, environment files or tests.
-  if(!(name==='index.html'||/^(lab\/(workshop|workshop-panel|floating|selection-cut|contact|files|mesh|ui|policy|codes|on-object|print-room|teacher-controller)\.(js|mjs)|lab\/(style|workshop|interface|feedback)\.css|vendor\/[\w.-]+\.js)$/.test(name))){res.writeHead(404);return res.end('Not found');}
+  if(!(name==='index.html'||/^(lab\/(model-import|model-import-worker|import-preview|workshop|workshop-panel|floating|selection-cut|contact|files|mesh|ui|policy|codes|on-object|print-room|teacher-controller)\.(js|mjs)|lab\/(style|workshop|interface|feedback)\.css|vendor\/[\w.-]+\.js)$/.test(name))){res.writeHead(404);return res.end('Not found');}
   const path=resolve(root,name);if(!path.startsWith(root+sep)&&path!==resolve(root,'index.html'))throw Error();
   const data=await readFile(path);res.writeHead(200,{'content-type':mime[extname(path)]||'application/octet-stream','cache-control':'no-store','x-content-type-options':'nosniff'});res.end(data);
  }catch{res.writeHead(404);res.end('Not found');}

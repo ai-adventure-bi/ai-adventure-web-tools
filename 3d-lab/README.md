@@ -18,3 +18,6 @@ HeyOtto generation and follow-up edits, or direct upload; teacher image approval
 
 ## Limits
 Conversation history is tab-local and lost on refresh. Paid image deduplication is in-process, not durable across Vercel instances; never automatically retry uncertain paid requests. Tripo reservations are stored in the database. Teacher review is required; geometry checks do not guarantee printability. See GO-LIVE.md at the repository root.
+
+## Automatic simplification
+Uploads over 150,000 triangles are reduced locally in a browser worker and previewed before acceptance. Input ceiling: 1,000,000 triangles, 50 MB, 80 objects. Simplification can remove fine detail and is not guaranteed to succeed for every mesh. The editor limit remains 150,000 triangles. See UPDATE-3D-LAB.md.

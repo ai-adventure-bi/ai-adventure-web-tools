@@ -77,13 +77,13 @@ export function inspect(g){
  return {triangles:(g.index?.count||g.attributes.position.count)/3,components,boundaryEdges:boundaries,nonManifoldEdges:nonManifold,dimensions:d.toArray()};
 }
 export function packObjects(objects){return {format:'3d-lab-v1',units:'mm',objects:objects.map(m=>({name:m.name,visible:m.visible,ignoredFloating:m.userData.ignoredFloating||[],positions:Array.from(m.geometry.attributes.position.array),indices:Array.from(m.geometry.index?.array||[]),position:m.position.toArray(),rotation:m.rotation.toArray().slice(0,3),scale:m.scale.toArray(),color:m.material.color.getHex()}))};}
-export function unpackObjects(data){
+export function unpackObjects(data,{maxTriangles=150000,maxPositionValues=1800000}={}){
  if(data?.format!=='3d-lab-v1'||!Array.isArray(data.objects)||data.objects.length>80)throw Error('This is not a 3D Lab project.');
  let total=0,totalTriangles=0;return data.objects.map(o=>{
   if(!Array.isArray(o.positions)||o.positions.length%9!==0&&o.positions.length%3!==0||!o.positions.length)throw Error('Invalid mesh.');
-  total+=o.positions.length;if(total>1800000||o.positions.some(n=>!Number.isFinite(n)||Math.abs(n)>1e6))throw Error('This project exceeds workshop limits.');
+  total+=o.positions.length;if(total>maxPositionValues||o.positions.some(n=>!Number.isFinite(n)||Math.abs(n)>1e6))throw Error('This project exceeds workshop limits.');
   if(!Array.isArray(o.indices)||o.indices.length%3||o.indices.some(n=>!Number.isInteger(n)||n<0||n>=o.positions.length/3))throw Error('Invalid triangle indices.');
-  totalTriangles+=(o.indices.length||o.positions.length/3)/3;if(totalTriangles>150000||!o.indices.length&&o.positions.length%9)throw Error('This project exceeds the triangle limit or has incomplete faces.');
+  totalTriangles+=(o.indices.length||o.positions.length/3)/3;if(totalTriangles>maxTriangles||!o.indices.length&&o.positions.length%9)throw Error('This project exceeds the triangle limit or has incomplete faces.');
   for(const k of ['position','rotation','scale'])if(!Array.isArray(o[k])||o[k].length!==3||o[k].some(n=>!Number.isFinite(n)||Math.abs(n)>1e4))throw Error('Invalid transform.');
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(o.positions,3));if(o.indices.length)g.setIndex(o.indices);g.computeVertexNormals();
   const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:Number.isInteger(o.color)?o.color:0x997deb,roughness:0.75}));m.userData.ignoredFloating=Array.isArray(o.ignoredFloating)?o.ignoredFloating.filter(n=>Number.isSafeInteger(n)&&n>=0).slice(0,150000):[];m.name=String(o.name||'Shape').slice(0,60);m.visible=o.visible!==false;m.position.fromArray(o.position);m.rotation.set(...o.rotation);m.scale.fromArray(o.scale);return m;
