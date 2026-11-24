@@ -1,0 +1,11 @@
+# Accounts and key storage
+
+Click your display name in the top bar to open **My account**. Students can change their display name and password. Their permanent ID is their fixed, case-insensitive login. Display-name changes preserve websites, class membership, history and HeyOtto connections. Student passwords require 8 characters; staff passwords require 1–100 characters. Changing a password requires the current password and signs the account out on all devices. Staff can reset a student's password through classroom settings.
+
+Restart **Start Studio.cmd** after updating. The local migration changes existing students' login usernames to their permanent IDs; passwords and internal ownership IDs stay unchanged. Staff usernames remain unchanged. The migration aborts on conflicting IDs. Existing sessions keep working until sign-out or expiry. For an existing hosted database, run `database/008-student-login.sql`; new hosted databases use `database/supabase-studio.sql`.
+
+HeyOtto keys are sent to the server when staff attach them. The server saves them through Supabase's `oracle_save_key` RPC and retrieves them through `oracle_read_key` using the account's stable `vault_id`. The application user table stores that reference and a `key_saved` flag, not the HeyOtto key. Server calls to HeyOtto use the retrieved key; browser responses and published project code do not contain it.
+
+The local `.env` holds the Supabase server credential and configuration. `.env`, local databases and generated builds are ignored by Git. Vercel must receive `SUPABASE_URL`, `SUPABASE_SECRET_KEY` and `DATABASE_URL` through its server environment settings. Never put these in frontend variables or student code, and never give students the Supabase server credential.
+
+Audit on 24 November 2026: all six attached keys were successfully read from Supabase without displaying their values. No configured server credential or retrieved HeyOtto key was found in tracked/unignored project files, generated browser/server files, stored project/history/question text, or the three available Git revisions. This checks the local project and live key retrieval; it does not verify a future Vercel deployment or Supabase's full permission configuration.

@@ -1,0 +1,58 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {api,hashPassword} from '../server/app.mjs';
+import {localDatabase} from '../scripts/db.mjs';
+async function setup(){const DB=localDatabase(),password=await hashPassword('test-password');
+ DB.raw.prepare('INSERT INTO classes(id,name,slug,teacher,created) VALUES(?,?,?,?,?)').run('oak','Oak','oak','teacher',1);
+ for(const id of ['a','b'])DB.raw.prepare('INSERT INTO users(id,username,name,password,role,class_id,permanent_id,vault_id) VALUES(?,?,?,?,?,?,?,?)').run(id,id,id,password,'student','oak',id,id);
+ const call=async(path,cookie,data)=>{const r=await api(new Request('https://test/api'+path,{method:data?'POST':'GET',headers:{origin:'https://test','content-type':'application/json',...(cookie?{cookie}:{})},body:data?JSON.stringify(data):undefined}),{DB});return {status:r.status,data:await r.json(),cookie:r.headers.get('set-cookie')?.split(';')[0]};};
+ const a=(await call('/login',null,{username:'a',password:'test-password'})).cookie,b=(await call('/login',null,{username:'b',password:'test-password'})).cookie;
+ const pid=(await call('/projects',a,{title:'First',classId:'oak'})).data.id,p=(await call('/projects/'+pid,a)).data.project;return {DB,call,a,b,pid,p};}
+test('anonymous typed-name scores persist, are opt-in and moderated only by project managers',async()=>{const f=await setup();try{const url='/leaderboards/'+f.pid;
+ assert.equal((await f.call(url)).status,404);
+ await f.call(`/projects/${f.pid}/leaderboard`,f.a,{enabled:true});assert.equal((await f.call(url)).status,404);
+ await f.call(`/projects/${f.pid}/publish`,f.a,{revision:0});
+ assert.equal((await f.call(url,null,{name:'Guest',score:14})).status,200);
+ assert.equal((await f.call(url,null,{name:'Other guest',score:22})).status,200);
+ const scores=(await f.call(url)).data.scores;assert.deepEqual(scores.map(s=>s.score),[22,14]);assert.ok(!JSON.stringify(scores).includes('user_id'));
+ assert.equal((await f.call(url,null,{name:'Bad',score:-1})).status,400);
+ assert.equal((await f.call(url,null,{name:'Bad',score:1.5})).status,400);
+ assert.equal((await f.call(url,null,{name:'x'.repeat(31),score:2})).status,400);
+ assert.equal((await f.call(`/projects/${f.pid}/leaderboard`,f.b,{clear:true})).status,403);
+ await f.call(`/projects/${f.pid}/leaderboard`,f.a,{remove:scores[0].id});assert.equal((await f.call(url)).data.scores.length,1);
+ await f.call(`/projects/${f.pid}/leaderboard`,f.a,{enabled:false});assert.equal((await f.call(url)).status,404);
+ await f.call(`/projects/${f.pid}/leaderboard`,f.a,{enabled:true});assert.equal((await f.call(url)).data.scores.length,1);
+ for(let i=0;i<8;i++)assert.equal((await f.call(url,null,{name:'Guest',score:i})).status,200);
+ assert.equal((await f.call(url,null,{name:'Guest',score:99})).status,429);
+ await f.call(`/projects/${f.pid}/unpublish`,f.a,{});assert.equal((await f.call(url)).status,404);
+ }finally{f.DB.close();}});
+test('saved leaderboard code connects automatically and respects an explicit pause',async()=>{const f=await setup();try{
+ const source="export default function App(){return <button onClick={()=>window.SiteStudio.leaderboard.submit('Nickname',42)}>Finish game</button>}";
+ assert.equal((await f.call(`/projects/${f.pid}/save`,f.a,{...f.p,source})).status,200);
+ const settings=await f.call(`/projects/${f.pid}/leaderboard`,f.a);assert.equal(settings.data.enabled,true);assert.equal(settings.data.configured,true);
+ assert.equal((await f.call(`/leaderboards/${f.pid}`)).status,404);
+ await f.call(`/projects/${f.pid}/publish`,f.a,{revision:1});
+ for(const score of [100,20,50])assert.equal((await f.call(`/leaderboards/${f.pid}`,null,{name:'Player',score})).status,200);
+ assert.deepEqual((await f.call(`/leaderboards/${f.pid}?order=asc`)).data.scores.map(s=>s.score),[20,50,100]);
+ assert.deepEqual((await f.call(`/leaderboards/${f.pid}`)).data.scores.map(s=>s.score),[100,50,20]);
+ await f.call(`/projects/${f.pid}/leaderboard`,f.a,{enabled:false});
+ const current=(await f.call(`/projects/${f.pid}`,f.a)).data.project;
+ await f.call(`/projects/${f.pid}/save`,f.a,{...current,source:source+'\n// Edited'});
+ await f.call(`/projects/${f.pid}/publish`,f.a,{revision:2});
+ assert.equal((await f.call(`/projects/${f.pid}/leaderboard`,f.a)).data.enabled,false);
+ }finally{f.DB.close();}});
+test('renamed addresses resolve to the newest URL, preserve aliases, and cannot be stolen',async()=>{const f=await setup();try{
+ await f.call(`/projects/${f.pid}/publish`,f.a,{revision:0});
+ assert.equal((await f.call(`/projects/${f.pid}/address`,f.b,{slug:'stolen'})).status,403);
+ assert.equal((await f.call(`/projects/${f.pid}/address`,f.a,{slug:'second-name'})).status,200);
+ assert.equal((await f.call(`/projects/${f.pid}/address`,f.a,{slug:'third-name'})).status,200);
+ for(const slug of [f.p.slug,'second-name','third-name']){const site=await f.call('/published/oak/'+slug,f.b);assert.equal(site.status,200);assert.equal(site.data.site.slug,'third-name');}
+ const links=(await f.call('/link-map',f.b)).data.links;assert.equal(links['/c/oak/'+f.p.slug],'/c/oak/third-name');
+ assert.equal((await f.call('/resolve-link?href='+encodeURIComponent('/c/oak/second-name'),f.b)).data.href,'/c/oak/third-name');
+ const other=(await f.call('/projects',f.b,{title:'Other',classId:'oak'})).data.id;
+ assert.equal((await f.call(`/projects/${other}/address`,f.b,{slug:'second-name'})).status,409);
+ assert.equal((await f.call(`/projects/${other}/address`,f.b,{slug:'third-name'})).status,409);
+ assert.equal((await f.call(`/projects/${f.pid}/address`,f.a,{slug:'Bad URL!'})).status,400);
+ assert.equal((await f.call('/published/oak/second-name')).status,401);
+ await f.call(`/projects/${f.pid}/unpublish`,f.a,{});assert.equal((await f.call('/published/oak/second-name',f.b)).status,404);
+ }finally{f.DB.close();}});

@@ -29,6 +29,10 @@
     },
     "api/3d-lab.mjs": {
       "maxDuration": 300
+    },
+    "api/web-hq.mjs": {
+      "maxDuration": 300,
+      "includeFiles": "web-hq/dist/server/**"
     }
   },
   "headers": [
@@ -51,6 +55,14 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/web-hq",
+      "destination": "/api/web-hq?route="
+    },
+    {
+      "source": "/web-hq/:path*",
+      "destination": "/api/web-hq?route=:path*"
+    },
     {
       "source": "/api/quake-quest/:path*",
       "destination": "/api/quake-quest-gateway?__qqroute=:path*"

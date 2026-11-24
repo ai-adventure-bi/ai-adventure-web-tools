@@ -1,0 +1,10 @@
+begin;
+create table if not exists studio.addresses (class_id text not null,slug text not null,project_id text not null,unique(class_id,slug));
+create table if not exists studio.boards (project_id text primary key,enabled integer not null default 0);
+create table if not exists studio.scores (id text primary key,project_id text not null,name text not null,score bigint not null,created bigint not null);
+insert into studio.addresses(class_id,slug,project_id) select class_id,slug,id from studio.projects on conflict do nothing;
+alter table studio.addresses enable row level security;
+alter table studio.boards enable row level security;
+alter table studio.scores enable row level security;
+revoke all on studio.addresses,studio.boards,studio.scores from public,anon,authenticated;
+commit;
