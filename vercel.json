@@ -60,6 +60,10 @@
       "destination": "/api/web-hq?route="
     },
     {
+      "source": "/web-hq/",
+      "destination": "/api/web-hq?route="
+    },
+    {
       "source": "/web-hq/:path*",
       "destination": "/api/web-hq?route=:path*"
     },
