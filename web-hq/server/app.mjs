@@ -25,7 +25,7 @@ async function all(db,sql,...args){return (await query(db,sql,...args).all()).re
 async function first(db,sql,...args){return query(db,sql,...args).first();}
 async function limit(db,key,max,windowMs){
   const until=now()+windowMs;
-  const row=await query(db,'INSERT INTO limits(key,count,expires) VALUES(?,1,?) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN expires<? THEN 1 ELSE count+1 END, expires=CASE WHEN expires<? THEN excluded.expires ELSE expires END RETURNING count',key,until,now(),now()).first();
+  const row=await query(db,'INSERT INTO limits(key,count,expires) VALUES(?,1,?) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN limits.expires<? THEN 1 ELSE limits.count+1 END, expires=CASE WHEN limits.expires<? THEN excluded.expires ELSE limits.expires END RETURNING count',key,until,now(),now()).first();
   if(row.count>max)fail(429,'Please wait before trying again.');
 }
 async function body(req,maxBytes=600000){
@@ -287,6 +287,6 @@ export async function api(req,env){
  }catch(error){
    if(error instanceof Problem)return json({error:error.message},error.status);
    if(error?.code==='23505'||/UNIQUE constraint/i.test(error?.message||''))return json({error:'That username, permanent ID or class address is already in use.'},409);
-   console.error('Studio request failed',path,error?.name||'Error');return json({error:'The request could not be completed. Your last saved version is safe.'},500);
+   console.error('Studio request failed',path,error?.name||'Error',error?.code||'');return json({error:'The request could not be completed. Your last saved version is safe.'},500);
  }
 }
