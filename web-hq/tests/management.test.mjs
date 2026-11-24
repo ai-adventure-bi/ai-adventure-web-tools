@@ -46,6 +46,20 @@ async function fixture(){
  const login=async name=>(await request('/login',null,{username:name,password:'testing-password'})).cookie;
  return {DB,request,login};
 }
+
+test('published gallery thumbnails persist with their snapshot and reject active content',async()=>{
+ const f=await fixture();try{
+  const cookie=await f.login('pupil');const id=(await f.request('/projects',cookie,{classId:'oak',title:'Thumbnail example'})).body.id;
+  const thumbnail='data:image/jpeg;base64,/9j/2Q==';
+  assert.equal((await f.request(`/projects/${id}/publish`,cookie,{revision:0,thumbnail:'data:image/svg+xml,<svg/>'})).status,400);
+  assert.equal((await f.request(`/projects/${id}/publish`,cookie,{revision:0,thumbnail})).status,200);
+  assert.equal((await f.request('/classes/oak/projects',cookie)).body.projects[0].has_thumbnail,1);
+  const published=f.DB.raw.prepare('SELECT published_id FROM projects WHERE id=?').get(id);const image=await api(new Request(`https://test/api/thumbnails/${id}/${published.published_id}`,{headers:{cookie}}),{DB:f.DB});assert.equal(image.status,200);assert.equal(image.headers.get('content-type'),'image/jpeg');
+  const project=(await f.request('/projects/'+id,cookie)).body.project;
+  await f.request(`/projects/${id}/save`,cookie,{...project,title:'Private draft'});
+  const gallery=(await f.request('/classes/oak/projects',cookie)).body.projects[0];assert.equal(gallery.title,'Thumbnail example');assert.equal(gallery.has_thumbnail,1);assert.equal(gallery.thumbnail,undefined);
+ }finally{f.DB.close();}
+});
 test('multiple classroom teachers share management; unchecking revokes access without changing students',async()=>{
  const f=await fixture();try{
  const a=await f.login('admin'),t=await f.login('teacher'),other=await f.login('foreign');

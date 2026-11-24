@@ -79,4 +79,5 @@ END $$;
 UPDATE studio.users SET username='~student-login~'||id WHERE role='student';
 UPDATE studio.users SET username=lower(permanent_id) WHERE role='student';
 
+ALTER TABLE studio.versions ADD COLUMN IF NOT EXISTS thumbnail text NOT NULL DEFAULT '';
 commit;

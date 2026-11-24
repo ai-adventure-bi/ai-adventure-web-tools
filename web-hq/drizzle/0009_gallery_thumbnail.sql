@@ -1,0 +1,1 @@
+ALTER TABLE versions ADD COLUMN thumbnail TEXT NOT NULL DEFAULT '';

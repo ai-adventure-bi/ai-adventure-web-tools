@@ -1,7 +1,7 @@
 import {usesLeaderboard,leaderboardInstructions} from '../src/leaderboard-contract.mjs';
 import { starter } from '../src/starters.mjs';
 import {parseTeaching} from '../src/learning.mjs';
-import {validateMedia} from './media.mjs';
+import {validateThumbnail,validateMedia} from './media.mjs';
 
 const enc = new TextEncoder();
 const id = () => crypto.randomUUID();
@@ -109,6 +109,8 @@ export async function api(req,env){
   if(path==='/api/logout'&&req.method==='POST'){await query(db,'DELETE FROM sessions WHERE token=?',await digest(cookie)).run();return json({ok:true},200,{'set-cookie':`studio_session=; Path=${env.STUDIO_BASE_PATH||'/'}; HttpOnly; SameSite=Strict; Max-Age=0`});}
   const admin=()=>{if(user.role!=='admin')fail(403,'This is an admin control.');};
   const publishedAccess=async cid=>{if(await manages(cid)||user.class_id===cid)return;const shared=await first(db,'SELECT id FROM classes WHERE id=? AND shared=1',cid);if(!shared)fail(404,'That class is not available.');};
+  const thumbnailRoute=path.match(/^\/api\/thumbnails\/([^/]+)\/([^/]+)$/);
+  if(thumbnailRoute&&req.method==='GET'){const row=await first(db,'SELECT p.class_id,v.thumbnail FROM projects p JOIN versions v ON v.id=p.published_id WHERE p.id=? AND p.published_id=? AND p.trashed=0',thumbnailRoute[1],thumbnailRoute[2]);if(!row||!row.thumbnail)fail(404,'Thumbnail not available.');await publishedAccess(row.class_id);return new Response(Buffer.from(row.thumbnail.split(',')[1],'base64'),{headers:{'content-type':'image/jpeg','cache-control':'no-store','x-content-type-options':'nosniff'}});}
   if(path==='/api/my-projects'&&req.method==='GET')return json({projects:await all(db,'SELECT p.id,p.owner,p.class_id,p.slug,p.title,p.description,p.published_id,p.updated,p.colour,p.trashed,c.slug AS classSlug,c.name AS className,u.name AS author FROM projects p JOIN classes c ON c.id=p.class_id JOIN users u ON u.id=p.owner WHERE p.owner=? ORDER BY p.updated DESC,p.id',user.id)});
   const studentSites=path.match(/^\/api\/users\/([^/]+)\/projects$/);
   if(studentSites&&req.method==='GET'){staff();const target=await first(db,'SELECT * FROM users WHERE id=?',studentSites[1]);if(!target||target.role!=='student')fail(404,'Student not found.');await classAccess(target.class_id);return json({user:safeUser(target),projects:await all(db,'SELECT p.id,p.owner,p.class_id,p.slug,p.title,p.description,p.published_id,p.updated,p.colour,p.trashed,c.slug AS classSlug,c.name AS className,u.name AS author FROM projects p JOIN classes c ON c.id=p.class_id JOIN users u ON u.id=p.owner WHERE p.owner=? ORDER BY p.updated DESC,p.id',target.id)});}
@@ -138,7 +140,7 @@ export async function api(req,env){
   }
   if(path==='/api/community'&&req.method==='GET'){const exclude=user.role==='student'?user.class_id:(url.searchParams.get('exclude')||user.class_id||'');return json({schools:await all(db,'SELECT c.id,c.name,c.slug,c.description,count(p.published_id) AS count FROM classes c LEFT JOIN projects p ON p.class_id=c.id AND p.trashed=0 WHERE c.shared=1 AND c.id<>? GROUP BY c.id,c.name,c.slug,c.description ORDER BY c.name',exclude||'')});}
   const community=path.match(/^\/api\/community\/([^/]+)$/);
-  if(community&&req.method==='GET'){let school=await first(db,'SELECT id,name,slug,description FROM classes WHERE slug=? AND shared=1',community[1]);if(!school){const legacy=await all(db,'SELECT c.id,c.name,c.slug,c.description FROM classes c JOIN schools s ON s.id=c.school_id WHERE s.slug=? AND c.shared=1',community[1]);if(legacy.length===1)school=legacy[0];}if(!school)fail(404,'That school is not sharing websites.');return json({school,projects:await all(db,'SELECT p.id,p.owner,p.slug,p.published_id,p.colour,v.title,v.description,u.name AS author,c.slug AS classSlug,c.name AS className FROM projects p JOIN versions v ON v.id=p.published_id JOIN users u ON u.id=p.owner JOIN classes c ON c.id=p.class_id WHERE c.id=? AND p.trashed=0 ORDER BY v.title,p.id',school.id)});}
+  if(community&&req.method==='GET'){let school=await first(db,'SELECT id,name,slug,description FROM classes WHERE slug=? AND shared=1',community[1]);if(!school){const legacy=await all(db,'SELECT c.id,c.name,c.slug,c.description FROM classes c JOIN schools s ON s.id=c.school_id WHERE s.slug=? AND c.shared=1',community[1]);if(legacy.length===1)school=legacy[0];}if(!school)fail(404,'That school is not sharing websites.');return json({school,projects:await all(db,'SELECT p.id,p.owner,p.slug,p.published_id,p.colour,v.title,v.description,CASE WHEN length(v.thumbnail)>0 THEN 1 ELSE 0 END AS has_thumbnail,u.name AS author,c.slug AS classSlug,c.name AS className FROM projects p JOIN versions v ON v.id=p.published_id JOIN users u ON u.id=p.owner JOIN classes c ON c.id=p.class_id WHERE c.id=? AND p.trashed=0 ORDER BY v.title,p.id',school.id)});}
   if(path==='/api/classes'&&req.method==='POST'){
    staff();const b=await body(req),name=text(b.name,'Class name'),slug=cleanSlug(b.slug||name);if(!slug)fail(400,'Choose a class address.');await checkAssignment(b);if(user.role==='teacher'&&(b.teacherIds.length!==1||b.teacherIds[0]!==user.id||b.schoolId))fail(403,'An admin assigns classroom teachers.');
    const cid=id();await db.batch([query(db,'INSERT INTO classes(id,name,slug,teacher,shared,description,created) VALUES(?,?,?,?,?,?,?)',cid,name,slug,b.teacherIds[0],b.shared===true?1:0,String(b.description||'').slice(0,300),now()),...teacherStatements(cid,b.teacherIds)]);return json({id:cid});
@@ -163,7 +165,7 @@ export async function api(req,env){
   }
   let m=path.match(/^\/api\/classes\/([^/]+)(?:\/(roster|students|projects))?$/);
   if(m){const c=await classAccess(m[1]);
-   if(m[2]==='projects'&&req.method==='GET')return json({class:c,projects:await all(db,'SELECT p.id,p.owner,p.slug,v.title,v.description,p.published_id,p.updated,p.colour,u.name AS author FROM projects p JOIN users u ON u.id=p.owner JOIN versions v ON v.id=p.published_id WHERE p.class_id=? AND p.trashed=0 ORDER BY p.updated DESC,p.id',c.id)});
+   if(m[2]==='projects'&&req.method==='GET')return json({class:c,projects:await all(db,'SELECT p.id,p.owner,p.slug,v.title,v.description,CASE WHEN length(v.thumbnail)>0 THEN 1 ELSE 0 END AS has_thumbnail,p.published_id,p.updated,p.colour,u.name AS author FROM projects p JOIN users u ON u.id=p.owner JOIN versions v ON v.id=p.published_id WHERE p.class_id=? AND p.trashed=0 ORDER BY p.updated DESC,p.id',c.id)});
    staff();
    if(!m[2]&&req.method==='POST'){const b=await body(req);if(b.schoolId)fail(400,'Each classroom is its school. No separate school assignment is needed.');if(user.role!=='admin'&&(b.teacherIds!==undefined||b.teacherId!==undefined||b.schoolId))fail(403,'Only admins assign classroom teachers.');let assignments=[];if(user.role==='admin'&&(b.teacherIds!==undefined||b.teacherId!==undefined)){await checkAssignment(b);assignments=[query(db,'UPDATE classes SET teacher=? WHERE id=?',b.teacherIds[0],c.id),...teacherStatements(c.id,b.teacherIds)];}await db.batch([query(db,'UPDATE classes SET name=?,description=?,shared=? WHERE id=?',text(b.name===undefined?c.name:b.name,'Classroom name'),b.description===undefined?c.description:String(b.description).slice(0,300),b.shared===undefined?c.shared:(b.shared?1:0),c.id),...assignments]);return json({ok:true});}
    if(m[2]==='roster'&&req.method==='GET')return json({users:(await all(db,"SELECT * FROM users WHERE class_id=? AND role='student' ORDER BY name",c.id)).map(safeUser)});
@@ -245,9 +247,9 @@ export async function api(req,env){
    }
    if(action==='publish'&&req.method==='POST'){
     const b=await body(req);if(!Number.isInteger(b.revision))fail(400,'Save your draft before publishing.');
-    if(!p.source.trim())fail(400,'Add some code before publishing.');const vid=id();
+    if(!p.source.trim())fail(400,'Add some code before publishing.');let thumbnail='';try{thumbnail=validateThumbnail(b.thumbnail);}catch(e){fail(400,e.message);}const vid=id();
     const result=await db.batch([
-     query(db,"INSERT INTO versions(id,project_id,source,css,kind,title,description,revision,created,label,published) SELECT ?,id,source,css,kind,title,description,revision,?,'Published',1 FROM projects WHERE id=? AND revision=?",vid,now(),pid,b.revision),
+     query(db,"INSERT INTO versions(id,project_id,source,css,kind,title,description,revision,created,label,published,thumbnail) SELECT ?,id,source,css,kind,title,description,revision,?,'Published',1,? FROM projects WHERE id=? AND revision=?",vid,now(),thumbnail,pid,b.revision),
      query(db,'UPDATE projects SET published_id=? WHERE id=? AND revision=? AND EXISTS(SELECT 1 FROM versions WHERE id=?)',vid,pid,b.revision,vid),...autoBoard(pid,p.source,vid)
     ]);if(!result[1].meta.changes)fail(409,'The draft changed. Save and preview it again before publishing.');
     return json({ok:true,publishedId:vid});

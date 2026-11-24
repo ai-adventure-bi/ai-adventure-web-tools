@@ -19,6 +19,6 @@ export function postgresAdapter(client){
 const databases=new Map();
 export function productionDatabase(connectionString=process.env.DATABASE_URL){
  if(!connectionString)return null;
- if(!databases.has(connectionString))databases.set(connectionString,postgresAdapter(postgres(connectionString,{prepare:false,max:1,ssl:'require',connect_timeout:10,idle_timeout:20}))); 
+ if(!databases.has(connectionString))databases.set(connectionString,postgresAdapter(postgres(connectionString,{prepare:false,max:2,max_pipeline:1,fetch_types:false,query_timeout:15,queue_timeout:15,ssl:'require',connect_timeout:10,idle_timeout:20})));
  return databases.get(connectionString);
 }

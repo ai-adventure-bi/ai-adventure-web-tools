@@ -11,6 +11,24 @@ function boardCall(action,args={}){return new Promise((resolve,reject)=>{if(pend
 window.SiteStudio=Object.freeze({leaderboard:Object.freeze({list:(options={})=>boardCall('list',{order:options?.order==='asc'?'asc':'desc'}),submit:(name,score)=>boardCall('submit',{name,score})})});
 window.addEventListener('message',e=>{if(e.source!==parent||e.data?.studio!==channel||e.data.type!=='leaderboard-result')return;const p=pending.get(e.data.id);if(!p)return;clearTimeout(p.timer);pending.delete(e.data.id);e.data.error?p.reject(new Error(e.data.error)):p.resolve(e.data.value);});
 let mounted=false;
+let capturing=false;
+window.addEventListener('message',async e=>{
+ if(e.source!==parent||e.data?.studio!==channel||e.data.type!=='capture-thumbnail'||!mounted||capturing)return;
+ capturing=true;
+ try{
+  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  const original=[document.body,...document.body.querySelectorAll('*')];if(original.length>1800)throw new Error('Page too large for capture');
+  const clone=document.body.cloneNode(true),copies=[clone,...clone.querySelectorAll('*')];
+  const properties='display position top right bottom left width height min-width min-height max-width max-height margin padding border border-radius box-shadow box-sizing background background-color color opacity font font-family font-size font-weight font-style line-height letter-spacing text-align text-decoration white-space overflow overflow-x overflow-y flex flex-direction flex-wrap flex-grow flex-shrink justify-content align-items align-self gap grid-template-columns grid-template-rows grid-column grid-row transform transform-origin object-fit object-position z-index'.split(' ');
+  for(let i=0;i<original.length;i++){const from=original[i],to=copies[i],computed=getComputedStyle(from);for(const attr of [...to.attributes])if(/^on/i.test(attr.name)||['srcset','href','src','poster'].includes(attr.name))to.removeAttribute(attr.name);to.removeAttribute('style');for(const key of properties)to.style.setProperty(key,computed.getPropertyValue(key));
+   if(from.tagName==='CANVAS'){try{const img=document.createElement('img');img.src=from.toDataURL('image/png');img.style.cssText=to.style.cssText;to.replaceWith(img);}catch{to.remove();}}
+   if(from.tagName==='IMG'&&/^data:image\/(png|jpeg|gif|webp);base64,/.test(from.src))to.src=from.src;
+  }
+  clone.querySelectorAll('script,iframe,object,embed,link,meta,base,style').forEach(n=>n.remove());clone.style.margin='0';clone.style.width=innerWidth+'px';clone.style.height=Math.min(innerHeight,600)+'px';clone.setAttribute('xmlns','http://www.w3.org/1999/xhtml');
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+innerWidth+'" height="'+Math.min(innerHeight,600)+'"><foreignObject width="100%" height="100%">'+new XMLSerializer().serializeToString(clone)+'</foreignObject></svg>';
+  tell('thumbnail',{svg:svg.length<=2000000?svg:''});
+ }catch(error){console.warn('Thumbnail capture unavailable:',error?.message||'Capture failed');tell('thumbnail',{image:''});}finally{capturing=false;}
+});
 window.addEventListener('message',e=>{
  if(e.source!==parent||e.data?.studio!==channel||e.data.type!=='render'||mounted)return;
  mounted=true;

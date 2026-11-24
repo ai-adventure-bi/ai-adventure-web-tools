@@ -64,6 +64,13 @@
       "when": 1795522283652,
       "tag": "0008_student_login",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1795531941605,
+      "tag": "0009_gallery_thumbnail",
+      "breakpoints": true
     }
   ]
 }

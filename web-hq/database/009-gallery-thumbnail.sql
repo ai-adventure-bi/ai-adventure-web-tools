@@ -1,0 +1,3 @@
+BEGIN;
+ALTER TABLE studio.versions ADD COLUMN IF NOT EXISTS thumbnail text NOT NULL DEFAULT '';
+COMMIT;

@@ -33,3 +33,5 @@ label{font-size:14px;font-weight:750;letter-spacing:0}input:not([type=checkbox])
 .teacher-choices{border:1px solid #ccc9bb;border-radius:12px;padding:14px;margin:0;min-width:0}.teacher-choices legend{font-weight:700;padding:0 6px}.teacher-choices label{display:flex;align-items:center;gap:10px;padding:8px 0}.teacher-choices input[type="checkbox"]{width:22px;height:22px;min-height:22px;flex-shrink:0;accent-color:#a4dc4d}
 
 .cm-search{padding:10px!important;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#f0f5e4}.cm-search input.cm-textfield{width:160px;min-height:36px;padding:5px 8px}.cm-search button{min-height:36px;padding:5px 10px}.cm-search label{display:inline-flex;gap:5px;align-items:center;font-size:12px}.cm-search input[type=checkbox]{width:18px;height:18px;min-height:18px}.cm-searchMatch{background:#e4f6a8!important}.cm-searchMatch-selected{background:#c1ef65!important}
+
+.site-thumbnail{display:block;width:100%;height:100%;object-fit:cover;object-position:left top;background:#fff;}

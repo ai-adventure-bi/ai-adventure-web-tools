@@ -1,4 +1,9 @@
 export const MAX_IMAGE_BYTES=2*1024*1024,MAX_VIDEO_BYTES=3*1024*1024;
+export function validateThumbnail(value){
+ if(value===undefined||value==='')return '';
+ if(typeof value!=='string'||value.length>160000||!value.startsWith('data:image/jpeg;base64,'))throw new Error('The thumbnail must be a small JPEG image.');
+ validateMedia('thumbnail.jpg',value);return value;
+}
 export function validateMedia(name,dataUrl){
  if(typeof name!=='string'||!name.trim()||name.length>160)throw new Error('Use a filename below 160 characters.');
  const match=typeof dataUrl==='string'&&dataUrl.match(/^data:(image\/(?:png|jpeg|gif|webp)|video\/(?:mp4|webm));base64,([A-Za-z0-9+/]*={0,2})$/);
