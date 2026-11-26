@@ -53,7 +53,7 @@ export function parseTeaching(reply,before,after){
  if(!data)return null;
  try{
   const changes=[];
-  for(const item of Array.isArray(data.changes)?data.changes.slice(0,12):[]){
+  for(const item of Array.isArray(data.changes)?data.changes.slice(0,12):Array.isArray(data.edits)?data.edits.slice(0,20):[]){
    if(typeof item.before!=='string'||typeof item.after!=='string'||(!item.before.trim()&&!item.after.trim())||item.before===item.after)continue;
    if((item.before&&!before.includes(item.before))||(item.after&&!after.includes(item.after)))continue;
    if(!['explanation','test','challenge'].every(k=>typeof item[k]==='string'&&item[k].trim().length>0&&item[k].length<=1000))continue;
