@@ -1,5 +1,16 @@
 import {diffLines,diffWordsWithSpace} from 'diff';
 
+export const SUMMARY_WORD_LIMIT=45;
+export const CHANGE_WORD_LIMIT=25;
+export function shortExplanation(value,limit=SUMMARY_WORD_LIMIT){
+ const words=String(value||'').trim().split(/\s+/).filter(Boolean);
+ if(words.length<=limit)return words.join(' ');
+ const kept=words.slice(0,limit);
+ // Prefer a finished sentence when it does not discard most of the summary.
+ for(let i=kept.length-1;i>=Math.ceil(limit*0.65);i--)if(/[.!?]["'’”)]*$/.test(kept[i]))return kept.slice(0,i+1).join(' ');
+ return kept.join(' ').replace(/[,:;–—-]+$/,'')+'…';
+}
+
 export function codeChanges(before,after){
  const parts=diffLines(before,after,{stripTrailingCr:true,timeout:150,maxEditLength:6000})||[{value:before,removed:true},{value:after,added:true}];
  const rows=[];let oldLine=1,newLine=1;
@@ -46,15 +57,15 @@ export function parseTeaching(reply,before,after){
    if(typeof item.before!=='string'||typeof item.after!=='string'||(!item.before.trim()&&!item.after.trim())||item.before===item.after)continue;
    if((item.before&&!before.includes(item.before))||(item.after&&!after.includes(item.after)))continue;
    if(!['explanation','test','challenge'].every(k=>typeof item[k]==='string'&&item[k].trim().length>0&&item[k].length<=1000))continue;
-   changes.push({before:item.before,after:item.after,explanation:item.explanation,test:item.test,challenge:item.challenge});
+   changes.push({before:item.before,after:item.after,explanation:shortExplanation(item.explanation,CHANGE_WORD_LIMIT),test:item.test,challenge:item.challenge});
   }
-  const summary=typeof data.summary==='string'&&data.summary.trim().length>=20&&data.summary.length<=3000?data.summary.trim():'';
+  const summary=typeof data.summary==='string'&&data.summary.trim().length>=20&&data.summary.length<=12000?shortExplanation(data.summary):'';
   return summary?{summary,changes}:changes.length?{changes}:null;
  }catch{return null;}
 }
 export function teachingSummary(teaching){
- if(typeof teaching?.summary==='string'&&teaching.summary.trim())return teaching.summary.trim();
- return [...new Set((teaching?.changes||[]).map(c=>c.explanation?.trim()).filter(Boolean))].join('\n\n');
+ if(typeof teaching?.summary==='string'&&teaching.summary.trim())return shortExplanation(teaching.summary);
+ return shortExplanation([...new Set((teaching?.changes||[]).map(c=>c.explanation?.trim()).filter(Boolean))].join(' '));
 }
 export function teachingForHunk(hunk,teaching){
  return teaching?.changes?.find(c=>(!c.before||hunk.before.includes(c.before.trim())||c.before.includes(hunk.before.trim())&&hunk.before.trim())&&(!c.after||hunk.after.includes(c.after.trim())||c.after.includes(hunk.after.trim())&&hunk.after.trim()))||null;
