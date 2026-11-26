@@ -19,7 +19,7 @@ import './style.css';
 import './lab-theme.css';
 import './learning.css';
 
-async function api(path,options={}){const response=await fetch(withBase('/api'+path),{signal:AbortSignal.timeout(/\/(assist|question)$/.test(path)?200000:20000),...options,headers:{'content-type':'application/json'},body:options.body?JSON.stringify(options.body):undefined});const data=await response.json();if(!response.ok)throw new Error(data.error||'Something went wrong.');return data;}
+async function api(path,options={}){const response=await fetch(withBase('/api'+path),{signal:AbortSignal.timeout(/\/(assist|question)$/.test(path)?260000:20000),...options,headers:{'content-type':'application/json'},body:options.body?JSON.stringify(options.body):undefined});const data=await response.json();if(!response.ok)throw new Error(data.error||'Something went wrong.');return data;}
 const post=(path,body={})=>api(path,{method:'POST',body});
 let leaveGuard=null;
 function go(path,alreadyConfirmed=false){if(!alreadyConfirmed&&leaveGuard&&!leaveGuard())return;history.pushState({},'',withBase(withoutBase(path)));window.dispatchEvent(new PopStateEvent('popstate'));}
@@ -102,11 +102,10 @@ function Studio({id,user,classes}){
 }
 
 function Visit({classSlug,siteSlug,user,currentClassId}){
- const [data,setData]=useState(null),[error,setError]=useState(''),[copied,setCopied]=useState(false),[showCode,setShowCode]=useState(false);
+ const [data,setData]=useState(null),[error,setError]=useState('');
  useEffect(()=>{setData(null);setError('');api(`/published/${classSlug}/${siteSlug}`).then(d=>{setData(d);if(d.site.slug!==siteSlug){history.replaceState({},'',withBase(`/c/${classSlug}/${d.site.slug}`));}}).catch(e=>setError(e.message));},[classSlug,siteSlug]);
  const navigate=href=>{href=typeof href==='string'?withoutBase(href):href;if(typeof href==='string'&&/^\/c\/[a-z0-9-]+\/[a-z0-9-]+$/.test(href))visitLink(href).catch(e=>setError(e.message));else setError('This link needs a published class site address, such as /c/your-class/site-name.');};
- const copyLink=async()=>{try{await navigator.clipboard.writeText(location.href);setCopied(true);}catch{setError('Copy this page’s address from your browser.');}};
- return <main className="published-visit"><button className="published-code" onClick={()=>setShowCode(true)}><Code2 size={16}/> View / copy code</button>{showCode&&<CodeViewer path={`/published/${classSlug}/${siteSlug}`} api={api} Modal={Modal} onClose={()=>setShowCode(false)}/>}<button className="published-back" onClick={()=>go(data?.school&&data.class.id!==currentClassId?'/school/'+data.school.slug:'/')} aria-label="Back to websites"><ArrowLeft size={17}/> {data?.school&&data.class.id!==currentClassId?'School websites':'Class websites'}</button>{error&&<div className="published-error"><ErrorBox>{error}</ErrorBox></div>}{data?<Preview projectId={data.site.projectId} source={data.site.source} css={data.site.css} kind={data.site.kind} title={data.site.title} onNavigate={navigate}/>:!error&&<div className="preview-wait">Opening website…</div>}</main>;
+ return <main className="published-visit">{error&&<div className="published-error"><ErrorBox>{error}</ErrorBox></div>}{data?<Preview projectId={data.site.projectId} source={data.site.source} css={data.site.css} kind={data.site.kind} title={data.site.title} onNavigate={navigate}/>:!error&&<div className="preview-wait">Opening website…</div>}</main>;
 }
 
 createRoot(document.getElementById('app')).render(<App/>);

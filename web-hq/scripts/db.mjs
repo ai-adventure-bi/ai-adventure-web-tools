@@ -9,5 +9,5 @@ export function localDatabase(filename=':memory:'){
   }
  }
  const make=(sql,values=[])=>({bind(...args){return make(sql,args);},async first(){return sqlite.prepare(sql).get(...values)||null;},async all(){return {results:sqlite.prepare(sql).all(...values)};},async run(){const result=sqlite.prepare(sql).run(...values);return {success:true,meta:{changes:Number(result.changes),last_row_id:Number(result.lastInsertRowid)}};},_sql:sql,_values:values});
- return {prepare:sql=>make(sql),async batch(statements){sqlite.exec('BEGIN IMMEDIATE');try{const results=[];for(const s of statements)results.push(await s.run());sqlite.exec('COMMIT');return results;}catch(e){sqlite.exec('ROLLBACK');throw e;}},close:()=>sqlite.close(),raw:sqlite};
+ return {prepare:sql=>make(sql),async batch(statements,options={}){sqlite.exec('BEGIN IMMEDIATE');try{if(options.activeProject&&!sqlite.prepare('SELECT id FROM projects WHERE id=? AND trashed=0').get(options.activeProject))throw Object.assign(new Error('Website unavailable'),{code:'PROJECT_UNAVAILABLE'});const results=[];for(const s of statements)results.push(await s.run());sqlite.exec('COMMIT');return results;}catch(e){sqlite.exec('ROLLBACK');throw e;}},close:()=>sqlite.close(),raw:sqlite};
 }

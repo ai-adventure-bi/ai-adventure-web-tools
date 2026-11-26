@@ -1,0 +1,79 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {api,hashPassword} from '../server/app.mjs';
+import {localDatabase} from '../scripts/db.mjs';
+
+test('permanent deletion is scoped, requires trash and confirmation, removes related data and releases every address',async()=>{
+ const DB=localDatabase(),pw=await hashPassword('test-password');
+ const call=async(path,cookie,data)=>{const r=await api(new Request('https://test/api'+path,{method:data?'POST':'GET',headers:{origin:'https://test','content-type':'application/json',...(cookie?{cookie}:{})},body:data?JSON.stringify(data):undefined}),{DB});return {status:r.status,data:await r.json(),cookie:r.headers.get('set-cookie')?.split(';')[0]};};
+ try{
+  for(const [id,role,cid]of [['a','student','oak'],['b','student','oak'],['teacher','teacher',null],['foreign','teacher',null],['admin','admin',null]])DB.raw.prepare('INSERT INTO users(id,username,name,password,role,class_id,permanent_id,vault_id) VALUES(?,?,?,?,?,?,?,?)').run(id,id,id,pw,role,cid,id,id);
+  DB.raw.prepare("INSERT INTO classes(id,name,slug,teacher,created) VALUES('oak','Oak','oak','teacher',1)").run();
+  const cookies={};for(const id of ['a','b','teacher','foreign','admin'])cookies[id]=(await call('/login',null,{username:id,password:'test-password'})).cookie;
+  const pid=(await call('/projects',cookies.a,{classId:'oak',title:'My game'})).data.id;
+  assert.equal((await call('/projects/'+pid,cookies.a)).data.project.slug,'my-game');
+  await call(`/projects/${pid}/address`,cookies.a,{slug:'new-game'});
+  const duplicate=(await call('/projects',cookies.b,{classId:'oak',title:'My game'})).data.id;
+  assert.equal((await call('/projects/'+duplicate,cookies.b)).data.project.slug,'my-game-2');
+  assert.equal((await call(`/projects/${pid}/delete`,cookies.a,{confirmDelete:true})).status,409);
+  await call(`/projects/${pid}/publish`,cookies.a,{revision:0});
+  DB.raw.prepare('INSERT INTO media VALUES(?,?,?,?,?,?,?)').run('asset',pid,'picture.png','image/png',1,'data:image/png;base64,AAAA',1);
+  DB.raw.prepare('INSERT INTO questions VALUES(?,?,?,?,?)').run('q',pid,'Question','Answer',1);
+  DB.raw.prepare('INSERT INTO boards VALUES(?,1)').run(pid);
+  DB.raw.prepare('INSERT INTO scores VALUES(?,?,?,?,?)').run('s',pid,'Nickname',10,1);
+  await call(`/projects/${pid}/trash`,cookies.a,{trashed:true});
+  assert.equal((await call(`/projects/${pid}/delete`,cookies.a,{})).status,400);
+  assert.equal((await call(`/projects/${pid}/delete`,cookies.b,{confirmDelete:true})).status,403);
+  assert.equal((await call(`/projects/${pid}/delete`,cookies.foreign,{confirmDelete:true})).status,404);
+  const batch=DB.batch;DB.batch=async(statements,options)=>{if(options?.projectDeletion)DB.raw.prepare('UPDATE projects SET trashed=0 WHERE id=?').run(pid);return batch(statements,options);};
+  assert.equal((await call(`/projects/${pid}/delete`,cookies.a,{confirmDelete:true})).status,409);
+  assert.equal(DB.raw.prepare('SELECT count(*) AS n FROM media WHERE project_id=?').get(pid).n,1);
+  DB.batch=batch;await call(`/projects/${pid}/trash`,cookies.a,{trashed:true});
+  assert.equal((await call(`/projects/${pid}/delete`,cookies.teacher,{confirmDelete:true})).status,200);
+  for(const table of ['addresses','media','questions','scores','boards','versions'])assert.equal(DB.raw.prepare(`SELECT count(*) AS n FROM ${table} WHERE project_id=?`).get(pid).n,0);
+  assert.equal((await call('/projects/'+pid,cookies.a)).status,404);
+  const replacement=(await call('/projects',cookies.a,{classId:'oak',title:'My game'})).data.id;
+  const other=(await call('/projects',cookies.a,{classId:'oak',title:'New game'})).data.id;
+  assert.equal((await call('/projects/'+replacement,cookies.a)).data.project.slug,'my-game');
+  assert.equal((await call('/projects/'+other,cookies.a)).data.project.slug,'new-game');
+  assert.equal((await call('/projects/'+duplicate,cookies.b)).data.project.slug,'my-game-2');
+ }finally{DB.close();}
+});
+test('private lists, published source sharing, scoped staff inspection and recoverable trash',async()=>{
+ const DB=localDatabase(),pw=await hashPassword('test-password');
+ const call=async(path,cookie,data)=>{const r=await api(new Request('https://test/api'+path,{method:data?'POST':'GET',headers:{origin:'https://test','content-type':'application/json',...(cookie?{cookie}:{})},body:data?JSON.stringify(data):undefined}),{DB});return {status:r.status,data:await r.json(),cookie:r.headers.get('set-cookie')?.split(';')[0]};};
+ try{
+ for(const [cid,teacher]of [['oak','teacher'],['pine','foreign']])DB.raw.prepare('INSERT INTO classes(id,name,slug,teacher,created) VALUES(?,?,?,?,?)').run(cid,cid,cid,teacher,1);
+ for(const [id,role,cid]of [['a','student','oak'],['b','student','oak'],['teacher','teacher',null],['foreign','teacher',null],['admin','admin',null]])DB.raw.prepare('INSERT INTO users(id,username,name,password,role,class_id,permanent_id,vault_id) VALUES(?,?,?,?,?,?,?,?)').run(id,id,id,pw,role,cid,id,id);
+ const cookies={};for(const id of ['a','b','teacher','foreign','admin'])cookies[id]=(await call('/login',null,{username:id,password:'test-password'})).cookie;
+ const pid=(await call('/projects',cookies.a,{classId:'oak',title:'My game'})).data.id;
+ const p=(await call('/projects/'+pid,cookies.a)).data.project;
+ assert.equal((await call('/classes/oak/projects',cookies.a)).data.projects.length,0);
+ assert.equal((await call('/classes/oak/projects',cookies.teacher)).data.projects.length,0);
+ assert.equal((await call('/my-projects',cookies.a)).data.projects.length,1);
+ assert.equal((await call('/my-projects',cookies.b)).data.projects.length,0);
+ assert.equal((await call('/users/a/projects',cookies.teacher)).data.projects.length,1);
+ assert.equal((await call('/users/a/projects',cookies.admin)).status,200);
+ assert.equal((await call('/users/a/projects',cookies.b)).status,403);
+ assert.equal((await call('/users/a/projects',cookies.foreign)).status,404);
+ await call(`/projects/${pid}/publish`,cookies.a,{revision:0});
+ await call(`/projects/${pid}/save`,cookies.a,{...p,source:'export default function App(){return <h1>PRIVATE EDIT</h1>}'});
+ const shared=await call('/published/oak/'+p.slug,cookies.b);assert.equal(shared.status,200);assert.equal(shared.data.site.source,p.source);assert.ok(!JSON.stringify(shared.data).includes('PRIVATE EDIT'));
+ assert.equal((await call(`/projects/${pid}/inspect`,cookies.b)).status,403);
+ assert.match((await call(`/projects/${pid}/inspect`,cookies.teacher)).data.site.source,/PRIVATE EDIT/);
+ await call(`/projects/${pid}/leaderboard`,cookies.a,{enabled:true});assert.equal((await call('/leaderboards/'+pid)).status,200);
+ assert.equal((await call(`/projects/${pid}/trash`,cookies.b,{trashed:true})).status,403);
+ assert.equal((await call(`/projects/${pid}/trash`,cookies.a,{trashed:true})).status,200);
+ assert.equal((await call('/published/oak/'+p.slug,cookies.b)).status,404);
+ assert.equal((await call('/leaderboards/'+pid)).status,404);
+ assert.equal((await call('/classes/oak/projects',cookies.a)).data.projects.length,0);
+ assert.equal((await call('/my-projects',cookies.a)).data.projects[0].trashed,1);
+ assert.equal((await call('/users/a/projects',cookies.teacher)).data.projects[0].trashed,1);
+ assert.equal((await call(`/projects/${pid}`,cookies.a)).status,409);
+ assert.match((await call(`/projects/${pid}/inspect`,cookies.a)).data.site.source,/PRIVATE EDIT/);
+ assert.equal((await call(`/projects/${pid}/trash`,cookies.teacher,{trashed:false})).status,200);
+ const restored=(await call(`/projects/${pid}`,cookies.a)).data.project;assert.equal(restored.trashed,0);assert.equal(restored.published_id,null);assert.match(restored.source,/PRIVATE EDIT/);
+ assert.equal((await call('/published/oak/'+p.slug,cookies.b)).status,404);
+ assert.equal((await call(`/projects/${pid}/versions`,cookies.a)).data.versions.length,2);
+ }finally{DB.close();}
+});

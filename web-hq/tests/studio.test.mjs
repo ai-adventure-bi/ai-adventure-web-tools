@@ -79,7 +79,7 @@ test('AI proposals use the actor’s Vault key and preserve code outside the sel
    if(url==='https://vault.test/rest/v1/rpc/oracle_read_key'){assert.deepEqual(JSON.parse(options.body),{account_id:'studio:a'});return Response.json('test-student-secret');}
    assert.equal(url,'https://api.chat.heyotto.app/v1/chat/completions');assert.equal(options.headers.Authorization,'Bearer test-student-secret');assert.ok(!options.body.includes('test-student-secret'));
    const request=JSON.parse(options.body);assert.equal(request.model,'heyotto-code');assert.match(request.messages[0].content,/Selected text/);
-   const teaching={changes:[{before:selected,after:'A brighter idea.',explanation:'This replaces the heading text while keeping its structure.',test:'Read the first heading in the preview.',challenge:'Change one word in the heading yourself.'}]};
+   const teaching={summary:'I changed the AI test heading from My website to A brighter idea, keeping the rest of the page unchanged.',changes:[{before:selected,after:'A brighter idea.',explanation:'This replaces the heading text while keeping its structure.',test:'Read the first heading in the preview.',challenge:'Change one word in the heading yourself.'}]};
    return Response.json({choices:[{message:{content:'```jsx\nA brighter idea.\n```\n```json\n'+JSON.stringify(teaching)+'\n```'}}]});
   };
   const result=await f.request(`/projects/${pid}/assist`,{method:'POST',cookie,data:{revision:0,prompt:'Change the first heading.',selection:{from,to}}});

@@ -16,6 +16,12 @@ test('Postgres adapter qualifies only app tables and keeps user values bound',as
  await db.batch([db.prepare('UPDATE users SET role=? WHERE id=?').bind('teacher','id')],{accountManagement:true});
  assert.equal(calls[offset],'begin');assert.equal(calls[offset+1].sql,'SELECT pg_advisory_xact_lock(72819461)');
  assert.equal(postgresSql('SELECT * FROM schools WHERE id=?'),'SELECT * FROM studio.schools WHERE id=$1');
+ const deletionOffset=calls.length;
+ await db.batch([db.prepare('DELETE FROM projects WHERE id=? AND trashed=1').bind('site-id')],{projectDeletion:'site-id'});
+ assert.equal(calls[deletionOffset],'begin');
+ assert.equal(calls[deletionOffset+1].sql,'SELECT id FROM studio.projects WHERE id=$1 FOR UPDATE');
+ assert.deepEqual(calls[deletionOffset+1].args,['site-id']);
+ assert.match(calls[deletionOffset+2].sql,/DELETE FROM studio.projects/);
 });
 
 async function invoke(route){

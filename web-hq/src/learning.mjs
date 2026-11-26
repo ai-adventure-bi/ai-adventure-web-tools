@@ -15,7 +15,7 @@ const lessons=[
  {match:/\buseState\b|\bset[A-Z]\w*\s*\(/,title:'Remembering a value',meaning:'State is a value the page remembers. Changing it asks React to draw the updated page.',test:'Change the value by using the page, then check what updates.',tryIt:'Find the starting value. Change it yourself and predict the first thing you will see.'},
  {match:/\bonClick\s*=|addEventListener\s*\(/,title:'Responding to an action',meaning:'An event handler is code that runs when someone clicks, taps or types.',test:'Try the control once, then several times. Check what it does each time.',tryIt:'Find the function attached to the action. Change one instruction inside it.'},
  {match:/\bclassName\s*=|\bstyle\s*=|\bclass\s*=|#[a-fA-F0-9]{3,8}\b|\b(background|font-size|padding|color)\s*:/,title:'Changing the appearance',meaning:'Styles control how something looks: its colour, spacing, size and position. They can change without changing the rules of the page.',test:'Check the affected part at phone and tablet widths. Can you still read and tap it?',tryIt:'Change one colour or spacing value yourself, then check the result.'},
- {match:/<a\b|href\s*=/,title:'Linking pages',meaning:'A link points to an address. It lets someone move from this page to another page.',test:'Follow the link, then use the back-to-class button. Check that neither route gets you stuck.',tryIt:'Change the link text while keeping its address the same.'},
+ {match:/<a\b|href\s*=/,title:'Linking pages',meaning:'A link points to an address. It lets someone move from this page to another page.',test:'Follow the link, then use your browser’s Back button. Check that neither route gets you stuck.',tryIt:'Change the link text while keeping its address the same.'},
  {match:/\.map\s*\(|\bfor\s*\(|\bwhile\s*\(/,title:'Repeating instructions',meaning:'A loop or map repeats an instruction for a collection of items instead of writing the same code over and over.',test:'Check the first item, last item and an empty list if your page supports one.',tryIt:'Add one item to the list and predict how many things will appear.'},
  {match:/\bif\s*\(|\?[^\n]+:|&&\s*</,title:'Making a decision',meaning:'A condition chooses what happens depending on whether something is true or false.',test:'Try an example for each possible outcome. Do both routes work?',tryIt:'Find the comparison and predict what happens exactly at its boundary.'},
  {match:/\bfunction\b|=>/,title:'Grouping instructions',meaning:'A function groups instructions so the page can run them together when they are needed.',test:'Find where the function is called. Try the action or input that calls it.',tryIt:'Trace the function one instruction at a time and explain the order.'}
@@ -36,18 +36,26 @@ export function explainChange(hunk){
  return {...primary,concepts,observations};
 }
 export function parseTeaching(reply,before,after){
- const block=[...String(reply||'').matchAll(/```json\s*\n([\s\S]*?)```/gi)][0];if(!block)return null;
+ const raw=String(reply||''),blocks=[...raw.matchAll(/```json\s*\n([\s\S]*?)```/gi)];
+ const candidates=blocks.map(block=>block[1]);if(raw.trim().startsWith('{'))candidates.push(raw.trim());
+ let data;for(const candidate of candidates){try{const parsed=JSON.parse(candidate);if(parsed&&typeof parsed==='object'&&!Array.isArray(parsed)){data=parsed;break;}}catch{}}
+ if(!data)return null;
  try{
-  const data=JSON.parse(block[1]),changes=[];
+  const changes=[];
   for(const item of Array.isArray(data.changes)?data.changes.slice(0,12):[]){
    if(typeof item.before!=='string'||typeof item.after!=='string'||(!item.before.trim()&&!item.after.trim())||item.before===item.after)continue;
    if((item.before&&!before.includes(item.before))||(item.after&&!after.includes(item.after)))continue;
-   if(!['explanation','test','challenge'].every(k=>typeof item[k]==='string'&&item[k].length<=1000))continue;
+   if(!['explanation','test','challenge'].every(k=>typeof item[k]==='string'&&item[k].trim().length>0&&item[k].length<=1000))continue;
    changes.push({before:item.before,after:item.after,explanation:item.explanation,test:item.test,challenge:item.challenge});
   }
-  return changes.length?{changes}:null;
+  const summary=typeof data.summary==='string'&&data.summary.trim().length>=20&&data.summary.length<=3000?data.summary.trim():'';
+  return summary?{summary,changes}:changes.length?{changes}:null;
  }catch{return null;}
 }
+export function teachingSummary(teaching){
+ if(typeof teaching?.summary==='string'&&teaching.summary.trim())return teaching.summary.trim();
+ return [...new Set((teaching?.changes||[]).map(c=>c.explanation?.trim()).filter(Boolean))].join('\n\n');
+}
 export function teachingForHunk(hunk,teaching){
- return teaching?.changes?.find(c=>(!c.before||hunk.before.includes(c.before))&&(!c.after||hunk.after.includes(c.after)))||null;
+ return teaching?.changes?.find(c=>(!c.before||hunk.before.includes(c.before.trim())||c.before.includes(hunk.before.trim())&&hunk.before.trim())&&(!c.after||hunk.after.includes(c.after.trim())||c.after.includes(hunk.after.trim())&&hunk.after.trim()))||null;
 }

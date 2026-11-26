@@ -18,7 +18,7 @@ test('AI receives actual uploaded references and cannot silently omit a requeste
    if(url.includes('oracle_read_key'))return Response.json('test-key');
    const task=JSON.parse(options.body).messages[0].content;assert.ok(task.includes('My actual photo.png'));assert.ok(task.includes(marker));assert.ok(task.includes('Never replace a supplied image with an SVG'));
    assert.ok(task.includes('built-in persistent online leaderboard'));assert.ok(task.includes('never ask the player to type their score'));assert.ok(task.includes("order:'asc'"));assert.ok(!task.includes('Ask the student to enable Online leaderboard'));
-   return Response.json({choices:[{message:{content:'```jsx\nexport default function App(){return '+(include?`<img src="${marker}" alt="Photo"/>`:'<svg/>')+';}\n```'}}]});
+   return Response.json({choices:[{message:{content:'```jsx\nexport default function App(){return '+(include?`<img src="${marker}" alt="Photo"/>`:'<svg/>')+';}\n```\n```json\n'+JSON.stringify({summary:'I replaced the placeholder drawing with your uploaded photo, using its exact media reference in an img element.'})+'\n```'}}]});
   };
   const missing=await call(`/projects/${pid}/assist`,{revision:0,prompt:'Use my photo '+marker},cookie);assert.equal(missing.status,422);assert.match(missing.data.error,/left out/);
   include=true;assert.equal((await call(`/projects/${pid}/assist`,{revision:0,prompt:'Use my photo '+marker},cookie)).status,200);

@@ -14,7 +14,7 @@ export function postgresAdapter(client){
   async run(){const result=await client.unsafe(postgresSql(sql),args);return {success:true,meta:{changes:result.count}};},
   _sql:sql,_values:args
  });
- return {prepare:sql=>make(sql),async batch(statements,options={}){return client.begin(async transaction=>{if(options.accountManagement)await transaction.unsafe('SELECT pg_advisory_xact_lock(72819461)');const results=[];for(const s of statements){const result=await transaction.unsafe(postgresSql(s._sql),s._values);results.push({success:true,meta:{changes:result.count}});}return results;});}};
+ return {prepare:sql=>make(sql),async batch(statements,options={}){return client.begin(async transaction=>{if(options.accountManagement)await transaction.unsafe('SELECT pg_advisory_xact_lock(72819461)');if(options.activeProject){const active=await transaction.unsafe('SELECT id FROM studio.projects WHERE id=$1 AND trashed=0 FOR UPDATE',[options.activeProject]);if(!active.length)throw Object.assign(new Error('Website unavailable'),{code:'PROJECT_UNAVAILABLE'});}if(options.projectDeletion)await transaction.unsafe('SELECT id FROM studio.projects WHERE id=$1 FOR UPDATE',[options.projectDeletion]);const results=[];for(const s of statements){const result=await transaction.unsafe(postgresSql(s._sql),s._values);results.push({success:true,meta:{changes:result.count}});}return results;});}};
 }
 const databases=new Map();
 export function productionDatabase(connectionString=process.env.DATABASE_URL){
