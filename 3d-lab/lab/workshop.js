@@ -126,7 +126,16 @@ export class Workshop{
   const box=new THREE.Box3().setFromObject(this.group),size=box.getSize(new THREE.Vector3()),scale=100/Math.max(size.x,size.y,size.z),center=box.getCenter(new THREE.Vector3());
   for(const m of meshes){m.geometry.translate(-center.x,-box.min.y,-center.z);m.geometry.scale(scale,scale,scale);m.geometry.computeVertexNormals();}this.select(meshes[0]);this.fit();this.changed();
  }
- stl(){if(!this.objects.length)throw Error('Add or open a sculpture first.');this.group.updateMatrixWorld(true);return new STLExporter().parse(this.group,{binary:true});}
+ stl(){
+  if(!this.objects.length)
+    throw Error('Add or open a sculpture first.');
+
+  const printGroup=this.group.clone(true);
+  printGroup.rotateX(Math.PI/2);
+  printGroup.updateMatrixWorld(true);
+
+  return new STLExporter().parse(printGroup,{binary:true});
+}
  inspect(){if(!this.selected)throw Error('Select a shape first.');const g=this.selected.geometry.clone();g.applyMatrix4(this.selected.matrix);const result=inspect(g);g.dispose();return result;}
  apply(operations){if(!this.selected)throw Error('Select a shape first.');this.checkpoint();for(const op of operations){if(op.type==='scale_selected')this.selected.scale.multiplyScalar(op.factor);else for(let i=0;i<op.count;i++){const m=this.add(op.shape,false);m.position.set((i-(op.count-1)/2)*20,40,0);}}for(const mesh of this.objects)clampToFloor(mesh);this.changed();}
 }
