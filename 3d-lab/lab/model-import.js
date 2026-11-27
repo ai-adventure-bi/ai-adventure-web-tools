@@ -18,6 +18,7 @@ export async function importModelFile(file,{onProgress=()=>{}}={}){
   if(!count)count=(new TextDecoder().decode(buffer).match(/facet\s+normal/gi)||[]).length;
   if(count>1000000)throw Error('This model is above the 1,000,000-triangle import limit. Simplify it in another program first.');
   root=new THREE.Mesh(new STLLoader().parse(buffer));
+root.rotation.x=-Math.PI/2;
  }else if(ext==='obj'){
   const text=await file.text();let count=0;for(const line of text.split(/\r?\n/))if(/^\s*f\s/.test(line)){count+=Math.max(0,line.trim().split(/\s+/).length-3);if(count>150000)throw Error('This model exceeds the 150,000-triangle limit.');}
   root=new OBJLoader().parse(text);
