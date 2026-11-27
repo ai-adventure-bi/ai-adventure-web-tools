@@ -29,3 +29,5 @@ Existing classrooms, accounts, teacher checkboxes, website ownership and /c/... 
 For an existing hosted database, run database/007-classrooms-are-schools.sql after the earlier upgrades. The full database/supabase-studio.sql includes this change for a fresh installation. No hosted migration or deployment was performed in this update.
 
 Selected website sharing: enabling school sharing no longer shares every published site. Use Settings → Classrooms → Websites shared with other schools, tick only agreed sites, then Save sharing choices. Existing and new sites start unticked. See SHARING-AND-GAME-SAVES.md for the required hosted migrations and private player saves.
+
+Student sharing choices: when school sharing is enabled, students can opt their own published sites in or out using the checkbox below Live on Class websites. This updates the same per-site choice shown in teacher settings. The school-wide switch and teacher publication approval remain required.

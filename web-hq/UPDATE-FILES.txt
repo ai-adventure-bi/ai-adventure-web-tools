@@ -1,3 +1,8 @@
+src/site-history.mjs
+src/editor.jsx
+src/lab-theme.css
+tests/undo-sharing.test.mjs
+UNDO-AND-STUDENT-SHARING.md
 src/app.jsx
 src/api-client.mjs
 src/media-client.mjs

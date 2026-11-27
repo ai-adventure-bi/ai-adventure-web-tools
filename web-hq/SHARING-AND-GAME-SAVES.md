@@ -8,7 +8,7 @@
 
 **Existing websites start unticked**, including sites in schools that already enabled sharing. Their own class can still visit published sites. Re-select any sites that should remain available to other schools. Drafts cannot be visited by other schools. Teachers can preselect a draft, but it becomes accessible only when published. New sites start unticked. Trashing a site clears its selection; restoring it keeps it private until reselected and published. Disabling the school's master switch hides all its sites from other schools while retaining its individual choices.
 
-Only assigned teachers and admins manage these choices. Students cannot change the teacher's selection. Selection means the teacher has confirmed agreement; this is not an automatic consent collection or consent record system. Restrictions apply to gallery results/counts, published code/pages, old address redirects, thumbnails and uploaded media. Existing anonymous leaderboard endpoints retain their deliberately public nickname/score behaviour.
+Assigned teachers and admins manage the classroom-wide controls. Students can also change their own website's selection from its class-gallery card when the school's master switch is enabled; the student and teacher controls use the same setting. Selection is the current website sharing choice; this is not an automatic consent collection or consent record system. Restrictions apply to gallery results/counts, published code/pages, old address redirects, thumbnails and uploaded media. Existing anonymous leaderboard endpoints retain their deliberately public nickname/score behaviour.
 
 Local installations apply the SQLite migrations when starting the updated app. The hosted scripts above must be run manually before deploying the new code.
 
