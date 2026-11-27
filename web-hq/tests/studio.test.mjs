@@ -1,6 +1,7 @@
+import {apiWithApprovedPublishes as api} from './support/approved-publication.mjs';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {api,hashPassword,extractCode} from '../server/app.mjs';
+import {hashPassword,extractCode} from '../server/app.mjs';
 import {localDatabase} from '../scripts/db.mjs';
 import {compile} from '../src/compiler.mjs';
 import {templates,starter} from '../src/starters.mjs';
@@ -37,7 +38,7 @@ test('ownership, class access, publication snapshots, stale saves and restoratio
  const gallery=await f.request('/classes/oak/projects',{cookie:b});assert.equal(gallery.data.projects[0].title,'Version one');assert.ok(!JSON.stringify(gallery.data).includes('Do not disclose'));
  assert.equal((await f.request(publishedUrl,{cookie:c})).status,404);
  const history=(await f.request(`/projects/${pid}/versions`,{cookie:a})).data.versions;
- assert.equal((await f.request(`/projects/${pid}/restore`,{method:'POST',cookie:a,data:{versionId:history.find(v=>v.label==='Published').id,revision:2}})).status,200);
+ assert.equal((await f.request(`/projects/${pid}/restore`,{method:'POST',cookie:a,data:{versionId:history.find(v=>v.label==='Teacher approved').id,revision:2}})).status,200);
  assert.equal((await f.request(`/projects/${pid}/unpublish`,{method:'POST',cookie:b,data:{}})).status,403);
  assert.equal((await f.request(`/projects/${pid}/unpublish`,{method:'POST',cookie:teacher,data:{}})).status,200);
  assert.equal((await f.request(publishedUrl,{cookie:b})).status,404);

@@ -1,8 +1,9 @@
+import {apiWithApprovedPublishes as api} from './support/approved-publication.mjs';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {validateMedia,MAX_VIDEO_BYTES} from '../server/media.mjs';
 import {mediaIds,mediaSnippet} from '../src/media-client.mjs';
-import {api,hashPassword} from '../server/app.mjs';
+import {hashPassword} from '../server/app.mjs';
 import {localDatabase} from '../scripts/db.mjs';
 const png='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aWQAAAABJRU5ErkJggg==';
 test('media uploads allow raster images and bounded videos, not active content',()=>{

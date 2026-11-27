@@ -4,7 +4,7 @@ import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import postgres from 'postgres';
 
-export const transferTables=['schools','classes','users','class_teachers','projects','versions','addresses','boards','scores','media','questions'];
+export const transferTables=['schools','classes','users','class_teachers','projects','versions','addresses','boards','scores','media','questions','game_saves','publish_reviews'];
 export function readTransfer(filename){
  const db=new DatabaseSync(filename,{readOnly:true});
  try{
@@ -15,7 +15,9 @@ export function readTransfer(filename){
   if(!data.users.some(u=>u.role==='admin'&&!u.disabled))throw new Error('The source needs an active admin.');
   const users=new Set(data.users.map(u=>u.id)),classes=new Set(data.classes.map(c=>c.id)),projects=new Map(data.projects.map(p=>[p.id,p])),versions=new Map(data.versions.map(v=>[v.id,v]));
   for(const p of data.projects){if(!users.has(p.owner)||!classes.has(p.class_id)||p.published_id&&versions.get(p.published_id)?.project_id!==p.id)throw new Error('A website has a missing owner, classroom or published version.');}
-  for(const table of ['versions','addresses','boards','scores','media','questions'])for(const row of data[table])if(!projects.has(row.project_id))throw new Error('Saved website data has a missing website.');
+  for(const table of ['versions','addresses','boards','scores','media','questions','game_saves','publish_reviews'])for(const row of data[table])if(!projects.has(row.project_id))throw new Error('Saved website data has a missing website.');
+  for(const row of data.publish_reviews)if(versions.get(row.version_id)?.project_id!==row.project_id||!users.has(row.requested_by))throw new Error('A publication review has a missing snapshot or requester.');
+  for(const row of data.game_saves)if(!users.has(row.user_id))throw new Error('A game save has a missing player.');
   db.exec('COMMIT');return data;
  }finally{db.close();}
 }

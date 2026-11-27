@@ -1,11 +1,11 @@
 import postgres from 'postgres';
-const tables=new Set(['questions','addresses','boards','scores','class_teachers','schools','classes','users','sessions','projects','versions','limits','media']);
+const tables=new Set(['publish_reviews','game_saves','questions','addresses','boards','scores','class_teachers','schools','classes','users','sessions','projects','versions','limits','media']);
 // SQL comes only from the server's fixed statements. User values remain bound.
 export function postgresSql(sql){
  let index=0;
  return sql.replace(/\b(FROM|JOIN|INTO|UPDATE)\s+([a-z_]+)/gi,(match,keyword,table)=>tables.has(table)?`${keyword} studio.${table}`:match).replace(/\?/g,()=>`$${++index}`);
 }
-function rows(result){return Array.from(result,row=>Object.fromEntries(Object.entries(row).map(([key,value])=>[key,typeof value==='string'&&['created','updated','expires','n','revision','count','score'].includes(key)&&/^\d+$/.test(value)?Number(value):value])));}
+function rows(result){return Array.from(result,row=>Object.fromEntries(Object.entries(row).map(([key,value])=>[key,typeof value==='string'&&['created','updated','expires','n','revision','count','score','media_revision','reviewed_at'].includes(key)&&/^\d+$/.test(value)?Number(value):value])));}
 export function postgresAdapter(client){
  const make=(sql,args=[])=>({
   bind(...values){return make(sql,values);},

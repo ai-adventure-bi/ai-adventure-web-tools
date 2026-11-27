@@ -1,6 +1,7 @@
+import {apiWithApprovedPublishes as api} from './support/approved-publication.mjs';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {api,hashPassword} from '../server/app.mjs';
+import {hashPassword} from '../server/app.mjs';
 import {localDatabase} from '../scripts/db.mjs';
 
 test('permanent deletion is scoped, requires trash and confirmation, removes related data and releases every address',async()=>{
@@ -17,7 +18,7 @@ test('permanent deletion is scoped, requires trash and confirmation, removes rel
   assert.equal((await call('/projects/'+duplicate,cookies.b)).data.project.slug,'my-game-2');
   assert.equal((await call(`/projects/${pid}/delete`,cookies.a,{confirmDelete:true})).status,409);
   await call(`/projects/${pid}/publish`,cookies.a,{revision:0});
-  DB.raw.prepare('INSERT INTO media VALUES(?,?,?,?,?,?,?)').run('asset',pid,'picture.png','image/png',1,'data:image/png;base64,AAAA',1);
+  DB.raw.prepare('INSERT INTO media(id,project_id,name,mime,size,data_url,created) VALUES(?,?,?,?,?,?,?)').run('asset',pid,'picture.png','image/png',1,'data:image/png;base64,AAAA',1);
   DB.raw.prepare('INSERT INTO questions VALUES(?,?,?,?,?)').run('q',pid,'Question','Answer',1);
   DB.raw.prepare('INSERT INTO boards VALUES(?,1)').run(pid);
   DB.raw.prepare('INSERT INTO scores VALUES(?,?,?,?,?)').run('s',pid,'Nickname',10,1);

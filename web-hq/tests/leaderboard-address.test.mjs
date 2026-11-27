@@ -1,6 +1,7 @@
+import {apiWithApprovedPublishes as api} from './support/approved-publication.mjs';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {api,hashPassword} from '../server/app.mjs';
+import {hashPassword} from '../server/app.mjs';
 import {localDatabase} from '../scripts/db.mjs';
 async function setup(){const DB=localDatabase(),password=await hashPassword('test-password');
  DB.raw.prepare('INSERT INTO classes(id,name,slug,teacher,created) VALUES(?,?,?,?,?)').run('oak','Oak','oak','teacher',1);

@@ -12,7 +12,7 @@ test('AI receives actual uploaded references and cannot silently omit a requeste
   const cookie=(await call('/login',{username:'a',password:'test-password'})).cookie;
   const pid=(await call('/projects',{classId:'oak',title:'Photos'},cookie)).data.id;
   const marker='studio-media:12345678-1234-1234-1234-123456789abc';
-  DB.raw.prepare('INSERT INTO media VALUES(?,?,?,?,?,?,?)').run(marker.slice(13),pid,'My actual photo.png','image/png',1,'data:image/png;base64,AA==',1);
+  DB.raw.prepare('INSERT INTO media(id,project_id,name,mime,size,data_url,created) VALUES(?,?,?,?,?,?,?)').run(marker.slice(13),pid,'My actual photo.png','image/png',1,'data:image/png;base64,AA==',1);
   let include=false;
   globalThis.fetch=async(url,options)=>{
    if(url.includes('oracle_read_key'))return Response.json('test-key');

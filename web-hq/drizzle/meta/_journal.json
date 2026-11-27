@@ -71,6 +71,27 @@
       "when": 1795531941605,
       "tag": "0009_gallery_thumbnail",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1795795200000,
+      "tag": "0010_selected_site_sharing",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1795795201000,
+      "tag": "0011_account_game_saves",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1795795202000,
+      "tag": "0012_teacher_publication_review",
+      "breakpoints": true
     }
   ]
 }
