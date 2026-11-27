@@ -38,7 +38,8 @@ export class OnObjectControls{
   const point=new THREE.Vector3(center.x,this.box.max.y+4,center.z).project(a.camera),w=a.host.clientWidth,h=a.host.clientHeight;
   if(point.z>1||point.z< -1){this.element.hidden=true;this.extra.hidden=true;return;}
   this.element.style.left=`${THREE.MathUtils.clamp((point.x*.5+.5)*w,64,w-64)}px`;this.element.style.top=`${THREE.MathUtils.clamp((-point.y*.5+.5)*h-110,65,h-130)}px`;
-  this.extra.style.left=this.element.style.left;this.extra.style.top=`${parseFloat(this.element.style.top)+118}px`;this.extra.querySelector('[data-stretch]').setAttribute('aria-pressed',String(!!this.stretch));
+  this.extra.style.left='50%';
+this.extra.style.top='12px';this.extra.querySelector('[data-stretch]').setAttribute('aria-pressed',String(!!this.stretch));
   for(const b of this.element.children)b.setAttribute('aria-pressed',String(b.dataset.objectTool===(a.arrangeMode||'translate')));
  }
 }
